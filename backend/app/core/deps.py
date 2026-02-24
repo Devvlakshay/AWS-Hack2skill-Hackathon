@@ -1,37 +1,30 @@
-from typing import AsyncGenerator, Callable, List
+from typing import Callable, List
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
-import redis.asyncio as aioredis
 
 from app.core.config import settings
 from app.core.security import verify_token
+from app.utils.json_store import JsonStore
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_PREFIX}/auth/login")
 
-# Global clients — initialized in main.py startup
-mongo_client: AsyncIOMotorClient | None = None
-redis_client: aioredis.Redis | None = None
+# Global store — initialized in main.py lifespan
+store: JsonStore | None = None
 
 
-def get_db() -> AsyncIOMotorDatabase:
-    if mongo_client is None:
+def get_store() -> JsonStore:
+    if store is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database connection not available",
+            detail="Data store not available",
         )
-    return mongo_client[settings.DATABASE_NAME]
-
-
-def get_redis() -> aioredis.Redis | None:
-    """Return Redis client, or None if not connected (non-critical)."""
-    return redis_client
+    return store
 
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    s: JsonStore = Depends(get_store),
 ) -> dict:
     payload = verify_token(token)
     email: str | None = payload.get("sub")
@@ -41,14 +34,14 @@ async def get_current_user(
             detail="Invalid token payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = await db["users"].find_one({"email": email})
+    user = await s.find_one("users", {"email": email})
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user["id"] = str(user["_id"])
+    user["id"] = user["_id"]
     return user
 
 

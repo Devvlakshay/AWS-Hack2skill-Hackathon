@@ -1,0 +1,12 @@
+[
+  {
+    "name": "lakshyaborasi",
+    "email": "lakshya@gmail.com",
+    "hashed_password": "$2b$12$uoT66WPuBz1iEjlgWbNYrO/oPyVZR5FZP4oU55e7diXTasaoju7ii",
+    "phone": null,
+    "role": "retailer",
+    "created_at": "2026-02-24T19:42:24.436375+00:00",
+    "updated_at": "2026-02-24T19:42:24.436379+00:00",
+    "_id": "f0fea466848e44e28f76e6ea442a3b3e"
+  }
+]

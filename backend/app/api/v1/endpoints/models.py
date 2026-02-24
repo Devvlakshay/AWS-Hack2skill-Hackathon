@@ -7,10 +7,8 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
-from redis.asyncio import Redis
 
-from app.core.deps import get_current_user, get_db, get_redis
+from app.core.deps import get_current_user, get_store
 from app.models.model import (
     BodyType,
     ModelCreate,
@@ -21,6 +19,7 @@ from app.models.model import (
     SkinTone,
 )
 from app.services import model_service
+from app.utils.json_store import JsonStore
 from app.utils.storage import upload_image_multiple_sizes, validate_image
 
 router = APIRouter(prefix="/models", tags=["models"])
@@ -30,7 +29,7 @@ router = APIRouter(prefix="/models", tags=["models"])
 async def create_model(
     data: ModelCreate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    store: JsonStore = Depends(get_store),
 ):
     """Create a new fashion model. Retailer only."""
     if current_user.get("role") != "retailer":
@@ -39,12 +38,8 @@ async def create_model(
             detail="Only retailers can create models",
         )
 
-    retailer_id = str(current_user["_id"])
-
-    # Ensure indexes on first use
-    await model_service.ensure_indexes(db)
-
-    model = await model_service.create_model(db, data, retailer_id)
+    retailer_id = current_user["id"]
+    model = await model_service.create_model(store, data, retailer_id)
     return model
 
 
@@ -56,7 +51,7 @@ async def list_models(
     retailer_id: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    store: JsonStore = Depends(get_store),
 ):
     """List fashion models with filters and pagination."""
     filters = {}
@@ -69,17 +64,16 @@ async def list_models(
     if retailer_id:
         filters["retailer_id"] = retailer_id
 
-    return await model_service.get_models(db, filters, page, limit)
+    return await model_service.get_models(store, filters, page, limit)
 
 
 @router.get("/{model_id}", response_model=ModelResponse)
 async def get_model(
     model_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Get a single fashion model by ID."""
-    model = await model_service.get_model_by_id(db, model_id, redis)
+    model = await model_service.get_model_by_id(store, model_id)
     if not model:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -93,8 +87,7 @@ async def update_model(
     model_id: str,
     data: ModelUpdate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Update a fashion model. Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -103,8 +96,8 @@ async def update_model(
             detail="Only retailers can update models",
         )
 
-    retailer_id = str(current_user["_id"])
-    model = await model_service.update_model(db, model_id, data, retailer_id, redis)
+    retailer_id = current_user["id"]
+    model = await model_service.update_model(store, model_id, data, retailer_id)
     if not model:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -117,8 +110,7 @@ async def update_model(
 async def delete_model(
     model_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Delete a fashion model (soft delete). Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -127,8 +119,8 @@ async def delete_model(
             detail="Only retailers can delete models",
         )
 
-    retailer_id = str(current_user["_id"])
-    deleted = await model_service.delete_model(db, model_id, retailer_id, redis)
+    retailer_id = current_user["id"]
+    deleted = await model_service.delete_model(store, model_id, retailer_id)
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -142,8 +134,7 @@ async def upload_model_image(
     model_id: str,
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Upload an image for a fashion model. Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -152,10 +143,10 @@ async def upload_model_image(
             detail="Only retailers can upload model images",
         )
 
-    retailer_id = str(current_user["_id"])
+    retailer_id = current_user["id"]
 
     # Check model exists and belongs to retailer
-    model = await model_service.get_model_by_id(db, model_id, redis)
+    model = await model_service.get_model_by_id(store, model_id)
     if not model:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -189,11 +180,10 @@ async def upload_model_image(
 
     # Update model with the original image URL
     updated = await model_service.update_model(
-        db,
+        store,
         model_id,
         ModelUpdate(image_url=urls["original"]),
         retailer_id,
-        redis,
     )
     if not updated:
         raise HTTPException(

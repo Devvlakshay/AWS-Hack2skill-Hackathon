@@ -1,26 +1,19 @@
 from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import UserCreate, UserLogin, UserResponse, UserInDB, TokenResponse
+from app.utils.json_store import JsonStore
 
 
-async def create_indexes(db: AsyncIOMotorDatabase) -> None:
-    users = db["users"]
-    await users.create_index("email", unique=True)
-    await users.create_index("role")
-    await users.create_index("created_at")
-
-
-async def get_user_by_email(db: AsyncIOMotorDatabase, email: str) -> dict | None:
-    user = await db["users"].find_one({"email": email})
+async def get_user_by_email(store: JsonStore, email: str) -> dict | None:
+    user = await store.find_one("users", {"email": email})
     return user
 
 
-async def register_user(db: AsyncIOMotorDatabase, user_data: UserCreate) -> TokenResponse:
-    existing_user = await get_user_by_email(db, user_data.email)
+async def register_user(store: JsonStore, user_data: UserCreate) -> TokenResponse:
+    existing_user = await get_user_by_email(store, user_data.email)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -37,14 +30,18 @@ async def register_user(db: AsyncIOMotorDatabase, user_data: UserCreate) -> Toke
         updated_at=datetime.now(timezone.utc),
     )
 
-    result = await db["users"].insert_one(user_in_db.model_dump())
+    doc = user_in_db.model_dump()
+    # Store role as string value for consistency
+    if hasattr(doc.get("role"), "value"):
+        doc["role"] = doc["role"].value
+    inserted_id = await store.insert_one("users", doc)
 
     access_token = create_access_token(
         data={"sub": user_data.email, "role": user_data.role.value}
     )
 
     user_response = UserResponse(
-        id=str(result.inserted_id),
+        id=inserted_id,
         name=user_data.name,
         email=user_data.email,
         role=user_data.role,
@@ -57,8 +54,8 @@ async def register_user(db: AsyncIOMotorDatabase, user_data: UserCreate) -> Toke
     )
 
 
-async def login_user(db: AsyncIOMotorDatabase, credentials: UserLogin) -> TokenResponse:
-    user = await get_user_by_email(db, credentials.email)
+async def login_user(store: JsonStore, credentials: UserLogin) -> TokenResponse:
+    user = await get_user_by_email(store, credentials.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,7 +73,7 @@ async def login_user(db: AsyncIOMotorDatabase, credentials: UserLogin) -> TokenR
     )
 
     user_response = UserResponse(
-        id=str(user["_id"]),
+        id=user["_id"],
         name=user["name"],
         email=user["email"],
         role=user["role"],

@@ -3,12 +3,8 @@ from typing import Optional
 
 
 class Settings(BaseSettings):
-    # MongoDB
-    MONGODB_URL: str = "mongodb://localhost:27017"
-    DATABASE_NAME: str = "fitview_ai"
-
-    # Redis
-    REDIS_URL: str = "redis://localhost:6379"
+    # Data storage (JSON files)
+    DATA_DIR: str = "data"
 
     # JWT
     JWT_SECRET_KEY: str = "change-this-to-a-real-secret-key"
