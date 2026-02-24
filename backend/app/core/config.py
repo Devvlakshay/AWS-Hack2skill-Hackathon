@@ -24,11 +24,6 @@ class Settings(BaseSettings):
     # File uploads (local storage for development)
     UPLOAD_DIR: str = "uploads"
 
-    # Cloudinary (Phase 2+)
-    CLOUDINARY_CLOUD_NAME: Optional[str] = None
-    CLOUDINARY_API_KEY: Optional[str] = None
-    CLOUDINARY_API_SECRET: Optional[str] = None
-
     # AI APIs (Phase 3+)
     NANO_BANANA_API_KEY: Optional[str] = None
     GROK_IMAGINE_API_KEY: Optional[str] = None
