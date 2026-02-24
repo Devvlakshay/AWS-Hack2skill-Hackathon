@@ -34,15 +34,15 @@ export default function ModelCard({ model, showActions = false, onDelete }: Mode
   const imageUrl = model.image_url || "/placeholder-model.png";
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden hover:shadow-lg hover:border-gray-700 transition-all">
       {/* Image */}
-      <div className="aspect-[3/4] bg-gray-100 relative overflow-hidden">
+      <div className="aspect-[3/4] bg-gray-800 relative overflow-hidden">
         <img
           src={imageUrl}
           alt={model.name}
           className="w-full h-full object-cover"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23e5e7eb' viewBox='0 0 24 24'%3E%3Cpath d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/%3E%3C/svg%3E";
+            (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%234b5563' viewBox='0 0 24 24'%3E%3Cpath d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/%3E%3C/svg%3E";
           }}
         />
         <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-0.5 rounded-full">
@@ -57,55 +57,55 @@ export default function ModelCard({ model, showActions = false, onDelete }: Mode
 
       {/* Details */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-sm">{model.name}</h3>
+        <h3 className="font-semibold text-white text-sm">{model.name}</h3>
 
         <div className="mt-2 space-y-1">
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-400">
             <span>Height</span>
-            <span className="font-medium text-gray-700">{model.height_cm} cm</span>
+            <span className="font-medium text-gray-200">{model.height_cm} cm</span>
           </div>
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-400">
             <span>Size</span>
-            <span className="font-medium text-gray-700">{model.size}</span>
+            <span className="font-medium text-gray-200">{model.size}</span>
           </div>
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-gray-400">
             <span>Skin Tone</span>
-            <span className="font-medium text-gray-700">{skinToneLabels[model.skin_tone] || model.skin_tone}</span>
+            <span className="font-medium text-gray-200">{skinToneLabels[model.skin_tone] || model.skin_tone}</span>
           </div>
         </div>
 
         {/* Measurements */}
-        <div className="flex justify-between mt-3 pt-2 border-t border-gray-100">
+        <div className="flex justify-between mt-3 pt-2 border-t border-gray-800">
           <div className="text-center">
-            <p className="text-xs text-gray-400">Bust</p>
-            <p className="text-xs font-medium text-gray-700">{model.measurements.bust}</p>
+            <p className="text-xs text-gray-500">Bust</p>
+            <p className="text-xs font-medium text-gray-200">{model.measurements.bust}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-gray-400">Waist</p>
-            <p className="text-xs font-medium text-gray-700">{model.measurements.waist}</p>
+            <p className="text-xs text-gray-500">Waist</p>
+            <p className="text-xs font-medium text-gray-200">{model.measurements.waist}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-gray-400">Hip</p>
-            <p className="text-xs font-medium text-gray-700">{model.measurements.hip}</p>
+            <p className="text-xs text-gray-500">Hip</p>
+            <p className="text-xs font-medium text-gray-200">{model.measurements.hip}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-3 text-xs text-gray-400">
+        <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
           <span>Used {model.usage_count} times</span>
         </div>
 
         {/* Actions */}
         {showActions && (
-          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-800">
             <Link
               href={`/retailer/models/${model._id}/edit`}
-              className="flex-1 text-center text-sm py-1.5 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors"
+              className="flex-1 text-center text-sm py-1.5 bg-indigo-900/40 text-indigo-400 rounded-lg hover:bg-indigo-900/60 transition-colors"
             >
               Edit
             </Link>
             <button
               onClick={() => onDelete?.(model._id)}
-              className="flex-1 text-sm py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+              className="flex-1 text-sm py-1.5 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-900/50 transition-colors"
             >
               Delete
             </button>

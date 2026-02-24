@@ -80,12 +80,12 @@ export default function ModelListPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-950">
+      <header className="bg-gray-900 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Fashion Models</h1>
-            <p className="text-sm text-gray-500 mt-1">{total} models uploaded</p>
+            <h1 className="text-2xl font-bold text-white">Fashion Models</h1>
+            <p className="text-sm text-gray-400 mt-1">{total} models uploaded</p>
           </div>
           <Link
             href="/retailer/models/new"
@@ -101,19 +101,19 @@ export default function ModelListPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex justify-between items-center">
+          <div className="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-4 flex justify-between items-center">
             <span className="text-sm">{error}</span>
-            <button onClick={clearError} className="text-red-500 hover:text-red-700 text-sm">Dismiss</button>
+            <button onClick={clearError} className="text-red-400 hover:text-red-300 text-sm">Dismiss</button>
           </div>
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <select
               value={bodyType}
               onChange={(e) => { setBodyType(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {BODY_TYPES.map((bt) => (
                 <option key={bt.value} value={bt.value}>{bt.label}</option>
@@ -123,7 +123,7 @@ export default function ModelListPage() {
             <select
               value={skinTone}
               onChange={(e) => { setSkinTone(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {SKIN_TONES.map((st) => (
                 <option key={st.value} value={st.value}>{st.label}</option>
@@ -133,7 +133,7 @@ export default function ModelListPage() {
             <select
               value={size}
               onChange={(e) => { setSize(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               {SIZES.map((s) => (
                 <option key={s.value} value={s.value}>{s.label}</option>
@@ -148,8 +148,8 @@ export default function ModelListPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
           </div>
         ) : models.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <p className="text-gray-500 mb-4">No models found.</p>
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-12 text-center">
+            <p className="text-gray-400 mb-4">No models found.</p>
             <Link
               href="/retailer/models/new"
               className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-emerald-700"
@@ -176,17 +176,17 @@ export default function ModelListPage() {
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-300">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
             >
               Next
             </button>

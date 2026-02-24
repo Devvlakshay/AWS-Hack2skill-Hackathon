@@ -2,6 +2,7 @@
 .env
 .env.local
 .env*.local
+!.env.example
 
 # Python
 __pycache__/
@@ -52,5 +53,5 @@ yarn-error.log*
 *.pem
 .vercel
 
-CLAUDE.md
-docs/*
+# Claude
+.claude/

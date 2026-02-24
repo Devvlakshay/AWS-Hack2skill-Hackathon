@@ -79,12 +79,12 @@ export default function ProductListPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-950">
+      <header className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-            <p className="text-sm text-gray-500 mt-1">{total} products in catalog</p>
+            <h1 className="text-2xl font-bold text-white">Products</h1>
+            <p className="text-sm text-gray-400 mt-1">{total} products in catalog</p>
           </div>
           <Link
             href="/retailer/products/new"
@@ -100,14 +100,14 @@ export default function ProductListPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex justify-between items-center">
+          <div className="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-4 flex justify-between items-center">
             <span className="text-sm">{error}</span>
-            <button onClick={clearError} className="text-red-500 hover:text-red-700 text-sm">Dismiss</button>
+            <button onClick={clearError} className="text-red-400 hover:text-red-300 text-sm">Dismiss</button>
           </div>
         )}
 
         {/* Filters Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+        <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <form onSubmit={handleSearch} className="flex-1">
@@ -117,9 +117,9 @@ export default function ProductListPage() {
                   placeholder="Search products..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
-                <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -129,7 +129,7 @@ export default function ProductListPage() {
             <select
               value={category}
               onChange={(e) => { setCategory(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -145,7 +145,7 @@ export default function ProductListPage() {
                 setSortOrder(order);
                 setCurrentPage(1);
               }}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="created_at_desc">Newest First</option>
               <option value="created_at_asc">Oldest First</option>
@@ -156,16 +156,16 @@ export default function ProductListPage() {
             </select>
 
             {/* View Toggle */}
-            <div className="flex border border-gray-200 rounded-lg overflow-hidden">
+            <div className="flex border border-gray-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`px-3 py-2 text-sm ${viewMode === "grid" ? "bg-indigo-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                className={`px-3 py-2 text-sm ${viewMode === "grid" ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}
               >
                 Grid
               </button>
               <button
                 onClick={() => setViewMode("table")}
-                className={`px-3 py-2 text-sm ${viewMode === "table" ? "bg-indigo-600 text-white" : "bg-white text-gray-600 hover:bg-gray-50"}`}
+                className={`px-3 py-2 text-sm ${viewMode === "table" ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}
               >
                 Table
               </button>
@@ -176,11 +176,11 @@ export default function ProductListPage() {
         {/* Content */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-            <p className="text-gray-500 mb-4">No products found.</p>
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-12 text-center">
+            <p className="text-gray-400 mb-4">No products found.</p>
             <Link
               href="/retailer/products/new"
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700"
@@ -200,11 +200,11 @@ export default function ProductListPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-500 bg-gray-50 border-b border-gray-100">
+                  <tr className="text-left text-gray-400 bg-gray-800/50 border-b border-gray-800">
                     <th className="px-4 py-3 font-medium">Product</th>
                     <th className="px-4 py-3 font-medium">Category</th>
                     <th className="px-4 py-3 font-medium">Price</th>
@@ -215,37 +215,37 @@ export default function ProductListPage() {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id} className="border-b border-gray-50 hover:bg-gray-50">
+                    <tr key={product._id} className="border-b border-gray-800/50 hover:bg-gray-800/50">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                          <div className="w-10 h-10 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
                             {product.images?.[0] && (
                               <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{product.name}</p>
+                            <p className="font-medium text-white">{product.name}</p>
                             <p className="text-xs text-gray-500 truncate max-w-[200px]">{product.description}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{product.category}</td>
-                      <td className="px-4 py-3 text-gray-600">
+                      <td className="px-4 py-3 text-gray-300">{product.category}</td>
+                      <td className="px-4 py-3 text-gray-300">
                         {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(product.price)}
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{product.sizes?.length || 0}</td>
-                      <td className="px-4 py-3 text-gray-600">{product.images?.length || 0}</td>
+                      <td className="px-4 py-3 text-gray-300">{product.sizes?.length || 0}</td>
+                      <td className="px-4 py-3 text-gray-300">{product.images?.length || 0}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
                           <Link
                             href={`/retailer/products/${product._id}/edit`}
-                            className="text-indigo-600 hover:text-indigo-700 text-xs font-medium"
+                            className="text-indigo-400 hover:text-indigo-300 text-xs font-medium"
                           >
                             Edit
                           </Link>
                           <button
                             onClick={() => handleDelete(product._id)}
-                            className="text-red-600 hover:text-red-700 text-xs font-medium"
+                            className="text-red-400 hover:text-red-300 text-xs font-medium"
                           >
                             Delete
                           </button>
@@ -265,17 +265,17 @@ export default function ProductListPage() {
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg text-gray-300 disabled:opacity-50 hover:bg-gray-800"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-400">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg disabled:opacity-50 hover:bg-gray-50"
+              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg text-gray-300 disabled:opacity-50 hover:bg-gray-800"
             >
               Next
             </button>
