@@ -53,4 +53,4 @@ yarn-error.log*
 .vercel
 
 CLAUDE.md
-docs/
+docs/*
