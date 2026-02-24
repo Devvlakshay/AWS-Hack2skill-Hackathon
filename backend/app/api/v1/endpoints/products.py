@@ -7,10 +7,8 @@ import uuid
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
-from motor.motor_asyncio import AsyncIOMotorDatabase
-from redis.asyncio import Redis
 
-from app.core.deps import get_current_user, get_db, get_redis
+from app.core.deps import get_current_user, get_store
 from app.models.product import (
     ProductCreate,
     ProductListResponse,
@@ -18,6 +16,7 @@ from app.models.product import (
     ProductUpdate,
 )
 from app.services import product_service
+from app.utils.json_store import JsonStore
 from app.utils.storage import upload_image_multiple_sizes, validate_image
 
 router = APIRouter(prefix="/products", tags=["products"])
@@ -27,7 +26,7 @@ router = APIRouter(prefix="/products", tags=["products"])
 async def create_product(
     data: ProductCreate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    store: JsonStore = Depends(get_store),
 ):
     """Create a new product. Retailer only."""
     if current_user.get("role") != "retailer":
@@ -36,12 +35,8 @@ async def create_product(
             detail="Only retailers can create products",
         )
 
-    retailer_id = str(current_user["_id"])
-
-    # Ensure indexes on first use
-    await product_service.ensure_indexes(db)
-
-    product = await product_service.create_product(db, data, retailer_id)
+    retailer_id = current_user["id"]
+    product = await product_service.create_product(store, data, retailer_id)
     return product
 
 
@@ -56,7 +51,7 @@ async def list_products(
     sort_order: str = Query("desc", regex="^(asc|desc)$"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    store: JsonStore = Depends(get_store),
 ):
     """List products with filters, sorting, and pagination."""
     filters = {}
@@ -72,17 +67,16 @@ async def list_products(
         filters["price_max"] = price_max
 
     order = -1 if sort_order == "desc" else 1
-    return await product_service.get_products(db, filters, page, limit, sort_by, order)
+    return await product_service.get_products(store, filters, page, limit, sort_by, order)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
     product_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Get a single product by ID."""
-    product = await product_service.get_product_by_id(db, product_id, redis)
+    product = await product_service.get_product_by_id(store, product_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -96,8 +90,7 @@ async def update_product(
     product_id: str,
     data: ProductUpdate,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Update a product. Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -106,8 +99,8 @@ async def update_product(
             detail="Only retailers can update products",
         )
 
-    retailer_id = str(current_user["_id"])
-    product = await product_service.update_product(db, product_id, data, retailer_id, redis)
+    retailer_id = current_user["id"]
+    product = await product_service.update_product(store, product_id, data, retailer_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -120,8 +113,7 @@ async def update_product(
 async def delete_product(
     product_id: str,
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Delete a product (soft delete). Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -130,8 +122,8 @@ async def delete_product(
             detail="Only retailers can delete products",
         )
 
-    retailer_id = str(current_user["_id"])
-    deleted = await product_service.delete_product(db, product_id, retailer_id, redis)
+    retailer_id = current_user["id"]
+    deleted = await product_service.delete_product(store, product_id, retailer_id)
     if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -145,8 +137,7 @@ async def upload_product_images(
     product_id: str,
     file: UploadFile = File(...),
     current_user: dict = Depends(get_current_user),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    redis: Redis = Depends(get_redis),
+    store: JsonStore = Depends(get_store),
 ):
     """Upload an image for a product. Retailer owner only."""
     if current_user.get("role") != "retailer":
@@ -155,10 +146,10 @@ async def upload_product_images(
             detail="Only retailers can upload product images",
         )
 
-    retailer_id = str(current_user["_id"])
+    retailer_id = current_user["id"]
 
     # Check product exists and belongs to retailer
-    product = await product_service.get_product_by_id(db, product_id, redis)
+    product = await product_service.get_product_by_id(store, product_id)
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -195,11 +186,10 @@ async def upload_product_images(
     current_images.append(urls["original"])
 
     updated = await product_service.update_product(
-        db,
+        store,
         product_id,
         ProductUpdate(images=current_images),
         retailer_id,
-        redis,
     )
     if not updated:
         raise HTTPException(
