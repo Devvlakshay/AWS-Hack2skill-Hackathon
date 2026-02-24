@@ -125,72 +125,72 @@ export default function EditProductPage() {
 
   if (loading && !loaded) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gray-950">
+      <header className="bg-gray-900 border-b border-gray-700">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
             onClick={() => router.back()}
-            className="text-sm text-gray-500 hover:text-gray-700 mb-2 inline-flex items-center gap-1"
+            className="text-sm text-gray-400 hover:text-gray-200 mb-2 inline-flex items-center gap-1"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Product</h1>
+          <h1 className="text-2xl font-bold text-white">Edit Product</h1>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
+          <div className="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Basic Information</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                <label className="block text-sm font-medium text-gray-200 mb-1">Product Name *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <label className="block text-sm font-medium text-gray-200 mb-1">Description *</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
                   required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                  <label className="block text-sm font-medium text-gray-200 mb-1">Category *</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="">Select category</option>
                     {CATEGORIES.map((cat) => (
@@ -200,19 +200,19 @@ export default function EditProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Subcategory</label>
+                  <label className="block text-sm font-medium text-gray-200 mb-1">Subcategory</label>
                   <input
                     type="text"
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (INR) *</label>
+                  <label className="block text-sm font-medium text-gray-200 mb-1">Price (INR) *</label>
                   <input
                     type="number"
                     value={price}
@@ -220,46 +220,46 @@ export default function EditProductPage() {
                     min="1"
                     step="0.01"
                     required
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Material</label>
+                  <label className="block text-sm font-medium text-gray-200 mb-1">Material</label>
                   <input
                     type="text"
                     value={material}
                     onChange={(e) => setMaterial(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+                <label className="block text-sm font-medium text-gray-200 mb-1">Tags (comma-separated)</label>
                 <input
                   type="text"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Colors (comma-separated)</label>
+                <label className="block text-sm font-medium text-gray-200 mb-1">Colors (comma-separated)</label>
                 <input
                   type="text"
                   value={colors}
                   onChange={(e) => setColors(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
           </div>
 
           {/* Sizes */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Sizes & Stock</h2>
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Sizes & Stock</h2>
 
             <div className="flex flex-wrap gap-2 mb-4">
               {AVAILABLE_SIZES.map((size) => {
@@ -272,7 +272,7 @@ export default function EditProductPage() {
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                       isSelected
                         ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                        : "bg-gray-800 text-gray-200 border-gray-700 hover:border-gray-600"
                     }`}
                   >
                     {size}
@@ -285,14 +285,14 @@ export default function EditProductPage() {
               <div className="space-y-2">
                 {sizes.map((s) => (
                   <div key={s.size} className="flex items-center gap-4">
-                    <span className="w-16 text-sm font-medium text-gray-700">{s.size}</span>
-                    <label className="text-xs text-gray-500">Stock:</label>
+                    <span className="w-16 text-sm font-medium text-gray-200">{s.size}</span>
+                    <label className="text-xs text-gray-400">Stock:</label>
                     <input
                       type="number"
                       value={s.stock}
                       onChange={(e) => updateStock(s.size, parseInt(e.target.value) || 0)}
                       min="0"
-                      className="w-24 px-2 py-1 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-24 px-2 py-1 border border-gray-700 rounded text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
                 ))}
@@ -301,8 +301,8 @@ export default function EditProductPage() {
           </div>
 
           {/* Images */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Product Images</h2>
+          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Product Images</h2>
             <ImageUpload
               onFilesSelected={setImageFiles}
               multiple
@@ -323,7 +323,7 @@ export default function EditProductPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-700 rounded-lg text-gray-200 hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>

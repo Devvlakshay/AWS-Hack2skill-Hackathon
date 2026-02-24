@@ -113,10 +113,10 @@ export default function ImageUpload({
       {/* Existing images */}
       {existingImages.length > 0 && (
         <div className="mb-4">
-          <p className="text-sm text-gray-600 mb-2">Current images:</p>
+          <p className="text-sm text-gray-400 mb-2">Current images:</p>
           <div className="flex flex-wrap gap-3">
             {existingImages.map((url, i) => (
-              <div key={`existing-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+              <div key={`existing-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-700">
                 <img src={url} alt={`Existing ${i + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function ImageUpload({
         onClick={() => inputRef.current?.click()}
         className={`
           border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors
-          ${isDragging ? "border-indigo-500 bg-indigo-50" : "border-gray-300 hover:border-gray-400 bg-gray-50"}
+          ${isDragging ? "border-indigo-500 bg-indigo-900/20" : "border-gray-700 hover:border-gray-600 bg-gray-800/50"}
         `}
       >
         <input
@@ -145,7 +145,7 @@ export default function ImageUpload({
         />
 
         <svg
-          className="mx-auto h-12 w-12 text-gray-400 mb-3"
+          className="mx-auto h-12 w-12 text-gray-500 mb-3"
           stroke="currentColor"
           fill="none"
           viewBox="0 0 48 48"
@@ -158,8 +158,8 @@ export default function ImageUpload({
           />
         </svg>
 
-        <p className="text-sm text-gray-600">
-          <span className="font-semibold text-indigo-600">Click to upload</span> or drag and drop
+        <p className="text-sm text-gray-400">
+          <span className="font-semibold text-indigo-400">Click to upload</span> or drag and drop
         </p>
         <p className="text-xs text-gray-500 mt-1">
           JPEG, PNG, or WebP. Min 512x512. Max 10MB.
@@ -174,10 +174,10 @@ export default function ImageUpload({
       {/* New previews */}
       {previews.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm text-gray-600 mb-2">New uploads:</p>
+          <p className="text-sm text-gray-400 mb-2">New uploads:</p>
           <div className="flex flex-wrap gap-3">
             {previews.map((preview, i) => (
-              <div key={`preview-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 group">
+              <div key={`preview-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-700 group">
                 <img src={preview} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
                 <button
                   type="button"

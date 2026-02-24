@@ -1,12 +1,42 @@
 [
   {
-    "name": "lakshyaborasi",
+    "_id": "retailer001",
+    "name": "FashionHub India",
+    "email": "retailer@fitview.ai",
+    "hashed_password": "$2b$12$ClwRLQR8/WdDz2B8u01X5.S2gDI4Fdz0d6QvCt6ebp2Q6A75p6ZTm",
+    "phone": "+91-9876543210",
+    "role": "retailer",
+    "created_at": "2026-02-01T10:00:00+00:00",
+    "updated_at": "2026-02-01T10:00:00+00:00"
+  },
+  {
+    "_id": "customer001",
+    "name": "Priya Sharma",
+    "email": "customer@fitview.ai",
+    "hashed_password": "$2b$12$ClwRLQR8/WdDz2B8u01X5.S2gDI4Fdz0d6QvCt6ebp2Q6A75p6ZTm",
+    "phone": "+91-9123456780",
+    "role": "customer",
+    "created_at": "2026-02-05T10:00:00+00:00",
+    "updated_at": "2026-02-05T10:00:00+00:00"
+  },
+  {
+    "name": "lakshya borasi",
     "email": "lakshya@gmail.com",
-    "hashed_password": "$2b$12$uoT66WPuBz1iEjlgWbNYrO/oPyVZR5FZP4oU55e7diXTasaoju7ii",
+    "hashed_password": "$2b$12$6Ie23DcTzEjC83j4EWaoK.PwkNV6Ltml8tNyFPbu0xZpTh4K/hVWm",
     "phone": null,
     "role": "retailer",
-    "created_at": "2026-02-24T19:42:24.436375+00:00",
-    "updated_at": "2026-02-24T19:42:24.436379+00:00",
-    "_id": "f0fea466848e44e28f76e6ea442a3b3e"
+    "created_at": "2026-02-24T20:00:18.562039+00:00",
+    "updated_at": "2026-02-24T20:00:18.562044+00:00",
+    "_id": "91eed8392fc34259be6c25d2b827935c"
+  },
+  {
+    "name": "lakshya",
+    "email": "lakshyaa@gmail.com",
+    "hashed_password": "$2b$12$KsIrMB6jDO.PxV/.Iv0nAufKrV.z6xQYBk//nwM5qf9QgCDwC.7IG",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-02-24T20:01:08.693197+00:00",
+    "updated_at": "2026-02-24T20:01:08.693203+00:00",
+    "_id": "5c32f1b6033e4bba82e000bc962f4071"
   }
 ]
