@@ -1,6 +1,6 @@
 # Phase 2 — Product & Model Management
 
-## Status: COMPLETE
+## Status: COMPLETE (Verified & Running)
 
 ---
 
@@ -247,9 +247,9 @@ curl "http://localhost:8000/api/v1/models?body_type=slim&skin_tone=medium&gender
 
 | File | Records | Description |
 |------|---------|-------------|
-| `data/users.json` | 2 | Pre-seeded retailer + customer accounts |
-| `data/products.json` | 8 | Indian retail products (Kurta, Shirt, Anarkali, Jeans, Saree, T-Shirt, Jacket, Palazzo Set) |
-| `data/models.json` | 7 | Fashion models with varied body types, sizes, and measurements |
+| `data/users.json` | 2+ | Pre-seeded retailer + customer accounts |
+| `data/products.json` | 10 | Indian retail products (Kurta, Shirt, Anarkali, Jeans, Saree, T-Shirt, Bomber Jacket, Palazzo Set, Wrap Dress, Nehru Jacket) |
+| `data/models.json` | 10 | Fashion models with varied body types, sizes, and measurements (Ananya, Meera, Riya, Divya, Zara, Kavya, Lakshmi, Priya, Sneha, Isha) |
 
 ## Dark Mode
 
