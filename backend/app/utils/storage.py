@@ -53,7 +53,7 @@ def validate_image(file_bytes: bytes) -> bool:
     return True
 
 
-def _resize_image(file_bytes: bytes, size: tuple[int, int], fmt: str = "WEBP") -> bytes:
+def _resize_image(file_bytes: bytes, size: tuple[int, int], fmt: str = "PNG") -> bytes:
     """Resize an image to the given dimensions, maintaining aspect ratio."""
     img = Image.open(io.BytesIO(file_bytes))
     img = img.convert("RGB")
@@ -73,11 +73,11 @@ def generate_thumbnail(file_bytes: bytes) -> bytes:
 
 
 def generate_optimized(file_bytes: bytes) -> bytes:
-    """Generate web-optimized image (max 1024x1024) in WebP format."""
+    """Generate web-optimized image (max 1024x1024) in PNG format."""
     return _resize_image(file_bytes, WEB_OPTIMIZED_SIZE)
 
 
-def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "webp") -> str:
+def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "png") -> str:
     """Save image bytes to local filesystem. Returns the URL path."""
     upload_dir = os.path.join(settings.UPLOAD_DIR, folder)
     os.makedirs(upload_dir, exist_ok=True)

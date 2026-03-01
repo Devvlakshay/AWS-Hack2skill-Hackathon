@@ -38,5 +38,35 @@
     "created_at": "2026-02-24T20:01:08.693197+00:00",
     "updated_at": "2026-02-24T20:01:08.693203+00:00",
     "_id": "5c32f1b6033e4bba82e000bc962f4071"
+  },
+  {
+    "name": "Lakshya Borasi",
+    "email": "l@gmail.com",
+    "hashed_password": "$2b$12$3S1n9s/F5Yy4ZmMxQoBm4uTHsuiJdp.Nw0lyjMOmbMrCpHieSPO1G",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-02-28T09:46:02.375122+00:00",
+    "updated_at": "2026-02-28T09:46:02.375127+00:00",
+    "_id": "14de21b6538242e0ba74fb24f6916055"
+  },
+  {
+    "name": "Lakshya Borasi",
+    "email": "lakshya1@gmail.com",
+    "hashed_password": "$2b$12$EyGODPxe/0jUu7obBMHUIOd4vBBhRy2/w8x.CBRV.65rchl9.pQcq",
+    "phone": null,
+    "role": "retailer",
+    "created_at": "2026-03-01T15:12:22.458628+00:00",
+    "updated_at": "2026-03-01T15:12:22.458633+00:00",
+    "_id": "4dbe4049da8c4c4c8a18ecae0506665f"
+  },
+  {
+    "name": "pawan",
+    "email": "pawan@gmail.com",
+    "hashed_password": "$2b$12$XM17XnuY7WjLK2Tg2rqaOeStkWEcsMVjOfjmgEcK/LbdoYE0s7S1O",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-03-01T15:15:09.479911+00:00",
+    "updated_at": "2026-03-01T15:15:09.479916+00:00",
+    "_id": "4cb8e6b0d7c64924ba1c33a332a1c9be"
   }
 ]

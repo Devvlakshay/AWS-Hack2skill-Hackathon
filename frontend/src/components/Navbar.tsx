@@ -46,6 +46,12 @@ export default function Navbar() {
                   Products
                 </Link>
                 <Link
+                  href="/tryon"
+                  className="text-gray-300 hover:text-primary-400 font-medium transition-colors"
+                >
+                  Try-On
+                </Link>
+                <Link
                   href="/dashboard"
                   className="text-gray-300 hover:text-primary-400 font-medium transition-colors"
                 >
@@ -125,6 +131,13 @@ export default function Navbar() {
             </Link>
             {mounted && isAuthenticated ? (
               <>
+                <Link
+                  href="/tryon"
+                  className="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Virtual Try-On
+                </Link>
                 <Link
                   href="/dashboard"
                   className="block px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg"
