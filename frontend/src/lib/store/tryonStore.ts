@@ -6,10 +6,13 @@
 import { create } from "zustand";
 import {
   generateTryOn,
+  generateTryOnWithPhoto,
+  generateBatchTryOn,
   getTryOnHistory,
   toggleTryOnFavorite,
   type TryOnSession,
   type TryOnHistoryResponse,
+  type BatchTryOnResponse,
 } from "@/lib/api/tryon";
 
 interface TryOnState {
@@ -17,6 +20,10 @@ interface TryOnState {
   currentResult: TryOnSession | null;
   isGenerating: boolean;
   generateError: string | null;
+
+  // Batch / multi-select
+  selectedProductIds: string[];
+  batchResults: BatchTryOnResponse | null;
 
   // History
   history: TryOnSession[];
@@ -29,10 +36,19 @@ interface TryOnState {
   selectedModelId: string | null;
   selectedProductId: string | null;
 
+  // User photo upload
+  userPhoto: File | null;
+  userPhotoPreview: string | null;
+
   // Actions
   setSelectedModel: (modelId: string | null) => void;
   setSelectedProduct: (productId: string | null) => void;
+  toggleProductSelection: (productId: string) => void;
+  clearProductSelection: () => void;
+  setUserPhoto: (file: File | null) => void;
+  clearUserPhoto: () => void;
   generate: () => Promise<void>;
+  generateBatch: () => Promise<void>;
   fetchHistory: (page?: number) => Promise<void>;
   toggleFavorite: (sessionId: string, isFavorite: boolean) => Promise<void>;
   clearResult: () => void;
@@ -44,6 +60,9 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
   isGenerating: false,
   generateError: null,
 
+  selectedProductIds: [],
+  batchResults: null,
+
   history: [],
   historyTotal: 0,
   historyPage: 1,
@@ -53,12 +72,90 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
   selectedModelId: null,
   selectedProductId: null,
 
+  userPhoto: null,
+  userPhotoPreview: null,
+
   setSelectedModel: (modelId) => set({ selectedModelId: modelId }),
   setSelectedProduct: (productId) => set({ selectedProductId: productId }),
 
+  toggleProductSelection: (productId) => {
+    const { selectedProductIds } = get();
+    if (selectedProductIds.includes(productId)) {
+      set({
+        selectedProductIds: selectedProductIds.filter((id) => id !== productId),
+        selectedProductId: selectedProductIds.length === 2 ? selectedProductIds.find((id) => id !== productId) || null : null,
+      });
+    } else {
+      if (selectedProductIds.length >= 5) return; // max 5
+      const next = [...selectedProductIds, productId];
+      set({
+        selectedProductIds: next,
+        selectedProductId: next.length === 1 ? productId : get().selectedProductId,
+      });
+    }
+  },
+
+  clearProductSelection: () => set({ selectedProductIds: [], selectedProductId: null, batchResults: null }),
+
+  setUserPhoto: (file) => {
+    // Revoke previous preview URL to avoid memory leaks
+    const prevPreview = get().userPhotoPreview;
+    if (prevPreview) {
+      URL.revokeObjectURL(prevPreview);
+    }
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      set({
+        userPhoto: file,
+        userPhotoPreview: previewUrl,
+        selectedModelId: "user_upload",
+      });
+    } else {
+      set({
+        userPhoto: null,
+        userPhotoPreview: null,
+      });
+    }
+  },
+
+  clearUserPhoto: () => {
+    const prevPreview = get().userPhotoPreview;
+    if (prevPreview) {
+      URL.revokeObjectURL(prevPreview);
+    }
+    set({
+      userPhoto: null,
+      userPhotoPreview: null,
+      selectedModelId: null,
+    });
+  },
+
   generate: async () => {
-    const { selectedModelId, selectedProductId } = get();
-    if (!selectedModelId || !selectedProductId) {
+    const { selectedModelId, selectedProductId, userPhoto } = get();
+
+    if (!selectedProductId) {
+      set({ generateError: "Please select a product" });
+      return;
+    }
+
+    // If user uploaded a photo, use the photo endpoint
+    if (userPhoto && selectedModelId === "user_upload") {
+      set({ isGenerating: true, generateError: null, currentResult: null });
+      try {
+        const result = await generateTryOnWithPhoto(userPhoto, selectedProductId);
+        set({ currentResult: result, isGenerating: false });
+      } catch (error: any) {
+        set({
+          generateError: error.message || "Try-on generation failed",
+          isGenerating: false,
+        });
+      }
+      return;
+    }
+
+    // Standard model-based try-on
+    if (!selectedModelId) {
       set({ generateError: "Please select both a model and a product" });
       return;
     }
@@ -73,6 +170,40 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
     } catch (error: any) {
       set({
         generateError: error.message || "Try-on generation failed",
+        isGenerating: false,
+      });
+    }
+  },
+
+  generateBatch: async () => {
+    const { selectedModelId, selectedProductIds } = get();
+
+    if (!selectedModelId) {
+      set({ generateError: "Please select a model" });
+      return;
+    }
+    if (selectedProductIds.length === 0) {
+      set({ generateError: "Please select at least one product" });
+      return;
+    }
+
+    // Single product: use existing single flow
+    if (selectedProductIds.length === 1) {
+      set({ selectedProductId: selectedProductIds[0] });
+      await get().generate();
+      return;
+    }
+
+    set({ isGenerating: true, generateError: null, currentResult: null, batchResults: null });
+    try {
+      const result = await generateBatchTryOn({
+        model_id: selectedModelId,
+        product_ids: selectedProductIds,
+      });
+      set({ batchResults: result, isGenerating: false });
+    } catch (error: any) {
+      set({
+        generateError: error.message || "Batch try-on generation failed",
         isGenerating: false,
       });
     }
@@ -114,6 +245,6 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
     }
   },
 
-  clearResult: () => set({ currentResult: null, generateError: null }),
+  clearResult: () => set({ currentResult: null, batchResults: null, generateError: null }),
   clearError: () => set({ generateError: null, historyError: null }),
 }));

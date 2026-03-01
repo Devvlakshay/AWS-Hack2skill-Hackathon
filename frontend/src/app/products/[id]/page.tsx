@@ -1,14 +1,24 @@
 "use client";
 
 /**
- * Product detail page with image gallery, size chart, and try-on button.
- * Phase 2: Product & Model Management.
+ * Product detail page with image gallery, size chart, try-on button,
+ * size recommendation, wishlist, cart, and style recommendations.
+ * Phase 2 + Phase 4 enhancements.
  */
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useProductStore } from "@/lib/store/productStore";
+import { useCartStore } from "@/lib/store/cartStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
+import { useAuthStore } from "@/lib/store/authStore";
+import {
+  getSizeRecommendation,
+  getStyleRecommendations,
+  type SizeRecommendation,
+  type RecommendedProduct,
+} from "@/lib/api/recommendations";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -23,8 +33,30 @@ export default function ProductDetailPage() {
     clearCurrentProduct,
   } = useProductStore();
 
+  const { isAuthenticated, hydrate } = useAuthStore();
+  const { addItem: addToCart, loading: cartLoading } = useCartStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist, fetchWishlist } = useWishlistStore();
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  // Size recommendation state
+  const [sizeRec, setSizeRec] = useState<SizeRecommendation | null>(null);
+  const [sizeRecLoading, setSizeRecLoading] = useState(false);
+
+  // Style recommendations state
+  const [styleRecs, setStyleRecs] = useState<RecommendedProduct[]>([]);
+  const [styleRecsLoading, setStyleRecsLoading] = useState(false);
+  const [styleRecsBasis, setStyleRecsBasis] = useState("");
+
+  // Wishlist state
+  const [wishlisted, setWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
 
   useEffect(() => {
     if (productId) {
@@ -34,6 +66,83 @@ export default function ProductDetailPage() {
       clearCurrentProduct();
     };
   }, [productId, fetchProduct, clearCurrentProduct]);
+
+  // Fetch recommendations and wishlist status when authenticated
+  useEffect(() => {
+    if (isAuthenticated && productId) {
+      fetchWishlist();
+
+      // Size recommendation
+      setSizeRecLoading(true);
+      getSizeRecommendation(productId)
+        .then(setSizeRec)
+        .catch(() => {})
+        .finally(() => setSizeRecLoading(false));
+
+      // Style recommendations
+      setStyleRecsLoading(true);
+      getStyleRecommendations(6)
+        .then((data) => {
+          setStyleRecs(data.products);
+          setStyleRecsBasis(data.based_on);
+        })
+        .catch(() => {})
+        .finally(() => setStyleRecsLoading(false));
+    }
+  }, [isAuthenticated, productId, fetchWishlist]);
+
+  // Update wishlisted state when wishlist store changes
+  useEffect(() => {
+    if (productId) {
+      setWishlisted(isInWishlist(productId));
+    }
+  }, [productId, isInWishlist]);
+
+  // Auto-select recommended size
+  useEffect(() => {
+    if (sizeRec && !selectedSize) {
+      setSelectedSize(sizeRec.recommended_size);
+    }
+  }, [sizeRec, selectedSize]);
+
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      alert("Please select a size");
+      return;
+    }
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    try {
+      await addToCart(productId, selectedSize, 1);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } catch {
+      // Error handled by store
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+    setWishlistLoading(true);
+    try {
+      if (wishlisted) {
+        await removeFromWishlist(productId);
+        setWishlisted(false);
+      } else {
+        await addToWishlist(productId);
+        setWishlisted(true);
+      }
+    } catch {
+      // Error handled by store
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   if (loading || !product) {
     return (
@@ -94,7 +203,7 @@ export default function ProductDetailPage() {
           {/* Image Gallery */}
           <div>
             {/* Main Image */}
-            <div className="aspect-[3/4] bg-gray-800 rounded-2xl overflow-hidden mb-4">
+            <div className="aspect-[3/4] bg-gray-800 rounded-2xl overflow-hidden mb-4 relative">
               {hasImages ? (
                 <img
                   src={images[selectedImage]}
@@ -108,6 +217,22 @@ export default function ProductDetailPage() {
                   </svg>
                 </div>
               )}
+
+              {/* Wishlist Heart Button */}
+              <button
+                onClick={handleToggleWishlist}
+                disabled={wishlistLoading}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-900/70 flex items-center justify-center transition-colors hover:bg-gray-900/90 disabled:opacity-50"
+              >
+                <svg
+                  className={`w-5 h-5 transition-colors ${wishlisted ? "text-red-500 fill-red-500" : "text-white"}`}
+                  fill={wishlisted ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
 
             {/* Thumbnail Row */}
@@ -173,20 +298,31 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Sizes */}
+            {/* Sizes with AI Recommendation */}
             {product.sizes.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-white mb-3">Select Size</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-white">Select Size</h3>
+                  {/* Size Recommendation Badge */}
+                  {sizeRecLoading ? (
+                    <span className="text-xs text-gray-500">Getting recommendation...</span>
+                  ) : sizeRec ? (
+                    <span className="text-xs bg-green-900/40 text-green-400 px-2 py-1 rounded-full">
+                      AI recommends: {sizeRec.recommended_size} ({Math.round(sizeRec.confidence * 100)}%)
+                    </span>
+                  ) : null}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((s, i) => {
                     const inStock = s.stock > 0;
                     const isSelected = selectedSize === s.size;
+                    const isRecommended = sizeRec?.recommended_size === s.size;
                     return (
                       <button
                         key={i}
                         onClick={() => inStock && setSelectedSize(s.size)}
                         disabled={!inStock}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                        className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors relative ${
                           isSelected
                             ? "bg-indigo-600 text-white border-indigo-600"
                             : inStock
@@ -198,10 +334,18 @@ export default function ProductDetailPage() {
                         {inStock && (
                           <span className="ml-1 text-xs opacity-60">({s.stock})</span>
                         )}
+                        {isRecommended && !isSelected && (
+                          <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full" />
+                        )}
                       </button>
                     );
                   })}
                 </div>
+
+                {/* Size Recommendation Detail */}
+                {sizeRec && (
+                  <p className="mt-2 text-xs text-gray-400">{sizeRec.reasoning}</p>
+                )}
               </div>
             )}
 
@@ -266,19 +410,107 @@ export default function ProductDetailPage() {
                 Try On Virtually
               </button>
               <button
-                className="px-6 py-3 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-                onClick={() => {
-                  alert("Wishlist feature will be available in Phase 4. Stay tuned!");
-                }}
+                onClick={handleAddToCart}
+                disabled={cartLoading}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-colors text-center flex items-center justify-center gap-2 ${
+                  addedToCart
+                    ? "bg-green-600 text-white"
+                    : "bg-white text-gray-900 hover:bg-gray-100"
+                }`}
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {addedToCart ? (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                    </svg>
+                    Add to Cart
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleToggleWishlist}
+                disabled={wishlistLoading}
+                className={`px-6 py-3 border rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                  wishlisted
+                    ? "border-red-500 text-red-400 hover:bg-red-900/20"
+                    : "border-gray-700 text-gray-300 hover:bg-gray-800"
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill={wishlisted ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                Wishlist
+                {wishlisted ? "Wishlisted" : "Wishlist"}
               </button>
             </div>
           </div>
         </div>
+
+        {/* You May Also Like Section */}
+        {styleRecs.length > 0 && (
+          <div className="mt-16">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-white">You May Also Like</h2>
+              {styleRecsBasis && (
+                <p className="text-sm text-gray-400 mt-1">{styleRecsBasis}</p>
+              )}
+            </div>
+
+            {styleRecsLoading ? (
+              <div className="flex justify-center py-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {styleRecs.map((rec) => {
+                  const recPrice = new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(rec.price);
+
+                  return (
+                    <Link
+                      key={rec._id}
+                      href={`/products/${rec._id}`}
+                      className="group"
+                    >
+                      <div className="aspect-[3/4] bg-gray-800 rounded-xl overflow-hidden mb-2">
+                        {rec.images && rec.images.length > 0 ? (
+                          <img
+                            src={rec.images[0]}
+                            alt={rec.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-white font-medium line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                        {rec.name}
+                      </p>
+                      <p className="text-sm text-gray-400">{recPrice}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
