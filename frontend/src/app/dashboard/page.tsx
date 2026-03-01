@@ -120,10 +120,13 @@ export default function DashboardPage() {
               <h3 className="font-semibold text-lg">Browse Products</h3>
               <p className="text-indigo-300 text-sm mt-1">Explore our curated clothing collection</p>
             </Link>
-            <div className="bg-gray-800 text-gray-300 rounded-xl p-6">
+            <Link
+              href="/tryon"
+              className="bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-xl p-6 hover:from-purple-700 hover:to-purple-800 transition-all shadow-sm"
+            >
               <h3 className="font-semibold text-lg">Virtual Try-On</h3>
-              <p className="text-gray-500 text-sm mt-1">Coming soon in Phase 3</p>
-            </div>
+              <p className="text-purple-300 text-sm mt-1">Try on clothes with AI-powered virtual fitting</p>
+            </Link>
           </div>
         )}
 

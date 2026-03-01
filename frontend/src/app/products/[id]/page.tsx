@@ -256,7 +256,7 @@ export default function ProductDetailPage() {
               <button
                 className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-indigo-700 transition-colors text-center flex items-center justify-center gap-2"
                 onClick={() => {
-                  alert("Virtual Try-On will be available in Phase 3. Stay tuned!");
+                  router.push(`/tryon?product=${product._id || product.id}`);
                 }}
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

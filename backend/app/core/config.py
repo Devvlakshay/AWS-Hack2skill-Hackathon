@@ -21,8 +21,13 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "uploads"
 
     # AI APIs (Phase 3+)
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_IMAGE_MODEL: str = "gemini-3.1-flash-image-preview"
+
+    # Legacy (kept for backward compat, not used)
     NANO_BANANA_API_KEY: Optional[str] = None
-    GROK_IMAGINE_API_KEY: Optional[str] = None
+    NANO_BANANA_BASE_URL: str = "https://api.nanobanana.google.com/v1"
 
     model_config = {
         "env_file": ".env",

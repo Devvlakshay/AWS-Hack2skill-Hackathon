@@ -10,9 +10,15 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
+class Gender(str, Enum):
+    MALE = "male"
+    FEMALE = "female"
+
+
 class BodyType(str, Enum):
     SLIM = "slim"
     AVERAGE = "average"
+    ATHLETIC = "athletic"
     CURVY = "curvy"
     PLUS_SIZE = "plus_size"
 
@@ -67,6 +73,7 @@ class ModelResponse(BaseModel):
     """Schema for fashion model response."""
     id: str = Field(..., alias="_id")
     name: str
+    gender: Gender = Gender.FEMALE
     body_type: BodyType
     height_cm: float
     measurements: Measurements

@@ -5,7 +5,7 @@
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
-type BodyType = "slim" | "average" | "curvy" | "plus_size";
+type BodyType = "slim" | "average" | "curvy" | "plus_size" | "athletic";
 type SkinTone = "fair" | "medium" | "olive" | "brown" | "dark";
 type ModelSize = "S" | "M" | "L" | "XL" | "XXL";
 
@@ -48,6 +48,7 @@ export interface FashionModel {
   id: string;
   _id: string;
   name: string;
+  gender: "male" | "female";
   body_type: BodyType;
   height_cm: number;
   measurements: Measurements;
