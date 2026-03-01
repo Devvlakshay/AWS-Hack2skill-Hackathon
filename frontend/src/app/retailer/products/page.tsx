@@ -79,16 +79,16 @@ export default function ProductListPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <header className="bg-gray-900 border-b border-gray-800">
+    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
+      <header className="glass-card-lg rounded-none border-x-0 border-t-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Products</h1>
-            <p className="text-sm text-gray-400 mt-1">{total} products in catalog</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">Products</h1>
+            <p className="text-sm text-[rgb(var(--text-muted))] mt-1">{total} products in catalog</p>
           </div>
           <Link
             href="/retailer/products/new"
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors inline-flex items-center gap-2"
+            className="btn-primary px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -107,7 +107,7 @@ export default function ProductListPage() {
         )}
 
         {/* Filters Bar */}
-        <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-4 mb-6">
+        <div className="glass-card p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <form onSubmit={handleSearch} className="flex-1">
@@ -117,9 +117,9 @@ export default function ProductListPage() {
                   placeholder="Search products..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="glass-input w-full pl-10 pr-4 py-2 text-sm"
                 />
-                <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="absolute left-3 top-2.5 w-4 h-4 text-[rgb(var(--text-muted))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
@@ -129,7 +129,7 @@ export default function ProductListPage() {
             <select
               value={category}
               onChange={(e) => { setCategory(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="glass-input px-3 py-2 text-sm"
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -145,7 +145,7 @@ export default function ProductListPage() {
                 setSortOrder(order);
                 setCurrentPage(1);
               }}
-              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="glass-input px-3 py-2 text-sm"
             >
               <option value="created_at_desc">Newest First</option>
               <option value="created_at_asc">Oldest First</option>
@@ -156,16 +156,16 @@ export default function ProductListPage() {
             </select>
 
             {/* View Toggle */}
-            <div className="flex border border-gray-700 rounded-lg overflow-hidden">
+            <div className="flex border border-[rgba(var(--glass-border))] rounded-lg overflow-hidden">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`px-3 py-2 text-sm ${viewMode === "grid" ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}
+                className={`px-3 py-2 text-sm transition-colors ${viewMode === "grid" ? "bg-violet-600 text-white" : "bg-white/5 text-[rgb(var(--text-secondary))] hover:bg-white/10"}`}
               >
                 Grid
               </button>
               <button
                 onClick={() => setViewMode("table")}
-                className={`px-3 py-2 text-sm ${viewMode === "table" ? "bg-indigo-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"}`}
+                className={`px-3 py-2 text-sm transition-colors ${viewMode === "table" ? "bg-violet-600 text-white" : "bg-white/5 text-[rgb(var(--text-secondary))] hover:bg-white/10"}`}
               >
                 Table
               </button>
@@ -176,14 +176,14 @@ export default function ProductListPage() {
         {/* Content */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
           </div>
         ) : products.length === 0 ? (
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-12 text-center">
-            <p className="text-gray-400 mb-4">No products found.</p>
+          <div className="glass-card p-12 text-center">
+            <p className="text-[rgb(var(--text-muted))] mb-4">No products found.</p>
             <Link
               href="/retailer/products/new"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700"
+              className="btn-primary px-4 py-2 rounded-lg text-sm"
             >
               Add your first product
             </Link>
@@ -200,11 +200,11 @@ export default function ProductListPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden">
+          <div className="glass-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-400 bg-gray-800/50 border-b border-gray-800">
+                  <tr className="text-left text-[rgb(var(--text-muted))] bg-white/5 border-b border-[rgba(var(--glass-border))]">
                     <th className="px-4 py-3 font-medium">Product</th>
                     <th className="px-4 py-3 font-medium">Category</th>
                     <th className="px-4 py-3 font-medium">Price</th>
@@ -215,31 +215,31 @@ export default function ProductListPage() {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id} className="border-b border-gray-800/50 hover:bg-gray-800/50">
+                    <tr key={product._id} className="border-b border-[rgba(var(--glass-border))]/50 hover:bg-white/5 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-800 rounded-lg overflow-hidden flex-shrink-0">
+                          <div className="w-10 h-10 bg-[rgb(var(--bg-secondary))] rounded-lg overflow-hidden flex-shrink-0 border border-[rgba(var(--glass-border))]">
                             {product.images?.[0] && (
                               <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
                             )}
                           </div>
                           <div>
-                            <p className="font-medium text-white">{product.name}</p>
-                            <p className="text-xs text-gray-500 truncate max-w-[200px]">{product.description}</p>
+                            <p className="font-medium text-[rgb(var(--text-primary))]">{product.name}</p>
+                            <p className="text-xs text-[rgb(var(--text-muted))] truncate max-w-[200px]">{product.description}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-gray-300">{product.category}</td>
-                      <td className="px-4 py-3 text-gray-300">
+                      <td className="px-4 py-3 text-[rgb(var(--text-secondary))]">{product.category}</td>
+                      <td className="px-4 py-3 text-[rgb(var(--text-secondary))]">
                         {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(product.price)}
                       </td>
-                      <td className="px-4 py-3 text-gray-300">{product.sizes?.length || 0}</td>
-                      <td className="px-4 py-3 text-gray-300">{product.images?.length || 0}</td>
+                      <td className="px-4 py-3 text-[rgb(var(--text-secondary))]">{product.sizes?.length || 0}</td>
+                      <td className="px-4 py-3 text-[rgb(var(--text-secondary))]">{product.images?.length || 0}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
                           <Link
                             href={`/retailer/products/${product._id}/edit`}
-                            className="text-indigo-400 hover:text-indigo-300 text-xs font-medium"
+                            className="text-violet-400 hover:text-violet-300 text-xs font-medium"
                           >
                             Edit
                           </Link>
@@ -265,17 +265,17 @@ export default function ProductListPage() {
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg text-gray-300 disabled:opacity-50 hover:bg-gray-800"
+              className="px-3 py-1.5 text-sm border border-[rgba(var(--glass-border))] rounded-lg text-[rgb(var(--text-secondary))] disabled:opacity-50 hover:bg-white/5 transition-colors"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-[rgb(var(--text-muted))]">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg text-gray-300 disabled:opacity-50 hover:bg-gray-800"
+              className="px-3 py-1.5 text-sm border border-[rgba(var(--glass-border))] rounded-lg text-[rgb(var(--text-secondary))] disabled:opacity-50 hover:bg-white/5 transition-colors"
             >
               Next
             </button>

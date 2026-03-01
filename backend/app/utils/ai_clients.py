@@ -3,8 +3,7 @@ AI API Clients for FitView AI.
 Phase 3: Core Virtual Try-On Engine.
 
 Clients:
-- NanoBananaClient: Virtual try-on generation (Nano Banana / Google)
-- GeminiImageClient: Image generation using Google Gemini API (replaces Grok Imagine)
+- GeminiImageClient: Image generation using Google Gemini API for virtual try-on and style variations
 """
 
 import asyncio
@@ -21,129 +20,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------
-# Nano Banana Client (Virtual Try-On)
-# -------------------------------------------------------------------
-
-NANO_BANANA_TIMEOUT = 30.0
-NANO_BANANA_MAX_RETRIES = 2
-
-
-class NanoBananaClient:
-    """Async httpx client for Nano Banana virtual try-on API (Google)."""
-
-    def __init__(self):
-        self._api_key = settings.NANO_BANANA_API_KEY
-        self._base_url = settings.NANO_BANANA_BASE_URL
-        self._timeout = NANO_BANANA_TIMEOUT
-
-    def _get_headers(self) -> dict[str, str]:
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        if self._api_key:
-            headers["Authorization"] = f"Bearer {self._api_key}"
-        return headers
-
-    async def generate_tryon(
-        self,
-        model_image: bytes,
-        garment_image: bytes,
-    ) -> bytes:
-        """
-        Generate a virtual try-on image using Nano Banana API.
-        Falls back to GeminiImageClient if Nano Banana key is not set.
-        """
-        if not self._api_key:
-            raise NanoBananaError("No Nano Banana API key configured")
-
-        model_b64 = base64.b64encode(model_image).decode("utf-8")
-        garment_b64 = base64.b64encode(garment_image).decode("utf-8")
-
-        payload = {
-            "model_image": model_b64,
-            "garment_image": garment_b64,
-            "options": {
-                "output_format": "png",
-                "output_size": "1024x1024",
-                "quality": "high",
-            },
-        }
-
-        last_error: Optional[Exception] = None
-
-        for attempt in range(NANO_BANANA_MAX_RETRIES + 1):
-            try:
-                start_time = time.time()
-                async with httpx.AsyncClient(timeout=self._timeout) as client:
-                    response = await client.post(
-                        f"{self._base_url}/tryon/generate",
-                        json=payload,
-                        headers=self._get_headers(),
-                    )
-
-                elapsed = time.time() - start_time
-                logger.info(f"Nano Banana API call took {elapsed:.2f}s (attempt {attempt + 1})")
-
-                if response.status_code == 200:
-                    result = response.json()
-                    result_b64 = result.get("result_image", "")
-                    if result_b64:
-                        return base64.b64decode(result_b64)
-                    raise NanoBananaError("API returned empty result image")
-
-                elif response.status_code == 429:
-                    logger.warning(f"Nano Banana rate limited (attempt {attempt + 1})")
-                    if attempt < NANO_BANANA_MAX_RETRIES:
-                        await asyncio.sleep(2 ** attempt)
-                        continue
-                    raise NanoBananaError("API rate limited after all retries")
-
-                elif response.status_code >= 500:
-                    logger.warning(f"Nano Banana server error {response.status_code} (attempt {attempt + 1})")
-                    if attempt < NANO_BANANA_MAX_RETRIES:
-                        await asyncio.sleep(1)
-                        continue
-                    raise NanoBananaError(f"API server error: {response.status_code}")
-
-                else:
-                    error_detail = response.text[:200]
-                    raise NanoBananaError(f"API error {response.status_code}: {error_detail}")
-
-            except httpx.TimeoutException:
-                last_error = NanoBananaError(f"API timeout after {self._timeout}s")
-                logger.warning(f"Nano Banana timeout (attempt {attempt + 1})")
-                if attempt < NANO_BANANA_MAX_RETRIES:
-                    continue
-            except NanoBananaError:
-                raise
-            except Exception as e:
-                last_error = NanoBananaError(f"Unexpected error: {str(e)}")
-                logger.error(f"Nano Banana unexpected error: {e}")
-                if attempt < NANO_BANANA_MAX_RETRIES:
-                    continue
-
-        raise last_error or NanoBananaError("Failed after all retries")
-
-    async def health_check(self) -> bool:
-        try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get(
-                    f"{self._base_url}/health",
-                    headers=self._get_headers(),
-                )
-                return response.status_code == 200
-        except Exception:
-            return False
-
-
-class NanoBananaError(Exception):
-    """Custom exception for Nano Banana API errors."""
-    pass
-
-
-# -------------------------------------------------------------------
-# Gemini Image Client (replaces Grok Imagine)
+# Gemini Image Client
 # -------------------------------------------------------------------
 
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta"
@@ -154,10 +31,10 @@ GEMINI_MAX_RETRIES = 2
 class GeminiImageClient:
     """
     Async httpx client for Google Gemini image generation API.
-    Uses gemini-2.0-flash-exp (or configured model) for:
+    Uses gemini-3.1-flash-image-preview (or configured model) for:
     - Text-to-image generation
     - Image editing (text + image input)
-    - Virtual try-on (model + garment → composite via Gemini vision)
+    - Virtual try-on (model + garment -> composite via Gemini vision)
     """
 
     def __init__(self):
@@ -254,12 +131,50 @@ class GeminiImageClient:
 
         return await self._call_api(payload)
 
+    async def generate_multi_garment_tryon(
+        self, model_image: bytes, garment_images: list[bytes]
+    ) -> bytes:
+        """
+        Generate a combined outfit try-on using Gemini vision.
+        Sends model image + multiple garment images with a combined outfit prompt.
+        """
+        if not self._api_key:
+            raise GeminiImageError("Gemini API key not configured")
+
+        model_b64 = base64.b64encode(model_image).decode("utf-8")
+
+        parts: list[dict] = [
+            {
+                "text": (
+                    "You are a virtual try-on AI. Given the model photo (first image) "
+                    "and the following garment photos, generate a single photorealistic image "
+                    "of the model wearing ALL the garments together as a complete outfit. "
+                    "Maintain the model's face, body, and pose exactly. Each garment should "
+                    "look natural on the model with proper fit, wrinkles, and lighting. "
+                    "Combine all garments into one cohesive outfit. Output only the final image."
+                )
+            },
+            {"inline_data": {"mime_type": "image/png", "data": model_b64}},
+        ]
+
+        for garment_bytes in garment_images:
+            garment_b64 = base64.b64encode(garment_bytes).decode("utf-8")
+            parts.append({"inline_data": {"mime_type": "image/png", "data": garment_b64}})
+
+        payload = {
+            "contents": [{"parts": parts}],
+            "generationConfig": {
+                "responseModalities": ["TEXT", "IMAGE"],
+            },
+        }
+
+        return await self._call_api(payload)
+
     async def generate_style_variation(
         self, base_image: bytes, style: str
     ) -> bytes:
         """
         Generate a style variation of a try-on image.
-        Replaces the old Grok Imagine style variation feature.
         """
         style_prompts = {
             "casual": "Show this outfit in a casual street setting with natural daylight, relaxed pose.",
@@ -367,5 +282,4 @@ class GeminiImageError(Exception):
 # Singleton instances
 # -------------------------------------------------------------------
 
-nano_banana_client = NanoBananaClient()
 gemini_image_client = GeminiImageClient()

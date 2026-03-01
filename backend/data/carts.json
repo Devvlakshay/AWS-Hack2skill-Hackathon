@@ -1,0 +1,27 @@
+[
+  {
+    "user_id": "9a563789bb9c4506afb8251577cbd349",
+    "items": [
+      {
+        "product_id": "prod003",
+        "size": "L",
+        "quantity": 2,
+        "added_at": "2026-03-01T16:27:28.618395+00:00"
+      }
+    ],
+    "updated_at": "2026-03-01T16:27:28.676020+00:00",
+    "_id": "ad191464b8ab4950ace99a6b102620fd"
+  },
+  {
+    "user_id": "bcc90881c42b43a8b30dbbb6b1415f99",
+    "items": [],
+    "updated_at": "2026-03-01T16:32:42.540169+00:00",
+    "_id": "96afc1eb3155426a8633799bda13ba4a"
+  },
+  {
+    "user_id": "c447fbc508d4485592f9fabe5d8da113",
+    "items": [],
+    "updated_at": "2026-03-01T18:41:45.909184+00:00",
+    "_id": "986064f9cdba42aeb7e6b9509ae22d88"
+  }
+]

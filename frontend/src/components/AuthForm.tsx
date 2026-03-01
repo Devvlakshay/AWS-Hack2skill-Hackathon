@@ -37,17 +37,14 @@ export default function AuthForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded-lg text-sm">
+        <div className="glass-card border-red-500/30 bg-red-500/10 text-red-400 px-4 py-3 text-sm">
           {error}
         </div>
       )}
 
       {mode === "register" && (
         <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-300 mb-1"
-          >
+          <label htmlFor="name" className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">
             Full Name
           </label>
           <input
@@ -57,17 +54,14 @@ export default function AuthForm({
             onChange={(e) => setName(e.target.value)}
             required
             minLength={2}
-            className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+            className="glass-input"
             placeholder="Enter your full name"
           />
         </div>
       )}
 
       <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-300 mb-1"
-        >
+        <label htmlFor="email" className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">
           Email Address
         </label>
         <input
@@ -76,16 +70,13 @@ export default function AuthForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+          className="glass-input"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-300 mb-1"
-        >
+        <label htmlFor="password" className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">
           Password
         </label>
         <input
@@ -95,26 +86,21 @@ export default function AuthForm({
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
-          placeholder={
-            mode === "register" ? "At least 6 characters" : "Enter your password"
-          }
+          className="glass-input"
+          placeholder={mode === "register" ? "At least 6 characters" : "Enter your password"}
         />
       </div>
 
       {mode === "register" && (
         <div>
-          <label
-            htmlFor="role"
-            className="block text-sm font-medium text-gray-300 mb-1"
-          >
+          <label htmlFor="role" className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">
             I am a
           </label>
           <select
             id="role"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
+            className="glass-input"
           >
             <option value="customer">Customer</option>
             <option value="retailer">Retailer</option>
@@ -125,7 +111,7 @@ export default function AuthForm({
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-800 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200"
+        className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLoading
           ? "Please wait..."

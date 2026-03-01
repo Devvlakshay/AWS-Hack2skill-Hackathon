@@ -161,6 +161,17 @@ class JsonStore:
                     return _copy(doc)
             return None
 
+    async def delete_one(self, collection: str, query: dict) -> int:
+        """Delete first matching doc. Returns number of deleted documents (0 or 1)."""
+        async with self._get_lock(collection):
+            docs = self._ensure_collection(collection)
+            for i, doc in enumerate(docs):
+                if self._match(doc, query):
+                    docs.pop(i)
+                    self._persist(collection)
+                    return 1
+            return 0
+
 
 # ------------------------------------------------------------------
 # Helpers

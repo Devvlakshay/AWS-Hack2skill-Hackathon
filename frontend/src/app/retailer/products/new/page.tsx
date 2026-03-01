@@ -92,19 +92,19 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <header className="bg-gray-900 border-b border-gray-700">
+    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
+      <header className="glass-card-lg rounded-none border-x-0 border-t-0">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
             onClick={() => router.back()}
-            className="text-sm text-gray-400 hover:text-gray-200 mb-2 inline-flex items-center gap-1"
+            className="text-sm text-[rgb(var(--text-muted))] hover:text-[rgb(var(--text-primary))] mb-2 inline-flex items-center gap-1 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back
           </button>
-          <h1 className="text-2xl font-bold text-white">Add New Product</h1>
+          <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">Add New Product</h1>
         </div>
       </header>
 
@@ -117,42 +117,42 @@ export default function NewProductPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Basic Information</h2>
+          <div className="glass-card-lg p-6">
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Basic Information</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">Product Name *</label>
+                <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Product Name *</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Classic Cotton Shirt"
                   required
-                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="glass-input w-full px-3 py-2 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">Description *</label>
+                <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Description *</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe your product..."
                   rows={4}
                   required
-                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  className="glass-input w-full px-3 py-2 text-sm resize-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1">Category *</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Category *</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="glass-input w-full px-3 py-2 text-sm"
                   >
                     <option value="">Select category</option>
                     {CATEGORIES.map((cat) => (
@@ -162,20 +162,20 @@ export default function NewProductPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1">Subcategory</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Subcategory</label>
                   <input
                     type="text"
                     value={subcategory}
                     onChange={(e) => setSubcategory(e.target.value)}
                     placeholder="e.g., Formal, Casual"
-                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="glass-input w-full px-3 py-2 text-sm"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1">Price (INR) *</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Price (INR) *</label>
                   <input
                     type="number"
                     value={price}
@@ -184,49 +184,49 @@ export default function NewProductPage() {
                     min="1"
                     step="0.01"
                     required
-                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="glass-input w-full px-3 py-2 text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-200 mb-1">Material</label>
+                  <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Material</label>
                   <input
                     type="text"
                     value={material}
                     onChange={(e) => setMaterial(e.target.value)}
                     placeholder="e.g., 100% Cotton"
-                    className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="glass-input w-full px-3 py-2 text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">Tags (comma-separated)</label>
+                <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Tags (comma-separated)</label>
                 <input
                   type="text"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="formal, cotton, office-wear"
-                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="glass-input w-full px-3 py-2 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-200 mb-1">Colors (comma-separated)</label>
+                <label className="block text-sm font-medium text-[rgb(var(--text-secondary))] mb-1">Colors (comma-separated)</label>
                 <input
                   type="text"
                   value={colors}
                   onChange={(e) => setColors(e.target.value)}
                   placeholder="White, Blue, Black"
-                  className="w-full px-3 py-2 border border-gray-700 rounded-lg text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="glass-input w-full px-3 py-2 text-sm"
                 />
               </div>
             </div>
           </div>
 
           {/* Sizes */}
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Sizes & Stock</h2>
+          <div className="glass-card-lg p-6">
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Sizes & Stock</h2>
 
             <div className="flex flex-wrap gap-2 mb-4">
               {AVAILABLE_SIZES.map((size) => {
@@ -238,8 +238,8 @@ export default function NewProductPage() {
                     onClick={() => toggleSize(size)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                       isSelected
-                        ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-gray-800 text-gray-200 border-gray-700 hover:border-gray-600"
+                        ? "bg-violet-600 text-white border-violet-600"
+                        : "bg-white/5 text-[rgb(var(--text-secondary))] border-[rgba(var(--glass-border))] hover:border-violet-500/50"
                     }`}
                   >
                     {size}
@@ -252,14 +252,14 @@ export default function NewProductPage() {
               <div className="space-y-2">
                 {sizes.map((s) => (
                   <div key={s.size} className="flex items-center gap-4">
-                    <span className="w-16 text-sm font-medium text-gray-200">{s.size}</span>
-                    <label className="text-xs text-gray-400">Stock:</label>
+                    <span className="w-16 text-sm font-medium text-[rgb(var(--text-secondary))]">{s.size}</span>
+                    <label className="text-xs text-[rgb(var(--text-muted))]">Stock:</label>
                     <input
                       type="number"
                       value={s.stock}
                       onChange={(e) => updateStock(s.size, parseInt(e.target.value) || 0)}
                       min="0"
-                      className="w-24 px-2 py-1 border border-gray-700 rounded text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="glass-input w-24 px-2 py-1 text-sm"
                     />
                   </div>
                 ))}
@@ -268,8 +268,8 @@ export default function NewProductPage() {
           </div>
 
           {/* Images */}
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Product Images</h2>
+          <div className="glass-card-lg p-6">
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Product Images</h2>
             <ImageUpload
               onFilesSelected={setImageFiles}
               multiple
@@ -282,14 +282,14 @@ export default function NewProductPage() {
             <button
               type="submit"
               disabled={submitting || loading}
-              className="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              className="btn-primary flex-1 py-3 rounded-lg font-medium disabled:opacity-50"
             >
               {submitting ? "Creating..." : "Create Product"}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 border border-gray-700 rounded-lg text-gray-200 hover:bg-gray-800 transition-colors"
+              className="btn-secondary px-6 py-3 rounded-lg"
             >
               Cancel
             </button>

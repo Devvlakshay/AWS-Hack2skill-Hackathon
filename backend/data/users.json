@@ -1,72 +1,72 @@
 [
   {
-    "_id": "retailer001",
-    "name": "FashionHub India",
-    "email": "retailer@fitview.ai",
-    "hashed_password": "$2b$12$ClwRLQR8/WdDz2B8u01X5.S2gDI4Fdz0d6QvCt6ebp2Q6A75p6ZTm",
-    "phone": "+91-9876543210",
-    "role": "retailer",
-    "created_at": "2026-02-01T10:00:00+00:00",
-    "updated_at": "2026-02-01T10:00:00+00:00"
-  },
-  {
-    "_id": "customer001",
-    "name": "Priya Sharma",
-    "email": "customer@fitview.ai",
-    "hashed_password": "$2b$12$ClwRLQR8/WdDz2B8u01X5.S2gDI4Fdz0d6QvCt6ebp2Q6A75p6ZTm",
-    "phone": "+91-9123456780",
+    "name": "Test User",
+    "email": "test@test.com",
+    "hashed_password": "$2b$12$YCwuvggqQRGyPOY7o6rCs.IdjQjd4NQv0DRQNEUPM0C329j8Jk9ea",
+    "phone": null,
     "role": "customer",
-    "created_at": "2026-02-05T10:00:00+00:00",
-    "updated_at": "2026-02-05T10:00:00+00:00"
+    "created_at": "2026-03-01T16:19:59.205865+00:00",
+    "updated_at": "2026-03-01T16:19:59.205869+00:00",
+    "_id": "9a563789bb9c4506afb8251577cbd349"
   },
   {
     "name": "lakshya borasi",
     "email": "lakshya@gmail.com",
-    "hashed_password": "$2b$12$6Ie23DcTzEjC83j4EWaoK.PwkNV6Ltml8tNyFPbu0xZpTh4K/hVWm",
+    "hashed_password": "$2b$12$0zun8sYQ2E2Z0jNIvlnJS.AzYiibMrvNLgVm3UT.9aHQcOLqn3I8q",
     "phone": null,
     "role": "retailer",
-    "created_at": "2026-02-24T20:00:18.562039+00:00",
-    "updated_at": "2026-02-24T20:00:18.562044+00:00",
-    "_id": "91eed8392fc34259be6c25d2b827935c"
+    "created_at": "2026-03-01T16:20:44.699998+00:00",
+    "updated_at": "2026-03-01T16:20:44.700002+00:00",
+    "_id": "105c774d8f264d91a320256d08c10476"
+  },
+  {
+    "name": "lakshya borasi",
+    "email": "Lakshya@gmail.com",
+    "hashed_password": "$2b$12$zqBTvO5nk6IVUHd0VTxF9OqmqK15fsOrO4mRLwO/vbxs57RGJYOcy",
+    "phone": null,
+    "role": "retailer",
+    "created_at": "2026-03-01T16:30:55.534773+00:00",
+    "updated_at": "2026-03-01T16:30:55.534778+00:00",
+    "_id": "bcc90881c42b43a8b30dbbb6b1415f99"
   },
   {
     "name": "lakshya",
-    "email": "lakshyaa@gmail.com",
-    "hashed_password": "$2b$12$KsIrMB6jDO.PxV/.Iv0nAufKrV.z6xQYBk//nwM5qf9QgCDwC.7IG",
-    "phone": null,
-    "role": "customer",
-    "created_at": "2026-02-24T20:01:08.693197+00:00",
-    "updated_at": "2026-02-24T20:01:08.693203+00:00",
-    "_id": "5c32f1b6033e4bba82e000bc962f4071"
-  },
-  {
-    "name": "Lakshya Borasi",
-    "email": "l@gmail.com",
-    "hashed_password": "$2b$12$3S1n9s/F5Yy4ZmMxQoBm4uTHsuiJdp.Nw0lyjMOmbMrCpHieSPO1G",
-    "phone": null,
-    "role": "customer",
-    "created_at": "2026-02-28T09:46:02.375122+00:00",
-    "updated_at": "2026-02-28T09:46:02.375127+00:00",
-    "_id": "14de21b6538242e0ba74fb24f6916055"
-  },
-  {
-    "name": "Lakshya Borasi",
-    "email": "lakshya1@gmail.com",
-    "hashed_password": "$2b$12$EyGODPxe/0jUu7obBMHUIOd4vBBhRy2/w8x.CBRV.65rchl9.pQcq",
+    "email": "lakshyaborasi@gmail.com",
+    "hashed_password": "$2b$12$AfAIEIRWvfvkKiSwzR0.t.CltNqnA8LY3HeyDnt.C42xUqH/JD0PG",
     "phone": null,
     "role": "retailer",
-    "created_at": "2026-03-01T15:12:22.458628+00:00",
-    "updated_at": "2026-03-01T15:12:22.458633+00:00",
-    "_id": "4dbe4049da8c4c4c8a18ecae0506665f"
+    "created_at": "2026-03-01T18:30:28.325194+00:00",
+    "updated_at": "2026-03-01T18:30:28.325198+00:00",
+    "_id": "94c9df1d2e8a454da29cd565d5e70bdf"
   },
   {
-    "name": "pawan",
-    "email": "pawan@gmail.com",
-    "hashed_password": "$2b$12$XM17XnuY7WjLK2Tg2rqaOeStkWEcsMVjOfjmgEcK/LbdoYE0s7S1O",
+    "name": "Test Retailer",
+    "email": "testretailer@test.com",
+    "hashed_password": "$2b$12$LC8aXG1N9QHfO4cDOhoD.eyqk/bC7EumcvgZpmvHrmAtoHIuG4znu",
+    "phone": null,
+    "role": "retailer",
+    "created_at": "2026-03-01T18:40:03.603210+00:00",
+    "updated_at": "2026-03-01T18:40:03.603216+00:00",
+    "_id": "44454ef2c5a6439b9ab18c8fd2f32091"
+  },
+  {
+    "name": "Test Customer",
+    "email": "testcustomer@test.com",
+    "hashed_password": "$2b$12$JF9enwZk1Tk/3LDGulmDf.zuZzV5sOfK1fdL8BXXO5XZCooJ3XYI.",
     "phone": null,
     "role": "customer",
-    "created_at": "2026-03-01T15:15:09.479911+00:00",
-    "updated_at": "2026-03-01T15:15:09.479916+00:00",
-    "_id": "4cb8e6b0d7c64924ba1c33a332a1c9be"
+    "created_at": "2026-03-01T18:40:23.530007+00:00",
+    "updated_at": "2026-03-01T18:40:23.530012+00:00",
+    "_id": "c447fbc508d4485592f9fabe5d8da113"
+  },
+  {
+    "name": "Lakshya",
+    "email": "lakshyaborasi985@gmail.com",
+    "hashed_password": "$2b$12$4xT1XkYrpy.F9xWRzNC/zuYZr9aQ1D9AiOg6//7LIueLwDKjG4Vjq",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-03-01T18:49:43.794530+00:00",
+    "updated_at": "2026-03-01T18:49:43.794536+00:00",
+    "_id": "6546103f3e684ffa86c54369f093219c"
   }
 ]

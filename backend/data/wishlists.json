@@ -1,0 +1,23 @@
+[
+  {
+    "user_id": "9a563789bb9c4506afb8251577cbd349",
+    "product_id": "prod002",
+    "tryon_image_url": "",
+    "added_at": "2026-03-01T16:20:19.168243+00:00",
+    "_id": "8e961c872e264ba191e4c674ae70d7d3"
+  },
+  {
+    "user_id": "bcc90881c42b43a8b30dbbb6b1415f99",
+    "product_id": "prod006",
+    "tryon_image_url": "",
+    "added_at": "2026-03-01T16:33:19.212612+00:00",
+    "_id": "ba86b4f8d29d4c468c0d443e46b66536"
+  },
+  {
+    "user_id": "bcc90881c42b43a8b30dbbb6b1415f99",
+    "product_id": "prod007",
+    "tryon_image_url": "",
+    "added_at": "2026-03-01T16:33:37.914154+00:00",
+    "_id": "f82fa9d8138c40a49f2667f84e88d7e9"
+  }
+]

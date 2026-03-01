@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * Reusable Image Upload component with drag-and-drop and preview.
- * Phase 2: Product & Model Management.
- */
-
 import React, { useCallback, useRef, useState } from "react";
 
 interface ImageUploadProps {
@@ -34,7 +29,6 @@ export default function ImageUpload({
       const fileArray = Array.from(files);
       const remaining = maxFiles - selectedFiles.length;
       const toProcess = fileArray.slice(0, remaining);
-
       if (toProcess.length === 0) return;
 
       const newPreviews: string[] = [];
@@ -43,7 +37,6 @@ export default function ImageUpload({
       toProcess.forEach((file) => {
         if (!file.type.match(/^image\/(jpeg|png|webp)$/)) return;
         if (file.size > 10 * 1024 * 1024) return;
-
         validFiles.push(file);
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -113,10 +106,10 @@ export default function ImageUpload({
       {/* Existing images */}
       {existingImages.length > 0 && (
         <div className="mb-4">
-          <p className="text-sm text-gray-400 mb-2">Current images:</p>
+          <p className="text-sm text-[rgb(var(--text-muted))] mb-2">Current images:</p>
           <div className="flex flex-wrap gap-3">
             {existingImages.map((url, i) => (
-              <div key={`existing-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-700">
+              <div key={`existing-${i}`} className="relative w-24 h-24 rounded-xl overflow-hidden glass-card">
                 <img src={url} alt={`Existing ${i + 1}`} className="w-full h-full object-cover" />
               </div>
             ))}
@@ -131,8 +124,11 @@ export default function ImageUpload({
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
         className={`
-          border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors
-          ${isDragging ? "border-indigo-500 bg-indigo-900/20" : "border-gray-700 hover:border-gray-600 bg-gray-800/50"}
+          border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all
+          ${isDragging
+            ? "border-violet-500 bg-violet-500/10 shadow-glow-violet"
+            : "border-[rgba(var(--glass-border))] hover:border-violet-500/50 bg-[rgba(var(--glass-bg))]"
+          }
         `}
       >
         <input
@@ -145,7 +141,7 @@ export default function ImageUpload({
         />
 
         <svg
-          className="mx-auto h-12 w-12 text-gray-500 mb-3"
+          className="mx-auto h-12 w-12 text-[rgb(var(--text-muted))] mb-3"
           stroke="currentColor"
           fill="none"
           viewBox="0 0 48 48"
@@ -158,14 +154,14 @@ export default function ImageUpload({
           />
         </svg>
 
-        <p className="text-sm text-gray-400">
-          <span className="font-semibold text-indigo-400">Click to upload</span> or drag and drop
+        <p className="text-sm text-[rgb(var(--text-secondary))]">
+          <span className="font-semibold text-violet-500">Click to upload</span> or drag and drop
         </p>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-[rgb(var(--text-muted))] mt-1">
           JPEG, PNG, or WebP. Min 512x512. Max 10MB.
         </p>
         {multiple && (
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[rgb(var(--text-muted))] mt-1">
             Up to {maxFiles} images. {selectedFiles.length}/{maxFiles} selected.
           </p>
         )}
@@ -174,10 +170,10 @@ export default function ImageUpload({
       {/* New previews */}
       {previews.length > 0 && (
         <div className="mt-4">
-          <p className="text-sm text-gray-400 mb-2">New uploads:</p>
+          <p className="text-sm text-[rgb(var(--text-muted))] mb-2">New uploads:</p>
           <div className="flex flex-wrap gap-3">
             {previews.map((preview, i) => (
-              <div key={`preview-${i}`} className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-700 group">
+              <div key={`preview-${i}`} className="relative w-24 h-24 rounded-xl overflow-hidden glass-card group">
                 <img src={preview} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" />
                 <button
                   type="button"

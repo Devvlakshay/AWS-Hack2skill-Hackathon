@@ -5,12 +5,41 @@
     "description": "Premium handwoven silk kurta with intricate zari work. Perfect for festive occasions and weddings. Features mandarin collar and full-length sleeves.",
     "category": "Kurtas",
     "subcategory": "Festive",
-    "tags": ["silk", "festive", "wedding", "zari", "men"],
+    "tags": [
+      "silk",
+      "festive",
+      "wedding",
+      "zari",
+      "men"
+    ],
     "price": 4999,
-    "sizes": [{"size": "S", "stock": 8}, {"size": "M", "stock": 15}, {"size": "L", "stock": 12}, {"size": "XL", "stock": 6}],
-    "colors": ["Royal Blue", "Maroon", "Gold"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 8
+      },
+      {
+        "size": "M",
+        "stock": 15
+      },
+      {
+        "size": "L",
+        "stock": 12
+      },
+      {
+        "size": "XL",
+        "stock": 6
+      }
+    ],
+    "colors": [
+      "Royal Blue",
+      "Maroon",
+      "Gold"
+    ],
     "material": "100% Pure Silk",
-    "images": ["http://localhost:8000/uploads/products/prod001_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod001_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -23,12 +52,41 @@
     "description": "Crisp cotton formal shirt with a slim fit. Wrinkle-resistant fabric ideal for office wear and business meetings.",
     "category": "Shirts",
     "subcategory": "Formal",
-    "tags": ["formal", "cotton", "office-wear", "slim-fit", "men"],
+    "tags": [
+      "formal",
+      "cotton",
+      "office-wear",
+      "slim-fit",
+      "men"
+    ],
     "price": 1899,
-    "sizes": [{"size": "S", "stock": 20}, {"size": "M", "stock": 25}, {"size": "L", "stock": 18}, {"size": "XL", "stock": 10}],
-    "colors": ["White", "Light Blue", "Pink"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 20
+      },
+      {
+        "size": "M",
+        "stock": 25
+      },
+      {
+        "size": "L",
+        "stock": 18
+      },
+      {
+        "size": "XL",
+        "stock": 10
+      }
+    ],
+    "colors": [
+      "White",
+      "Light Blue",
+      "Pink"
+    ],
     "material": "100% Premium Cotton",
-    "images": ["http://localhost:8000/uploads/products/prod002_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod002_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -41,12 +99,41 @@
     "description": "Stunning floor-length Anarkali dress with delicate thread embroidery. Flared silhouette with a fitted bodice. Includes matching dupatta.",
     "category": "Ethnic Wear",
     "subcategory": "Anarkali",
-    "tags": ["anarkali", "embroidered", "party-wear", "women", "ethnic"],
+    "tags": [
+      "anarkali",
+      "embroidered",
+      "party-wear",
+      "women",
+      "ethnic"
+    ],
     "price": 6499,
-    "sizes": [{"size": "S", "stock": 5}, {"size": "M", "stock": 10}, {"size": "L", "stock": 8}, {"size": "XL", "stock": 4}],
-    "colors": ["Emerald Green", "Wine Red", "Midnight Blue"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 5
+      },
+      {
+        "size": "M",
+        "stock": 10
+      },
+      {
+        "size": "L",
+        "stock": 8
+      },
+      {
+        "size": "XL",
+        "stock": 4
+      }
+    ],
+    "colors": [
+      "Emerald Green",
+      "Wine Red",
+      "Midnight Blue"
+    ],
     "material": "Georgette with Net Dupatta",
-    "images": ["http://localhost:8000/uploads/products/prod003_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod003_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -59,12 +146,40 @@
     "description": "Modern slim-fit jeans with stretch for all-day comfort. Mid-rise waist with 5-pocket styling.",
     "category": "Jeans",
     "subcategory": "Slim Fit",
-    "tags": ["denim", "slim-fit", "casual", "unisex"],
+    "tags": [
+      "denim",
+      "slim-fit",
+      "casual",
+      "unisex"
+    ],
     "price": 2299,
-    "sizes": [{"size": "S", "stock": 15}, {"size": "M", "stock": 22}, {"size": "L", "stock": 18}, {"size": "XL", "stock": 12}],
-    "colors": ["Black", "Indigo Blue", "Grey"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 15
+      },
+      {
+        "size": "M",
+        "stock": 22
+      },
+      {
+        "size": "L",
+        "stock": 18
+      },
+      {
+        "size": "XL",
+        "stock": 12
+      }
+    ],
+    "colors": [
+      "Black",
+      "Indigo Blue",
+      "Grey"
+    ],
     "material": "98% Cotton, 2% Elastane",
-    "images": ["http://localhost:8000/uploads/products/prod004_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod004_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -77,12 +192,30 @@
     "description": "Authentic Banarasi silk saree with traditional motifs woven in gold zari. Comes with unstitched blouse piece.",
     "category": "Sarees",
     "subcategory": "Banarasi",
-    "tags": ["banarasi", "silk", "saree", "traditional", "women", "wedding"],
+    "tags": [
+      "banarasi",
+      "silk",
+      "saree",
+      "traditional",
+      "women",
+      "wedding"
+    ],
     "price": 12999,
-    "sizes": [{"size": "Free Size", "stock": 10}],
-    "colors": ["Red", "Purple", "Teal"],
+    "sizes": [
+      {
+        "size": "Free Size",
+        "stock": 10
+      }
+    ],
+    "colors": [
+      "Red",
+      "Purple",
+      "Teal"
+    ],
     "material": "Pure Banarasi Silk",
-    "images": ["http://localhost:8000/uploads/products/prod005_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod005_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -95,12 +228,37 @@
     "description": "Trendy oversized t-shirt with bold graphic print. Drop shoulder design with a relaxed fit. Perfect for streetwear styling.",
     "category": "T-Shirts",
     "subcategory": "Oversized",
-    "tags": ["graphic", "oversized", "streetwear", "casual", "unisex"],
+    "tags": [
+      "graphic",
+      "oversized",
+      "streetwear",
+      "casual",
+      "unisex"
+    ],
     "price": 799,
-    "sizes": [{"size": "M", "stock": 30}, {"size": "L", "stock": 25}, {"size": "XL", "stock": 20}],
-    "colors": ["Olive Green", "Black", "White"],
+    "sizes": [
+      {
+        "size": "M",
+        "stock": 30
+      },
+      {
+        "size": "L",
+        "stock": 25
+      },
+      {
+        "size": "XL",
+        "stock": 20
+      }
+    ],
+    "colors": [
+      "Olive Green",
+      "Black",
+      "White"
+    ],
     "material": "100% Cotton, 220 GSM",
-    "images": ["http://localhost:8000/uploads/products/prod006_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod006_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -113,12 +271,41 @@
     "description": "Lightweight quilted bomber jacket with ribbed cuffs and hem. Water-resistant outer shell with warm polyester fill.",
     "category": "Jackets",
     "subcategory": "Bomber",
-    "tags": ["bomber", "quilted", "winter", "unisex", "layering"],
+    "tags": [
+      "bomber",
+      "quilted",
+      "winter",
+      "unisex",
+      "layering"
+    ],
     "price": 3499,
-    "sizes": [{"size": "S", "stock": 8}, {"size": "M", "stock": 14}, {"size": "L", "stock": 12}, {"size": "XL", "stock": 7}],
-    "colors": ["Navy Blue", "Black", "Olive"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 8
+      },
+      {
+        "size": "M",
+        "stock": 14
+      },
+      {
+        "size": "L",
+        "stock": 12
+      },
+      {
+        "size": "XL",
+        "stock": 7
+      }
+    ],
+    "colors": [
+      "Navy Blue",
+      "Black",
+      "Olive"
+    ],
     "material": "Polyester Shell, Polyester Fill",
-    "images": ["http://localhost:8000/uploads/products/prod007_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod007_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
@@ -131,16 +318,86 @@
     "description": "Elegant Lucknowi Chikankari embroidered kurta with matching palazzo pants. Breathable cotton with hand-embroidered patterns.",
     "category": "Ethnic Wear",
     "subcategory": "Palazzo Set",
-    "tags": ["chikankari", "lucknowi", "palazzo", "cotton", "women", "summer"],
+    "tags": [
+      "chikankari",
+      "lucknowi",
+      "palazzo",
+      "cotton",
+      "women",
+      "summer"
+    ],
     "price": 3299,
-    "sizes": [{"size": "S", "stock": 10}, {"size": "M", "stock": 16}, {"size": "L", "stock": 14}, {"size": "XL", "stock": 8}],
-    "colors": ["White", "Pastel Pink", "Sky Blue"],
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 10
+      },
+      {
+        "size": "M",
+        "stock": 16
+      },
+      {
+        "size": "L",
+        "stock": 14
+      },
+      {
+        "size": "XL",
+        "stock": 8
+      }
+    ],
+    "colors": [
+      "White",
+      "Pastel Pink",
+      "Sky Blue"
+    ],
     "material": "Pure Cotton with Chikankari Embroidery",
-    "images": ["http://localhost:8000/uploads/products/prod008_web.png"],
+    "images": [
+      "http://localhost:8000/uploads/products/prod008_web.png"
+    ],
     "size_chart": {},
     "retailer_id": "retailer001",
     "is_deleted": false,
     "created_at": "2026-02-17T10:00:00+00:00",
     "updated_at": "2026-02-17T10:00:00+00:00"
+  },
+  {
+    "name": "Zara jacket",
+    "description": "Leather Jacket by Zara",
+    "category": "Jackets",
+    "subcategory": "Casual",
+    "tags": [],
+    "price": 4500.0,
+    "sizes": [
+      {
+        "size": "S",
+        "stock": 10
+      },
+      {
+        "size": "XL",
+        "stock": 10
+      },
+      {
+        "size": "XXL",
+        "stock": 10
+      },
+      {
+        "size": "M",
+        "stock": 10
+      },
+      {
+        "size": "L",
+        "stock": 10
+      }
+    ],
+    "colors": [],
+    "material": "",
+    "images": [],
+    "size_chart": {},
+    "retailer_id": "94c9df1d2e8a454da29cd565d5e70bdf",
+    "is_deleted": false,
+    "created_at": "2026-03-01T18:33:28.544847+00:00",
+    "updated_at": "2026-03-01T18:33:28.544847+00:00",
+    "_id": "72599c1f67cc470584139ff86eb67816"
   }
+
 ]

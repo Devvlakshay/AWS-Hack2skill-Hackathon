@@ -25,10 +25,6 @@ class Settings(BaseSettings):
     GEMINI_MODEL: str = "gemini-2.0-flash"
     GEMINI_IMAGE_MODEL: str = "gemini-3.1-flash-image-preview"
 
-    # Legacy (kept for backward compat, not used)
-    NANO_BANANA_API_KEY: Optional[str] = None
-    NANO_BANANA_BASE_URL: str = "https://api.nanobanana.google.com/v1"
-
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",

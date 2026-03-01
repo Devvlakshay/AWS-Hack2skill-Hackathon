@@ -14,7 +14,7 @@
     "size": "S",
     "retailer_id": "retailer001",
     "image_url": "http://localhost:8000/uploads/models/model001_web.png",
-    "usage_count": 0,
+    "usage_count": 1,
     "is_active": true,
     "is_deleted": false,
     "created_at": "2026-02-10T10:00:00+00:00",
@@ -35,7 +35,7 @@
     "size": "M",
     "retailer_id": "retailer001",
     "image_url": "http://localhost:8000/uploads/models/model002_web.png",
-    "usage_count": 0,
+    "usage_count": 1,
     "is_active": true,
     "is_deleted": false,
     "created_at": "2026-02-11T10:00:00+00:00",
@@ -56,7 +56,7 @@
     "size": "L",
     "retailer_id": "retailer001",
     "image_url": "http://localhost:8000/uploads/models/model003_web.png",
-    "usage_count": 1,
+    "usage_count": 3,
     "is_active": true,
     "is_deleted": false,
     "created_at": "2026-02-12T10:00:00+00:00",
@@ -124,5 +124,25 @@
     "is_deleted": false,
     "created_at": "2026-02-15T10:00:00+00:00",
     "updated_at": "2026-02-15T10:00:00+00:00"
+  },
+  {
+    "name": "Test Model",
+    "body_type": "slim",
+    "height_cm": 175.0,
+    "measurements": {
+      "bust": 86.0,
+      "waist": 71.0,
+      "hip": 91.0
+    },
+    "skin_tone": "medium",
+    "size": "M",
+    "retailer_id": "44454ef2c5a6439b9ab18c8fd2f32091",
+    "image_url": "",
+    "usage_count": 0,
+    "is_active": true,
+    "is_deleted": false,
+    "created_at": "2026-03-01T18:40:23.543102+00:00",
+    "updated_at": "2026-03-01T18:40:23.543102+00:00",
+    "_id": "7623e2228c5d4ca0ba355427a6c6d7c7"
   }
 ]
