@@ -2,7 +2,7 @@
 
 ## Overview
 
-Phase 3 implements the **core product** of FitView AI -- an AI-powered virtual try-on engine. Customers select a brand-provided model and a garment, and the system generates a photorealistic try-on image using AI with full image preprocessing and postprocessing pipelines.
+Phase 3 implements the **core product** of FitView AI -- an AI-powered virtual try-on engine. Customers select a brand-provided model (or upload their own photo) and a garment, and the system generates a photorealistic try-on image using Google Gemini AI with full image preprocessing and postprocessing pipelines.
 
 **Status**: COMPLETE AND TESTED
 
@@ -12,13 +12,10 @@ Phase 3 implements the **core product** of FitView AI -- an AI-powered virtual t
 
 | Component | Model / Service | Purpose |
 | --- | --- | --- |
-| **Virtual Try-On** | Nano Banana (Google) | Primary try-on generation |
-| **Image Generation** | Gemini (`gemini-2.0-flash-exp-image-generation`) | Fallback try-on + style variations (replaces Grok Imagine) |
+| **Virtual Try-On** | Gemini (`gemini-3.1-flash-image-preview`) | Primary try-on generation |
 | **Background Removal** | rembg (U2-Net) | Garment isolation preprocessing |
 | **Color Correction** | OpenCV CLAHE + bilateral filter | Postprocessing enhancement |
-| **Fallback** | Pillow composite overlay | When all AI APIs are unavailable |
-
-> **Note**: Grok Imagine has been fully replaced by Google Gemini (`gemini-2.0-flash-exp-image-generation` / `gemini-3.1-flash-image-preview`) for all image generation and style variation tasks.
+| **Fallback** | Pillow composite overlay | When Gemini API is unavailable |
 
 ---
 
@@ -29,19 +26,22 @@ Customer Request
        |
        v
 +---------------------------+
-|  POST /api/v1/tryon       |
+|  POST /api/v1/tryon       |  (model + product)
+|  POST /api/v1/tryon/      |
+|       with-photo          |  (user photo + product)
 +---------------------------+
        |
        v
 +---------------------------+
 |  1. Cache Check           |  In-memory cache (1h TTL)
-|     key: tryon:{m}:{p}    |
+|     key: tryon:{m}:{p}    |  (skipped for user photo)
 +---------------------------+
        | (miss)
        v
 +---------------------------+
-|  2. Fetch Images          |  Local uploads/
-|     model + garment       |
+|  2. Fetch / Validate      |
+|  Images (model/photo +    |
+|  garment)                 |
 +---------------------------+
        |
        v
@@ -56,8 +56,7 @@ Customer Request
 +---------------------------+
 |  4. AI Generation         |
 |  Priority chain:          |
-|    Nano Banana API        |
-|      -> Gemini API        |
+|    Gemini API             |
 |      -> Fallback composite|
 +---------------------------+
        |
@@ -66,7 +65,7 @@ Customer Request
 |  5. Postprocess           |
 |  Sharpen, contrast,       |
 |  CLAHE, bilateral filter, |
-|  1024x1024 WebP output    |
+|  1024x1024 PNG output     |
 +---------------------------+
        |
        v
@@ -85,7 +84,7 @@ Customer Request
 
 ## API Endpoints
 
-### POST /api/v1/tryon -- Generate Try-On
+### POST /api/v1/tryon -- Generate Try-On (Model)
 
 **Auth**: Required (any authenticated user)
 
@@ -106,7 +105,7 @@ Customer Request
   "user_id": "customer001",
   "model_id": "model001",
   "product_id": "prod001",
-  "result_url": "http://localhost:8000/uploads/tryon_results/tryon_abc123.webp",
+  "result_url": "http://localhost:8000/uploads/tryon_results/tryon_abc123.png",
   "model_name": "Ananya - Petite Elegance",
   "product_name": "Royal Blue Silk Kurta",
   "model_image_url": "http://localhost:8000/uploads/models/model001_web.webp",
@@ -114,6 +113,7 @@ Customer Request
   "status": "completed",
   "processing_time_ms": 10351,
   "is_favorite": false,
+  "ai_provider": "gemini",
   "created_at": "2026-02-28T10:30:00Z",
   "expires_at": "2026-05-29T10:30:00Z"
 }
@@ -127,6 +127,29 @@ Customer Request
 | 400 | Product not found or has been deleted |
 | 400 | Model does not have an image uploaded |
 | 400 | Product does not have any images uploaded |
+| 500 | Try-on generation failed |
+
+### POST /api/v1/tryon/with-photo -- Generate Try-On (User Photo)
+
+**Auth**: Required (any authenticated user)
+
+**Request**: Multipart form data
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `file` | File | User's photo (JPEG or PNG, min 512x512, max 10MB) |
+| `product_id` | string | Product/garment ID |
+
+**Response** (201 Created): Same as `/tryon` response, with `model_id: "user_upload"` and `model_name: "Your Photo"`.
+
+**Error Responses**:
+
+| Status | Detail |
+| --- | --- |
+| 400 | Invalid file type (only JPEG, PNG allowed) |
+| 400 | File size exceeds 10MB |
+| 400 | Image resolution below 512x512 |
+| 400 | Product not found or has been deleted |
 | 500 | Try-on generation failed |
 
 ### GET /api/v1/tryon/history -- Get Try-On History
@@ -175,21 +198,15 @@ Customer Request
 | --- | --- | --- |
 | `preprocess_model_image()` | Pillow, numpy | Resize to 1024x1024, RGB normalize |
 | `preprocess_garment_image()` | Pillow, rembg, numpy | Resize min 512x512, background removal, RGBA |
-| `postprocess_tryon_image()` | Pillow, OpenCV, numpy | Sharpen, contrast +5%, CLAHE, bilateral filter, WebP |
+| `postprocess_tryon_image()` | Pillow, OpenCV, numpy | Sharpen, contrast +5%, CLAHE, bilateral filter, PNG |
 
 Graceful degradation: Falls back to Pillow-only if OpenCV or rembg not installed.
 
 ### app/utils/ai_clients.py
 
-**NanoBananaClient** -- Virtual try-on via Nano Banana API
+**GeminiImageClient** -- Image generation via Google Gemini API
 
-- Falls back to Gemini if no Nano Banana key is set
-- Retries: max 2 with exponential backoff
-- Timeout: 30s
-
-**GeminiImageClient** -- Image generation via Google Gemini API (replaces Grok Imagine)
-
-- Model: `gemini-2.0-flash-exp-image-generation` (configurable via `GEMINI_IMAGE_MODEL` env var)
+- Model: `gemini-3.1-flash-image-preview` (configurable via `GEMINI_IMAGE_MODEL` env var)
 - Methods:
   - `generate_image(prompt)` -- Text-to-image generation
   - `edit_image(prompt, image_bytes)` -- Image editing with text instruction
@@ -201,19 +218,22 @@ Graceful degradation: Falls back to Pillow-only if OpenCV or rembg not installed
 
 ### app/services/tryon_service.py
 
-Full pipeline orchestration with 3-tier AI fallback:
+Full pipeline orchestration with Gemini-first fallback:
 
 ```text
-1. Nano Banana API  (primary)
-2. Gemini API       (secondary)
-3. Composite overlay (offline fallback)
+1. Gemini API       (primary)
+2. Composite overlay (offline fallback)
 ```
+
+Two entry points:
+- `generate_tryon(store, model_id, product_id, user_id)` -- standard model-based try-on with caching
+- `generate_tryon_with_user_photo(store, user_photo_bytes, product_id, user_id, user_photo_url)` -- user photo upload try-on
 
 In-memory cache simulating Redis with 1h TTL.
 
 ### app/api/v1/endpoints/tryon.py
 
-FastAPI router: POST /tryon, GET /tryon/history, GET /tryon/{id}, PATCH /tryon/{id}/favorite
+FastAPI router: POST /tryon, POST /tryon/with-photo, GET /tryon/history, GET /tryon/{id}, PATCH /tryon/{id}/favorite
 
 ---
 
@@ -223,22 +243,32 @@ FastAPI router: POST /tryon, GET /tryon/history, GET /tryon/{id}, PATCH /tryon/{
 
 | Function | HTTP | Description |
 | --- | --- | --- |
-| `generateTryOn(data)` | POST /tryon | Generate try-on image |
+| `generateTryOn(data)` | POST /tryon | Generate try-on image (model-based) |
+| `generateTryOnWithPhoto(file, productId)` | POST /tryon/with-photo | Generate try-on image (user photo) |
 | `getTryOnHistory(page, limit)` | GET /tryon/history | Paginated history |
 | `getTryOnSession(id)` | GET /tryon/{id} | Single session |
 | `toggleTryOnFavorite(id, fav)` | PATCH /tryon/{id}/favorite | Toggle favorite |
 
 ### lib/store/tryonStore.ts
 
-Zustand store: selectedModelId, selectedProductId, currentResult, isGenerating, history, actions (generate, fetchHistory, toggleFavorite).
+Zustand store: selectedModelId, selectedProductId, userPhoto, userPhotoPreview, currentResult, isGenerating, history, actions (generate, setUserPhoto, clearUserPhoto, fetchHistory, toggleFavorite).
 
 ### app/tryon/page.tsx -- Main Try-On Page
 
 3-step flow:
 
-1. **Select Model** -- Grid with body type/skin tone/size filters
+1. **Select Model** -- Upload your own photo OR select from model grid with body type/skin tone/size filters
 2. **Select Garment** -- Grid with search/category filters, pre-select via `?product={id}`
-3. **Result Viewer** -- Before/after comparison, favorite toggle, try another
+3. **Result Viewer** -- Before/after comparison, 3D view toggle, favorite toggle, try another
+
+### components/ThreeDViewer.tsx -- 3D Result Viewer
+
+- Uses Three.js (dynamically imported to avoid SSR issues)
+- Renders try-on result image as a texture on a curved cylindrical surface
+- User can rotate with mouse drag (OrbitControls)
+- Auto-rotation enabled by default
+- Scroll to zoom, drag to rotate
+- Shows "3D View" label and interaction hints
 
 ### app/tryon/history/page.tsx -- History Page
 
@@ -290,28 +320,37 @@ python3 scripts/generate_sample_images.py
 # Required for AI image generation
 GEMINI_API_KEY=your-gemini-api-key
 GEMINI_MODEL=gemini-2.0-flash
-GEMINI_IMAGE_MODEL=gemini-2.0-flash-exp-image-generation
-
-# Optional (primary try-on API)
-NANO_BANANA_API_KEY=your-nano-banana-key
-NANO_BANANA_BASE_URL=https://api.nanobanana.google.com/v1
+GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
 ```
 
 ---
 
 ## Dependencies (Phase 3)
 
+### Backend
+
 | Package | Purpose |
 | --- | --- |
 | `numpy>=1.26.0` | Image array manipulation |
 | `opencv-python-headless>=4.9.0` | CLAHE color correction, bilateral smoothing |
 | `rembg>=2.0.55` | AI background removal (U2-Net) |
-| `google-genai` | Google Gemini API SDK |
+| `python-multipart` | Multipart form data (user photo upload) |
 
 ```bash
 cd backend
 pip install -r requirements.txt
-pip install google-genai
+```
+
+### Frontend
+
+| Package | Purpose |
+| --- | --- |
+| `three` | Three.js 3D rendering library |
+| `@types/three` | TypeScript types for Three.js |
+
+```bash
+cd frontend
+npm install three @types/three
 ```
 
 ---
@@ -320,50 +359,59 @@ pip install google-genai
 
 | Failure | Behavior |
 | --- | --- |
-| Nano Banana key missing | Falls to Gemini API |
+| Gemini API key missing | Falls to composite overlay |
 | Gemini API quota exceeded | Falls to composite overlay |
 | Gemini API timeout | Retries 2x, then falls to composite |
 | All AI APIs down | Composite overlay (garment on model) |
 | rembg not installed | Skips background removal |
 | OpenCV not installed | Skips CLAHE and bilateral filter |
+| Three.js not installed | 3D viewer shows error message, 2D view still works |
 
 ---
 
-## Test Results (Verified)
+## Features Summary
 
-```text
-Test                              Status
-─────────────────────────────────────────
-Python syntax (all files)         PASS
-TypeScript diagnostics            PASS (0 errors)
-Backend server startup            PASS
-POST /auth/login                  200 OK
-GET /models (10 with images)      200 OK
-GET /products (10 with images)    200 OK
-POST /tryon (model001+prod001)    201 Created (10351ms)
-POST /tryon (model003+prod005)    201 Created (10432ms)
-Result image served               200 OK (image/webp, 1024x1024)
-GET /tryon/history (2 sessions)   200 OK
-PATCH /tryon/{id}/favorite        200 OK (is_favorite: true)
-Model image serving               200 OK
-Product image serving             200 OK
-AI fallback chain                 Nano Banana -> Gemini -> Composite (all tested)
-```
+### Virtual Try-On (Core)
+- Select from brand-provided models OR upload your own photo
+- AI-powered photorealistic try-on generation via Gemini `gemini-3.1-flash-image-preview`
+- Fallback composite overlay when Gemini is unavailable
+- Image preprocessing: resize, background removal (rembg), normalization
+- Image postprocessing: sharpen, contrast, CLAHE, bilateral filter
+
+### User Photo Upload
+- Upload JPEG/PNG photos (min 512x512, max 10MB)
+- Photos saved to `uploads/user_photos/`
+- Same AI pipeline as model-based try-on
+- Sessions saved with `model_name: "Your Photo"`
+
+### 3D Result Viewer
+- Three.js-powered 3D rotation viewer
+- Try-on result mapped onto curved cylindrical surface
+- Mouse drag to rotate, scroll to zoom
+- Auto-rotation with damping
+- Dynamically loaded (no SSR, lazy import)
+
+### Result Management
+- Before/after comparison view
+- 3D rotation view
+- Favorite toggle (saved in session)
+- Try-on history with pagination
+- Try another garment / start over actions
 
 ---
 
 ## How It Works (User Flow)
 
 1. Customer logs in and clicks "Try-On" in the navbar or "Try On Virtually" on a product page
-2. **Step 1**: Selects a fashion model (filterable by body type, skin tone, size)
+2. **Step 1**: Either uploads their own photo OR selects a fashion model (filterable by body type, skin tone, size)
 3. **Step 2**: Selects a garment (filterable by category, searchable by name)
 4. Clicks "Generate Try-On"
 5. Backend pipeline runs (8-12 seconds):
-   - Preprocesses model image (1024x1024, RGB)
+   - Preprocesses model/user image (1024x1024, RGB)
    - Preprocesses garment image (background removal with rembg)
-   - Calls Nano Banana -> Gemini -> Fallback composite
-   - Postprocesses result (sharpen, color correct, WebP)
+   - Calls Gemini API -> Fallback composite
+   - Postprocesses result (sharpen, color correct, PNG)
    - Uploads and saves session
-6. **Step 3**: Views result with before/after comparison
+6. **Step 3**: Views result with before/after comparison or 3D rotation view
 7. Can save to favorites, try another garment, or start over
 8. All sessions saved in history at `/tryon/history`

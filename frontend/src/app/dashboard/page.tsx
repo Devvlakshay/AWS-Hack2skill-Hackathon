@@ -16,7 +16,7 @@ import {
 const AnalyticsCharts = dynamic(() => import("./AnalyticsCharts"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 flex items-center justify-center text-gray-500">
+    <div className="h-64 flex items-center justify-center text-[rgb(var(--text-muted))]">
       Loading charts...
     </div>
   ),
@@ -61,15 +61,15 @@ function downloadBlob(blob: Blob, filename: string) {
 function CustomerDashboard({ user }: { user: { name: string; email: string; role: string; created_at: string } }) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="bg-gray-900 rounded-2xl shadow-sm border border-gray-800 p-8 mb-8">
+      <div className="glass-card-lg p-8 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">
               Welcome back, {user.name}
             </h1>
-            <p className="mt-1 text-gray-400">{user.email}</p>
+            <p className="mt-1 text-[rgb(var(--text-secondary))]">{user.email}</p>
           </div>
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-green-900/40 text-green-400 self-start">
+          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-green-500/10 text-green-400 border border-green-500/20 self-start">
             Customer
           </span>
         </div>
@@ -78,39 +78,39 @@ function CustomerDashboard({ user }: { user: { name: string; email: string; role
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <Link
           href="/products"
-          className="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-xl p-6 hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-sm"
+          className="glass-card p-6 border-t-2 border-t-violet-500 hover:-translate-y-1 transition-all duration-300"
         >
-          <h3 className="font-semibold text-lg">Browse Products</h3>
-          <p className="text-indigo-300 text-sm mt-1">
+          <h3 className="font-semibold text-lg text-[rgb(var(--text-primary))]">Browse Products</h3>
+          <p className="text-violet-400 text-sm mt-1">
             Explore our curated clothing collection
           </p>
         </Link>
         <Link
           href="/tryon"
-          className="bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-xl p-6 hover:from-purple-700 hover:to-purple-800 transition-all shadow-sm"
+          className="glass-card p-6 border-t-2 border-t-amber-500 hover:-translate-y-1 transition-all duration-300"
         >
-          <h3 className="font-semibold text-lg">Virtual Try-On</h3>
-          <p className="text-purple-300 text-sm mt-1">
+          <h3 className="font-semibold text-lg text-[rgb(var(--text-primary))]">Virtual Try-On</h3>
+          <p className="text-amber-400 text-sm mt-1">
             Try on clothes with AI-powered virtual fitting
           </p>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-gray-900 rounded-2xl shadow-sm border border-gray-800 p-8">
-          <h2 className="text-lg font-semibold text-white mb-6">Account Details</h2>
+        <div className="glass-card p-8">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-6">Account Details</h2>
           <dl className="space-y-4">
             <div>
-              <dt className="text-sm text-gray-400">Full Name</dt>
-              <dd className="text-white font-medium">{user.name}</dd>
+              <dt className="text-sm text-[rgb(var(--text-secondary))]">Full Name</dt>
+              <dd className="text-[rgb(var(--text-primary))] font-medium">{user.name}</dd>
             </div>
             <div>
-              <dt className="text-sm text-gray-400">Email</dt>
-              <dd className="text-white font-medium">{user.email}</dd>
+              <dt className="text-sm text-[rgb(var(--text-secondary))]">Email</dt>
+              <dd className="text-[rgb(var(--text-primary))] font-medium">{user.email}</dd>
             </div>
             <div>
-              <dt className="text-sm text-gray-400">Member Since</dt>
-              <dd className="text-white font-medium">
+              <dt className="text-sm text-[rgb(var(--text-secondary))]">Member Since</dt>
+              <dd className="text-[rgb(var(--text-primary))] font-medium">
                 {new Date(user.created_at).toLocaleDateString("en-IN", {
                   year: "numeric",
                   month: "long",
@@ -120,15 +120,15 @@ function CustomerDashboard({ user }: { user: { name: string; email: string; role
             </div>
           </dl>
         </div>
-        <div className="bg-gray-900 rounded-2xl shadow-sm border border-gray-800 p-8">
-          <h2 className="text-lg font-semibold text-white mb-6">Available Features</h2>
+        <div className="glass-card p-8">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-6">Available Features</h2>
           <ul className="space-y-3">
             {["Browse product catalog", "Virtual try-on with AI", "Get size recommendations", "Save favorites and wishlist"].map((f, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="mt-0.5 w-5 h-5 bg-primary-900/50 text-primary-400 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">
+                <span className="mt-0.5 w-5 h-5 bg-violet-500/20 text-violet-400 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">
                   &#10003;
                 </span>
-                <span className="text-gray-300">{f}</span>
+                <span className="text-[rgb(var(--text-secondary))]">{f}</span>
               </li>
             ))}
           </ul>
@@ -208,19 +208,19 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Analytics Dashboard</h1>
-          <p className="text-gray-400 mt-1">Welcome back, {user.name}</p>
+          <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">Analytics Dashboard</h1>
+          <p className="text-[rgb(var(--text-secondary))] mt-1">Welcome back, {user.name}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/retailer/products"
-            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
           >
             Manage Products
           </Link>
           <Link
             href="/retailer/models"
-            className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+            className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
           >
             Manage Models
           </Link>
@@ -228,15 +228,15 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       </div>
 
       {/* Date Range Filter */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-4 mb-6">
+      <div className="glass-card p-4 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2">
             <button
               onClick={() => handlePreset("7d")}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 activePreset === "7d"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-800 text-gray-400 hover:text-white"
+                  ? "bg-violet-600 text-white"
+                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
               }`}
             >
               Last 7 days
@@ -245,8 +245,8 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
               onClick={() => handlePreset("30d")}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 activePreset === "30d"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-800 text-gray-400 hover:text-white"
+                  ? "bg-violet-600 text-white"
+                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
               }`}
             >
               Last 30 days
@@ -255,8 +255,8 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
               onClick={() => handlePreset("all")}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 activePreset === "all"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-800 text-gray-400 hover:text-white"
+                  ? "bg-violet-600 text-white"
+                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
               }`}
             >
               All time
@@ -267,18 +267,18 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="glass-input rounded-lg px-3 py-1.5 text-sm"
             />
-            <span className="text-gray-500 text-sm">to</span>
+            <span className="text-[rgb(var(--text-muted))] text-sm">to</span>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="glass-input rounded-lg px-3 py-1.5 text-sm"
             />
             <button
               onClick={handleFilter}
-              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="btn-primary px-3 py-1.5 rounded-lg text-sm font-medium"
             >
               Filter
             </button>
@@ -289,12 +289,12 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       {/* Loading / Error */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <div className="text-gray-400">Loading analytics...</div>
+          <div className="text-[rgb(var(--text-secondary))]">Loading analytics...</div>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/30 border border-red-800 rounded-xl p-4 mb-6">
+        <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-6 backdrop-blur-sm">
           <p className="text-red-400 text-sm">{error}</p>
           <button
             onClick={() => fetchData(dateFrom, dateTo)}
@@ -312,7 +312,7 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
             <SummaryCard
               label="Total Try-Ons"
               value={data.total_tryons}
-              color="indigo"
+              color="violet"
             />
             <SummaryCard
               label="Total Products"
@@ -327,7 +327,7 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
             <SummaryCard
               label="Avg Processing"
               value={formatMs(data.avg_processing_time_ms)}
-              color="emerald"
+              color="amber"
             />
           </div>
 
@@ -336,15 +336,15 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
 
           {/* Top Products Table */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Top Products</h2>
+            <div className="glass-card p-6">
+              <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Top Products</h2>
               {data.top_products.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4">No try-on data yet.</p>
+                <p className="text-[rgb(var(--text-muted))] text-sm py-4">No try-on data yet.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-gray-400 border-b border-gray-800">
+                      <tr className="text-[rgb(var(--text-secondary))] border-b border-[rgba(var(--glass-border))]">
                         <th className="text-left py-2 pr-4">#</th>
                         <th className="text-left py-2 pr-4">Product</th>
                         <th className="text-center py-2 pr-4">Try-Ons</th>
@@ -353,12 +353,12 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
                     </thead>
                     <tbody>
                       {data.top_products.map((p, i) => (
-                        <tr key={p.product_id} className="border-b border-gray-800/50">
-                          <td className="py-2.5 pr-4 text-gray-500">{i + 1}</td>
-                          <td className="py-2.5 pr-4 text-white font-medium truncate max-w-[200px]">
+                        <tr key={p.product_id} className="border-b border-[rgba(var(--glass-border))]/50">
+                          <td className="py-2.5 pr-4 text-[rgb(var(--text-muted))]">{i + 1}</td>
+                          <td className="py-2.5 pr-4 text-[rgb(var(--text-primary))] font-medium truncate max-w-[200px]">
                             {p.name}
                           </td>
-                          <td className="py-2.5 pr-4 text-center text-indigo-400 font-semibold">
+                          <td className="py-2.5 pr-4 text-center text-violet-400 font-semibold">
                             {p.tryon_count}
                           </td>
                           <td className="py-2.5 text-center text-pink-400">
@@ -373,15 +373,15 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
             </div>
 
             {/* Top Models Table */}
-            <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">Top Models</h2>
+            <div className="glass-card p-6">
+              <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Top Models</h2>
               {data.top_models.length === 0 ? (
-                <p className="text-gray-500 text-sm py-4">No try-on data yet.</p>
+                <p className="text-[rgb(var(--text-muted))] text-sm py-4">No try-on data yet.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-gray-400 border-b border-gray-800">
+                      <tr className="text-[rgb(var(--text-secondary))] border-b border-[rgba(var(--glass-border))]">
                         <th className="text-left py-2 pr-4">#</th>
                         <th className="text-left py-2 pr-4">Model</th>
                         <th className="text-center py-2">Try-Ons</th>
@@ -389,12 +389,12 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
                     </thead>
                     <tbody>
                       {data.top_models.map((m, i) => (
-                        <tr key={m.model_id} className="border-b border-gray-800/50">
-                          <td className="py-2.5 pr-4 text-gray-500">{i + 1}</td>
-                          <td className="py-2.5 pr-4 text-white font-medium">
+                        <tr key={m.model_id} className="border-b border-[rgba(var(--glass-border))]/50">
+                          <td className="py-2.5 pr-4 text-[rgb(var(--text-muted))]">{i + 1}</td>
+                          <td className="py-2.5 pr-4 text-[rgb(var(--text-primary))] font-medium">
                             {m.name}
                           </td>
-                          <td className="py-2.5 text-center text-indigo-400 font-semibold">
+                          <td className="py-2.5 text-center text-violet-400 font-semibold">
                             {m.tryon_count}
                           </td>
                         </tr>
@@ -407,20 +407,20 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
           </div>
 
           {/* Export Buttons */}
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 mb-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Export Data</h2>
+          <div className="glass-card p-6 mb-8">
+            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Export Data</h2>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={handleExportCSV}
                 disabled={exporting === "csv"}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800 disabled:cursor-wait text-white rounded-lg text-sm font-medium transition-colors"
+                className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-wait"
               >
                 {exporting === "csv" ? "Exporting..." : "Export CSV"}
               </button>
               <button
                 onClick={handleExportReport}
                 disabled={exporting === "report"}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-800 disabled:cursor-wait text-white rounded-lg text-sm font-medium transition-colors"
+                className="btn-primary px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-wait"
               >
                 {exporting === "report" ? "Exporting..." : "Export Report"}
               </button>
@@ -440,26 +440,26 @@ function SummaryCard({
 }: {
   label: string;
   value: string | number;
-  color: "indigo" | "blue" | "pink" | "emerald";
+  color: "violet" | "blue" | "pink" | "amber";
 }) {
   const colorMap = {
-    indigo: "from-indigo-600/20 to-indigo-900/10 border-indigo-800/50",
-    blue: "from-blue-600/20 to-blue-900/10 border-blue-800/50",
-    pink: "from-pink-600/20 to-pink-900/10 border-pink-800/50",
-    emerald: "from-emerald-600/20 to-emerald-900/10 border-emerald-800/50",
+    violet: "border-t-violet-500",
+    blue: "border-t-blue-500",
+    pink: "border-t-pink-500",
+    amber: "border-t-amber-500",
   };
   const valueColorMap = {
-    indigo: "text-indigo-400",
+    violet: "text-violet-400",
     blue: "text-blue-400",
     pink: "text-pink-400",
-    emerald: "text-emerald-400",
+    amber: "text-amber-400",
   };
 
   return (
     <div
-      className={`bg-gradient-to-br ${colorMap[color]} border rounded-xl p-5`}
+      className={`glass-card border-t-2 ${colorMap[color]} p-5`}
     >
-      <p className="text-sm text-gray-400 mb-1">{label}</p>
+      <p className="text-sm text-[rgb(var(--text-secondary))] mb-1">{label}</p>
       <p className={`text-2xl font-bold ${valueColorMap[color]}`}>{value}</p>
     </div>
   );
@@ -485,7 +485,7 @@ export default function DashboardPage() {
   if (!isAuthenticated || !user) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+        <div className="text-[rgb(var(--text-secondary))]">Loading...</div>
       </div>
     );
   }
@@ -493,7 +493,7 @@ export default function DashboardPage() {
   const isRetailer = user.role === "retailer" || user.role === "admin";
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gray-950 py-10">
+    <div className="min-h-[calc(100vh-64px)] bg-[rgb(var(--bg-primary))] py-10">
       {isRetailer ? (
         <RetailerDashboard user={user} />
       ) : (

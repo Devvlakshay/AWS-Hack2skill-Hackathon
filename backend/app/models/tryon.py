@@ -37,7 +37,7 @@ class TryOnResponse(BaseModel):
     status: str = Field(default="completed", description="pending | processing | completed | failed")
     processing_time_ms: int = Field(default=0, description="Time taken to generate in milliseconds")
     is_favorite: bool = False
-    ai_provider: str = Field(default="fallback", description="AI provider used: gemini, nano_banana, or fallback")
+    ai_provider: str = Field(default="fallback", description="AI provider used: gemini or fallback")
     created_at: datetime
     expires_at: Optional[datetime] = None
 
@@ -53,3 +53,25 @@ class TryOnHistoryResponse(BaseModel):
 class TryOnFavoriteRequest(BaseModel):
     """Schema for toggling favorite on a try-on session."""
     is_favorite: bool
+
+
+class BatchTryOnRequest(BaseModel):
+    """Schema for requesting batch virtual try-on generation (multiple garments)."""
+    model_config = {"protected_namespaces": ()}
+
+    model_id: str = Field(..., description="Fashion model ID")
+    product_ids: list[str] = Field(
+        ...,
+        min_length=1,
+        max_length=5,
+        description="List of product/garment IDs (1-5)",
+    )
+
+
+class BatchTryOnResponse(BaseModel):
+    """Schema for batch try-on generation response."""
+    batch_id: str
+    individual_results: list[TryOnResponse]
+    combined_result: Optional[TryOnResponse] = None
+    total_processing_time_ms: int
+    product_count: int

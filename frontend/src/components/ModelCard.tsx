@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * Fashion Model Card component for grid display.
- * Phase 2: Product & Model Management.
- */
-
 import React from "react";
 import Link from "next/link";
 import type { FashionModel } from "@/lib/api/models";
@@ -34,9 +29,9 @@ export default function ModelCard({ model, showActions = false, onDelete }: Mode
   const imageUrl = model.image_url || "/placeholder-model.png";
 
   return (
-    <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 overflow-hidden hover:shadow-lg hover:border-gray-700 transition-all">
+    <div className="glass-card overflow-hidden hover:scale-[1.02] hover:shadow-glass-lg transition-all duration-300">
       {/* Image */}
-      <div className="aspect-[3/4] bg-gray-800 relative overflow-hidden">
+      <div className="aspect-[3/4] bg-[rgb(var(--bg-secondary))] relative overflow-hidden">
         <img
           src={imageUrl}
           alt={model.name}
@@ -45,11 +40,11 @@ export default function ModelCard({ model, showActions = false, onDelete }: Mode
             (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%234b5563' viewBox='0 0 24 24'%3E%3Cpath d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/%3E%3C/svg%3E";
           }}
         />
-        <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-0.5 rounded-full">
+        <span className="absolute top-2 left-2 bg-amber-500/80 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full">
           {bodyTypeLabels[model.body_type] || model.body_type}
         </span>
         {!model.is_active && (
-          <span className="absolute top-2 right-2 bg-gray-600 text-white text-xs px-2 py-0.5 rounded-full">
+          <span className="absolute top-2 right-2 glass-card text-[rgb(var(--text-muted))] text-xs px-2 py-0.5">
             Inactive
           </span>
         )}
@@ -57,55 +52,55 @@ export default function ModelCard({ model, showActions = false, onDelete }: Mode
 
       {/* Details */}
       <div className="p-4">
-        <h3 className="font-semibold text-white text-sm">{model.name}</h3>
+        <h3 className="font-semibold text-[rgb(var(--text-primary))] text-sm">{model.name}</h3>
 
         <div className="mt-2 space-y-1">
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-[rgb(var(--text-muted))]">
             <span>Height</span>
-            <span className="font-medium text-gray-200">{model.height_cm} cm</span>
+            <span className="font-medium text-[rgb(var(--text-secondary))]">{model.height_cm} cm</span>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-[rgb(var(--text-muted))]">
             <span>Size</span>
-            <span className="font-medium text-gray-200">{model.size}</span>
+            <span className="font-medium text-[rgb(var(--text-secondary))]">{model.size}</span>
           </div>
-          <div className="flex justify-between text-xs text-gray-400">
+          <div className="flex justify-between text-xs text-[rgb(var(--text-muted))]">
             <span>Skin Tone</span>
-            <span className="font-medium text-gray-200">{skinToneLabels[model.skin_tone] || model.skin_tone}</span>
+            <span className="font-medium text-[rgb(var(--text-secondary))]">{skinToneLabels[model.skin_tone] || model.skin_tone}</span>
           </div>
         </div>
 
         {/* Measurements */}
-        <div className="flex justify-between mt-3 pt-2 border-t border-gray-800">
+        <div className="flex justify-between mt-3 pt-2 border-t border-[rgba(var(--glass-border))]">
           <div className="text-center">
-            <p className="text-xs text-gray-500">Bust</p>
-            <p className="text-xs font-medium text-gray-200">{model.measurements.bust}</p>
+            <p className="text-xs text-[rgb(var(--text-muted))]">Bust</p>
+            <p className="text-xs font-medium text-[rgb(var(--text-secondary))]">{model.measurements.bust}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-gray-500">Waist</p>
-            <p className="text-xs font-medium text-gray-200">{model.measurements.waist}</p>
+            <p className="text-xs text-[rgb(var(--text-muted))]">Waist</p>
+            <p className="text-xs font-medium text-[rgb(var(--text-secondary))]">{model.measurements.waist}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-gray-500">Hip</p>
-            <p className="text-xs font-medium text-gray-200">{model.measurements.hip}</p>
+            <p className="text-xs text-[rgb(var(--text-muted))]">Hip</p>
+            <p className="text-xs font-medium text-[rgb(var(--text-secondary))]">{model.measurements.hip}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+        <div className="flex items-center justify-between mt-3 text-xs text-[rgb(var(--text-muted))]">
           <span>Used {model.usage_count} times</span>
         </div>
 
         {/* Actions */}
         {showActions && (
-          <div className="flex gap-2 mt-3 pt-3 border-t border-gray-800">
+          <div className="flex gap-2 mt-3 pt-3 border-t border-[rgba(var(--glass-border))]">
             <Link
               href={`/retailer/models/${model._id}/edit`}
-              className="flex-1 text-center text-sm py-1.5 bg-indigo-900/40 text-indigo-400 rounded-lg hover:bg-indigo-900/60 transition-colors"
+              className="flex-1 text-center text-sm py-1.5 glass-card text-violet-500 hover:shadow-glow-violet transition-all"
             >
               Edit
             </Link>
             <button
               onClick={() => onDelete?.(model._id)}
-              className="flex-1 text-sm py-1.5 bg-red-900/30 text-red-400 rounded-lg hover:bg-red-900/50 transition-colors"
+              className="flex-1 text-sm py-1.5 glass-card text-red-400 hover:bg-red-500/10 transition-all"
             >
               Delete
             </button>

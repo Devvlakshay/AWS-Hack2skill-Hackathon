@@ -146,19 +146,19 @@ export default function ProductDetailPage() {
 
   if (loading || !product) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-[rgb(var(--bg-primary))] flex items-center justify-center">
         {error ? (
           <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
+            <p className="text-red-400 mb-4">{error}</p>
             <button
               onClick={() => router.back()}
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-violet-400 hover:text-violet-300 font-medium"
             >
               Go Back
             </button>
           </div>
         ) : (
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600" />
         )}
       </div>
     );
@@ -173,12 +173,12 @@ export default function ProductDetailPage() {
   const hasImages = images.length > 0;
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
       {/* Breadcrumb */}
-      <div className="bg-gray-900 border-b border-gray-700">
+      <div className="glass-card border-b border-[rgba(var(--glass-border))] rounded-none">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="flex items-center text-sm text-gray-400 gap-2">
-            <Link href="/products" className="hover:text-indigo-600 transition-colors">
+          <nav className="flex items-center text-sm text-[rgb(var(--text-muted))] gap-2">
+            <Link href="/products" className="hover:text-violet-400 transition-colors">
               Products
             </Link>
             <span>/</span>
@@ -186,14 +186,14 @@ export default function ProductDetailPage() {
               <>
                 <Link
                   href={`/products?category=${product.category}`}
-                  className="hover:text-indigo-600 transition-colors"
+                  className="hover:text-violet-400 transition-colors"
                 >
                   {product.category}
                 </Link>
                 <span>/</span>
               </>
             )}
-            <span className="text-white font-medium truncate">{product.name}</span>
+            <span className="text-[rgb(var(--text-primary))] font-medium truncate">{product.name}</span>
           </nav>
         </div>
       </div>
@@ -203,7 +203,7 @@ export default function ProductDetailPage() {
           {/* Image Gallery */}
           <div>
             {/* Main Image */}
-            <div className="aspect-[3/4] bg-gray-800 rounded-2xl overflow-hidden mb-4 relative">
+            <div className="aspect-[3/4] bg-[rgb(var(--bg-secondary))] rounded-2xl overflow-hidden mb-4 relative border border-[rgba(var(--glass-border))]">
               {hasImages ? (
                 <img
                   src={images[selectedImage]}
@@ -212,7 +212,7 @@ export default function ProductDetailPage() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <svg className="w-24 h-24 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-24 h-24 text-[rgb(var(--text-muted))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -222,7 +222,7 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleToggleWishlist}
                 disabled={wishlistLoading}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-900/70 flex items-center justify-center transition-colors hover:bg-gray-900/90 disabled:opacity-50"
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center transition-colors hover:bg-black/60 disabled:opacity-50"
               >
                 <svg
                   className={`w-5 h-5 transition-colors ${wishlisted ? "text-red-500 fill-red-500" : "text-white"}`}
@@ -242,8 +242,8 @@ export default function ProductDetailPage() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      selectedImage === idx ? "border-indigo-600" : "border-gray-700 hover:border-gray-600"
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all backdrop-blur-sm ${
+                      selectedImage === idx ? "border-violet-500 shadow-glow-violet" : "border-[rgba(var(--glass-border))] hover:border-violet-500/50"
                     }`}
                   >
                     <img src={img} alt={`View ${idx + 1}`} className="w-full h-full object-cover" />
@@ -257,41 +257,41 @@ export default function ProductDetailPage() {
           <div>
             {/* Category badge */}
             {product.category && (
-              <span className="inline-block bg-indigo-900/40 text-indigo-400 text-xs font-medium px-3 py-1 rounded-full mb-3">
+              <span className="inline-block bg-violet-500/20 text-violet-400 text-xs font-medium px-3 py-1 rounded-full mb-3 border border-violet-500/30">
                 {product.category}
                 {product.subcategory ? ` / ${product.subcategory}` : ""}
               </span>
             )}
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">{product.name}</h1>
-            <p className="text-3xl font-bold text-white mt-4">{formattedPrice}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))]">{product.name}</h1>
+            <p className="text-3xl font-bold text-amber-400 mt-4">{formattedPrice}</p>
 
             {/* Description */}
             <div className="mt-6">
-              <h3 className="text-sm font-medium text-white mb-2">Description</h3>
-              <p className="text-gray-300 text-sm leading-relaxed">{product.description}</p>
+              <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] mb-2">Description</h3>
+              <p className="text-[rgb(var(--text-secondary))] text-sm leading-relaxed">{product.description}</p>
             </div>
 
             {/* Material */}
             {product.material && (
               <div className="mt-4">
-                <h3 className="text-sm font-medium text-white mb-1">Material</h3>
-                <p className="text-gray-300 text-sm">{product.material}</p>
+                <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] mb-1">Material</h3>
+                <p className="text-[rgb(var(--text-secondary))] text-sm">{product.material}</p>
               </div>
             )}
 
             {/* Colors */}
             {product.colors.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-white mb-3">Available Colors</h3>
+                <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] mb-3">Available Colors</h3>
                 <div className="flex flex-wrap gap-3">
                   {product.colors.map((color, i) => (
                     <div key={i} className="flex items-center gap-2">
                       <span
-                        className="w-6 h-6 rounded-full border border-gray-600"
+                        className="w-6 h-6 rounded-full border border-[rgba(var(--glass-border))]"
                         style={{ backgroundColor: color.toLowerCase() }}
                       />
-                      <span className="text-sm text-gray-300">{color}</span>
+                      <span className="text-sm text-[rgb(var(--text-secondary))]">{color}</span>
                     </div>
                   ))}
                 </div>
@@ -302,12 +302,12 @@ export default function ProductDetailPage() {
             {product.sizes.length > 0 && (
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-white">Select Size</h3>
+                  <h3 className="text-sm font-medium text-[rgb(var(--text-primary))]">Select Size</h3>
                   {/* Size Recommendation Badge */}
                   {sizeRecLoading ? (
-                    <span className="text-xs text-gray-500">Getting recommendation...</span>
+                    <span className="text-xs text-[rgb(var(--text-muted))]">Getting recommendation...</span>
                   ) : sizeRec ? (
-                    <span className="text-xs bg-green-900/40 text-green-400 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full border border-green-500/30">
                       AI recommends: {sizeRec.recommended_size} ({Math.round(sizeRec.confidence * 100)}%)
                     </span>
                   ) : null}
@@ -322,12 +322,12 @@ export default function ProductDetailPage() {
                         key={i}
                         onClick={() => inStock && setSelectedSize(s.size)}
                         disabled={!inStock}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors relative ${
+                        className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all relative ${
                           isSelected
-                            ? "bg-indigo-600 text-white border-indigo-600"
+                            ? "bg-violet-600 text-white border-violet-600 shadow-glow-violet"
                             : inStock
-                            ? "bg-gray-800 text-gray-200 border-gray-700 hover:border-indigo-500"
-                            : "bg-gray-800 text-gray-600 border-gray-800 line-through cursor-not-allowed"
+                            ? "bg-white/5 text-[rgb(var(--text-secondary))] border-[rgba(var(--glass-border))] hover:border-violet-500/50"
+                            : "bg-white/5 text-[rgb(var(--text-muted))] border-[rgba(var(--glass-border))] line-through cursor-not-allowed opacity-50"
                         }`}
                       >
                         {s.size}
@@ -344,7 +344,7 @@ export default function ProductDetailPage() {
 
                 {/* Size Recommendation Detail */}
                 {sizeRec && (
-                  <p className="mt-2 text-xs text-gray-400">{sizeRec.reasoning}</p>
+                  <p className="mt-2 text-xs text-[rgb(var(--text-muted))]">{sizeRec.reasoning}</p>
                 )}
               </div>
             )}
@@ -352,12 +352,12 @@ export default function ProductDetailPage() {
             {/* Tags */}
             {product.tags.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-white mb-2">Tags</h3>
+                <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] mb-2">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.tags.map((tag, i) => (
                     <span
                       key={i}
-                      className="bg-gray-800 text-gray-300 text-xs px-3 py-1 rounded-full"
+                      className="glass-card text-[rgb(var(--text-secondary))] text-xs px-3 py-1 rounded-full"
                     >
                       {tag}
                     </span>
@@ -369,11 +369,11 @@ export default function ProductDetailPage() {
             {/* Size Chart */}
             {product.size_chart && Object.keys(product.size_chart).length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-medium text-white mb-3">Size Chart</h3>
-                <div className="bg-gray-950 rounded-lg p-4 overflow-x-auto">
+                <h3 className="text-sm font-medium text-[rgb(var(--text-primary))] mb-3">Size Chart</h3>
+                <div className="glass-card rounded-lg p-4 overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-gray-400 border-b border-gray-700">
+                      <tr className="text-left text-[rgb(var(--text-muted))] border-b border-[rgba(var(--glass-border))]">
                         <th className="pb-2 font-medium">Size</th>
                         {Object.keys(Object.values(product.size_chart)[0] as Record<string, unknown> || {}).map((key) => (
                           <th key={key} className="pb-2 font-medium capitalize">{key}</th>
@@ -382,10 +382,10 @@ export default function ProductDetailPage() {
                     </thead>
                     <tbody>
                       {Object.entries(product.size_chart).map(([sizeName, measurements]) => (
-                        <tr key={sizeName} className="border-b border-gray-800">
-                          <td className="py-2 font-medium text-white">{sizeName}</td>
+                        <tr key={sizeName} className="border-b border-[rgba(var(--glass-border))]">
+                          <td className="py-2 font-medium text-[rgb(var(--text-primary))]">{sizeName}</td>
                           {Object.values(measurements as Record<string, unknown>).map((val, i) => (
-                            <td key={i} className="py-2 text-gray-300">{String(val)}</td>
+                            <td key={i} className="py-2 text-[rgb(var(--text-secondary))]">{String(val)}</td>
                           ))}
                         </tr>
                       ))}
@@ -398,7 +398,7 @@ export default function ProductDetailPage() {
             {/* Actions */}
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <button
-                className="flex-1 bg-indigo-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-indigo-700 transition-colors text-center flex items-center justify-center gap-2"
+                className="btn-primary flex-1 py-3 px-6 rounded-xl font-medium text-center flex items-center justify-center gap-2"
                 onClick={() => {
                   router.push(`/tryon?product=${product._id || product.id}`);
                 }}
@@ -412,10 +412,10 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleAddToCart}
                 disabled={cartLoading}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-colors text-center flex items-center justify-center gap-2 ${
+                className={`btn-accent flex-1 py-3 px-6 rounded-xl font-medium transition-colors text-center flex items-center justify-center gap-2 ${
                   addedToCart
-                    ? "bg-green-600 text-white"
-                    : "bg-white text-gray-900 hover:bg-gray-100"
+                    ? "!bg-green-600 !text-white"
+                    : ""
                 }`}
               >
                 {addedToCart ? (
@@ -437,10 +437,10 @@ export default function ProductDetailPage() {
               <button
                 onClick={handleToggleWishlist}
                 disabled={wishlistLoading}
-                className={`px-6 py-3 border rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                className={`btn-secondary px-6 py-3 rounded-xl flex items-center justify-center gap-2 ${
                   wishlisted
-                    ? "border-red-500 text-red-400 hover:bg-red-900/20"
-                    : "border-gray-700 text-gray-300 hover:bg-gray-800"
+                    ? "!border-pink-500/50 !text-pink-400 hover:!bg-pink-500/10"
+                    : ""
                 }`}
               >
                 <svg
@@ -461,15 +461,15 @@ export default function ProductDetailPage() {
         {styleRecs.length > 0 && (
           <div className="mt-16">
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-white">You May Also Like</h2>
+              <h2 className="text-xl font-bold text-[rgb(var(--text-primary))]">You May Also Like</h2>
               {styleRecsBasis && (
-                <p className="text-sm text-gray-400 mt-1">{styleRecsBasis}</p>
+                <p className="text-sm text-[rgb(var(--text-muted))] mt-1">{styleRecsBasis}</p>
               )}
             </div>
 
             {styleRecsLoading ? (
               <div className="flex justify-center py-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600" />
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -485,7 +485,7 @@ export default function ProductDetailPage() {
                       href={`/products/${rec._id}`}
                       className="group"
                     >
-                      <div className="aspect-[3/4] bg-gray-800 rounded-xl overflow-hidden mb-2">
+                      <div className="aspect-[3/4] bg-[rgb(var(--bg-secondary))] rounded-xl overflow-hidden mb-2 glass-card hover:shadow-glow-violet transition-all duration-300">
                         {rec.images && rec.images.length > 0 ? (
                           <img
                             src={rec.images[0]}
@@ -494,16 +494,16 @@ export default function ProductDetailPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-8 h-8 text-[rgb(var(--text-muted))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>
                         )}
                       </div>
-                      <p className="text-sm text-white font-medium line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                      <p className="text-sm text-[rgb(var(--text-primary))] font-medium line-clamp-1 group-hover:text-violet-400 transition-colors">
                         {rec.name}
                       </p>
-                      <p className="text-sm text-gray-400">{recPrice}</p>
+                      <p className="text-sm text-amber-400">{recPrice}</p>
                     </Link>
                   );
                 })}

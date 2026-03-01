@@ -13,7 +13,7 @@ from app.core.config import settings
 
 # Constraints
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-MIN_RESOLUTION = 512
+MIN_RESOLUTION = 100
 ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
 
 # Thumbnail and web-optimized sizes

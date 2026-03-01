@@ -80,16 +80,16 @@ export default function ModelListPage() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <header className="bg-gray-900 border-b border-gray-700">
+    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
+      <header className="glass-card-lg rounded-none border-x-0 border-t-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Fashion Models</h1>
-            <p className="text-sm text-gray-400 mt-1">{total} models uploaded</p>
+            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">Fashion Models</h1>
+            <p className="text-sm text-[rgb(var(--text-muted))] mt-1">{total} models uploaded</p>
           </div>
           <Link
             href="/retailer/models/new"
-            className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors inline-flex items-center gap-2"
+            className="btn-accent px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -108,12 +108,12 @@ export default function ModelListPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-4 mb-6">
+        <div className="glass-card p-4 mb-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <select
               value={bodyType}
               onChange={(e) => { setBodyType(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="glass-input px-3 py-2 text-sm"
             >
               {BODY_TYPES.map((bt) => (
                 <option key={bt.value} value={bt.value}>{bt.label}</option>
@@ -123,7 +123,7 @@ export default function ModelListPage() {
             <select
               value={skinTone}
               onChange={(e) => { setSkinTone(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="glass-input px-3 py-2 text-sm"
             >
               {SKIN_TONES.map((st) => (
                 <option key={st.value} value={st.value}>{st.label}</option>
@@ -133,7 +133,7 @@ export default function ModelListPage() {
             <select
               value={size}
               onChange={(e) => { setSize(e.target.value); setCurrentPage(1); }}
-              className="px-3 py-2 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="glass-input px-3 py-2 text-sm"
             >
               {SIZES.map((s) => (
                 <option key={s.value} value={s.value}>{s.label}</option>
@@ -145,14 +145,14 @@ export default function ModelListPage() {
         {/* Content */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
           </div>
         ) : models.length === 0 ? (
-          <div className="bg-gray-900 rounded-xl shadow-sm border border-gray-800 p-12 text-center">
-            <p className="text-gray-400 mb-4">No models found.</p>
+          <div className="glass-card p-12 text-center">
+            <p className="text-[rgb(var(--text-muted))] mb-4">No models found.</p>
             <Link
               href="/retailer/models/new"
-              className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-emerald-700"
+              className="btn-accent px-4 py-2 rounded-lg text-sm"
             >
               Upload your first model
             </Link>
@@ -176,17 +176,17 @@ export default function ModelListPage() {
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
+              className="px-3 py-1.5 text-sm border border-[rgba(var(--glass-border))] rounded-lg text-[rgb(var(--text-secondary))] disabled:opacity-50 hover:bg-white/5 transition-colors"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-300">
+            <span className="text-sm text-[rgb(var(--text-muted))]">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm border border-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
+              className="px-3 py-1.5 text-sm border border-[rgba(var(--glass-border))] rounded-lg text-[rgb(var(--text-secondary))] disabled:opacity-50 hover:bg-white/5 transition-colors"
             >
               Next
             </button>

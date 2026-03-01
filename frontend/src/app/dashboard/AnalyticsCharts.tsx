@@ -16,7 +16,7 @@ import {
 } from "recharts";
 import type { DashboardData } from "@/lib/api/analytics";
 
-const COLORS = ["#6366F1", "#8B5CF6", "#A78BFA", "#C4B5FD", "#818CF8", "#4F46E5"];
+const COLORS = ["#8b5cf6", "#a78bfa", "#c4b5fd", "#f59e0b", "#fbbf24", "#fde68a"];
 
 interface Props {
   data: DashboardData;
@@ -47,36 +47,37 @@ export default function AnalyticsCharts({ data }: Props) {
   return (
     <div className="space-y-6 mb-6">
       {/* Try-Ons Over Time */}
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
           Try-Ons Over Time
         </h2>
         {!hasLineData ? (
-          <div className="h-64 flex items-center justify-center text-gray-500 text-sm">
+          <div className="h-64 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
             No try-on data available for this period.
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={lineData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--glass-border))" />
               <XAxis
                 dataKey="date"
-                stroke="#9CA3AF"
+                stroke="rgb(var(--text-muted))"
                 fontSize={12}
                 tickLine={false}
               />
               <YAxis
-                stroke="#9CA3AF"
+                stroke="rgb(var(--text-muted))"
                 fontSize={12}
                 tickLine={false}
                 allowDecimals={false}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#1F2937",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                  color: "#F9FAFB",
+                  backgroundColor: "rgba(15, 15, 25, 0.85)",
+                  border: "1px solid rgba(var(--glass-border))",
+                  borderRadius: "12px",
+                  color: "rgb(var(--text-primary))",
+                  backdropFilter: "blur(12px)",
                 }}
                 labelFormatter={(label, payload) => {
                   if (payload && payload.length > 0) {
@@ -88,9 +89,9 @@ export default function AnalyticsCharts({ data }: Props) {
               <Line
                 type="monotone"
                 dataKey="count"
-                stroke="#6366F1"
+                stroke="#8b5cf6"
                 strokeWidth={2}
-                dot={{ fill: "#6366F1", r: 4 }}
+                dot={{ fill: "#8b5cf6", r: 4 }}
                 activeDot={{ r: 6 }}
               />
             </LineChart>
@@ -101,21 +102,21 @@ export default function AnalyticsCharts({ data }: Props) {
       {/* Category Distribution + AI Provider */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Distribution */}
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="glass-card p-6">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
             Category Distribution
           </h2>
           {!hasCategoryData ? (
-            <div className="h-56 flex items-center justify-center text-gray-500 text-sm">
+            <div className="h-56 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
               No category data available.
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={categoryData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--glass-border))" />
                 <XAxis
                   dataKey="name"
-                  stroke="#9CA3AF"
+                  stroke="rgb(var(--text-muted))"
                   fontSize={11}
                   tickLine={false}
                   interval={0}
@@ -124,17 +125,18 @@ export default function AnalyticsCharts({ data }: Props) {
                   height={50}
                 />
                 <YAxis
-                  stroke="#9CA3AF"
+                  stroke="rgb(var(--text-muted))"
                   fontSize={12}
                   tickLine={false}
                   allowDecimals={false}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1F2937",
-                    border: "1px solid #374151",
-                    borderRadius: "8px",
-                    color: "#F9FAFB",
+                    backgroundColor: "rgba(15, 15, 25, 0.85)",
+                    border: "1px solid rgba(var(--glass-border))",
+                    borderRadius: "12px",
+                    color: "rgb(var(--text-primary))",
+                    backdropFilter: "blur(12px)",
                   }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
@@ -151,12 +153,12 @@ export default function AnalyticsCharts({ data }: Props) {
         </div>
 
         {/* AI Provider Distribution */}
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="glass-card p-6">
+          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
             AI Provider Usage
           </h2>
           {!hasAiData ? (
-            <div className="h-56 flex items-center justify-center text-gray-500 text-sm">
+            <div className="h-56 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
               No AI provider data available.
             </div>
           ) : (
@@ -184,10 +186,11 @@ export default function AnalyticsCharts({ data }: Props) {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1F2937",
-                      border: "1px solid #374151",
-                      borderRadius: "8px",
-                      color: "#F9FAFB",
+                      backgroundColor: "rgba(15, 15, 25, 0.85)",
+                      border: "1px solid rgba(var(--glass-border))",
+                      borderRadius: "12px",
+                      color: "rgb(var(--text-primary))",
+                      backdropFilter: "blur(12px)",
                     }}
                   />
                 </PieChart>

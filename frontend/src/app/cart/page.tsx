@@ -43,12 +43,12 @@ export default function CartPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-white mb-4">Please log in to view your cart</h2>
+      <div className="min-h-screen bg-[rgb(var(--bg-primary))] flex items-center justify-center">
+        <div className="glass-card p-8 text-center">
+          <h2 className="text-xl font-bold text-[rgb(var(--text-primary))] mb-4">Please log in to view your cart</h2>
           <Link
             href="/login"
-            className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
+            className="btn-primary px-6 py-3 rounded-lg inline-block"
           >
             Login
           </Link>
@@ -58,11 +58,11 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Shopping Cart</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))]">Shopping Cart</h1>
           {items.length > 0 && (
             <button
               onClick={() => clear()}
@@ -74,19 +74,19 @@ export default function CartPage() {
         </div>
 
         {error && (
-          <div className="bg-red-900/30 border border-red-800 text-red-300 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-900/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg mb-6 backdrop-blur-sm">
             {error}
           </div>
         )}
 
         {loading && items.length === 0 ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
           </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="glass-card p-12 text-center">
             <svg
-              className="w-16 h-16 text-gray-600 mx-auto mb-4"
+              className="w-16 h-16 text-[rgb(var(--text-muted))] mx-auto mb-4"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -98,11 +98,11 @@ export default function CartPage() {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
               />
             </svg>
-            <h2 className="text-xl font-semibold text-gray-400 mb-2">Your cart is empty</h2>
-            <p className="text-gray-500 mb-6">Browse products and add them to your cart</p>
+            <h2 className="text-xl font-semibold text-[rgb(var(--text-secondary))] mb-2">Your cart is empty</h2>
+            <p className="text-[rgb(var(--text-muted))] mb-6">Browse products and add them to your cart</p>
             <Link
               href="/products"
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors inline-block"
+              className="btn-accent px-6 py-3 rounded-lg inline-block"
             >
               Browse Products
             </Link>
@@ -125,12 +125,12 @@ export default function CartPage() {
                 return (
                   <div
                     key={`${item.product_id}-${item.size}`}
-                    className="bg-gray-900 border border-gray-800 rounded-xl p-4 flex gap-4"
+                    className="glass-card p-4 flex gap-4"
                   >
                     {/* Product Image */}
                     <div className="flex-shrink-0">
                       <Link href={`/products/${item.product_id}`}>
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-gray-800 rounded-lg overflow-hidden">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[rgb(var(--bg-secondary))] rounded-lg overflow-hidden">
                           {item.product_image ? (
                             <img
                               src={item.product_image}
@@ -138,7 +138,7 @@ export default function CartPage() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-600">
+                            <div className="w-full h-full flex items-center justify-center text-[rgb(var(--text-muted))]">
                               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
@@ -149,8 +149,8 @@ export default function CartPage() {
                       {/* Try-on image thumbnail */}
                       {item.tryon_image_url && (
                         <div className="mt-2 w-24 sm:w-28">
-                          <p className="text-[10px] text-gray-500 mb-1">Try-on preview</p>
-                          <div className="w-full h-16 bg-gray-800 rounded overflow-hidden">
+                          <p className="text-[10px] text-[rgb(var(--text-muted))] mb-1">Try-on preview</p>
+                          <div className="w-full h-16 bg-[rgb(var(--bg-secondary))] rounded overflow-hidden">
                             <img
                               src={item.tryon_image_url}
                               alt="Try-on"
@@ -164,15 +164,15 @@ export default function CartPage() {
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       <Link href={`/products/${item.product_id}`}>
-                        <h3 className="text-white font-medium hover:text-indigo-400 transition-colors truncate">
+                        <h3 className="text-[rgb(var(--text-primary))] font-medium hover:text-violet-400 transition-colors truncate">
                           {item.product_name}
                         </h3>
                       </Link>
-                      <p className="text-gray-400 text-sm mt-1">
-                        Size: <span className="text-gray-300">{item.size}</span>
+                      <p className="text-[rgb(var(--text-secondary))] text-sm mt-1">
+                        Size: <span className="text-[rgb(var(--text-primary))]">{item.size}</span>
                       </p>
-                      <p className="text-gray-400 text-sm">
-                        Price: <span className="text-gray-300">{itemPrice}</span>
+                      <p className="text-[rgb(var(--text-secondary))] text-sm">
+                        Price: <span className="text-[rgb(var(--text-primary))]">{itemPrice}</span>
                       </p>
 
                       {/* Quantity Controls */}
@@ -183,18 +183,18 @@ export default function CartPage() {
                               ? updateItem(item.product_id, { quantity: item.quantity - 1 })
                               : removeItem(item.product_id)
                           }
-                          className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:border-indigo-500 flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg glass-input flex items-center justify-center text-[rgb(var(--text-secondary))] hover:border-violet-500/50 transition-colors"
                         >
                           -
                         </button>
-                        <span className="text-white font-medium w-8 text-center">
+                        <span className="text-[rgb(var(--text-primary))] font-medium w-8 text-center">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() =>
                             updateItem(item.product_id, { quantity: item.quantity + 1 })
                           }
-                          className="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:border-indigo-500 flex items-center justify-center transition-colors"
+                          className="w-8 h-8 rounded-lg glass-input flex items-center justify-center text-[rgb(var(--text-secondary))] hover:border-violet-500/50 transition-colors"
                         >
                           +
                         </button>
@@ -203,7 +203,7 @@ export default function CartPage() {
 
                     {/* Price + Remove */}
                     <div className="flex flex-col items-end justify-between">
-                      <p className="text-white font-semibold">{itemTotal}</p>
+                      <p className="text-[rgb(var(--text-primary))] font-semibold">{itemTotal}</p>
                       <button
                         onClick={() => removeItem(item.product_id)}
                         className="text-sm text-red-400 hover:text-red-300 transition-colors"
@@ -218,26 +218,26 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div>
-              <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 sticky top-24">
-                <h2 className="text-lg font-semibold text-white mb-4">Order Summary</h2>
+              <div className="glass-card-lg p-6 sticky top-24">
+                <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Items ({totalItems})</span>
-                    <span className="text-gray-300">{formattedTotal}</span>
+                    <span className="text-[rgb(var(--text-secondary))]">Items ({totalItems})</span>
+                    <span className="text-[rgb(var(--text-primary))]">{formattedTotal}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Shipping</span>
+                    <span className="text-[rgb(var(--text-secondary))]">Shipping</span>
                     <span className="text-green-400">Free</span>
                   </div>
-                  <div className="border-t border-gray-800 pt-3 flex justify-between">
-                    <span className="text-white font-semibold">Total</span>
-                    <span className="text-white font-bold text-lg">{formattedTotal}</span>
+                  <div className="border-t border-[rgba(var(--glass-border))] pt-3 flex justify-between">
+                    <span className="text-[rgb(var(--text-primary))] font-semibold">Total</span>
+                    <span className="text-[rgb(var(--text-primary))] font-bold text-lg">{formattedTotal}</span>
                   </div>
                 </div>
 
                 <button
-                  className="w-full bg-indigo-600 text-white py-3 rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+                  className="btn-accent w-full py-3 rounded-xl font-medium"
                   onClick={() => alert("Checkout functionality coming soon!")}
                 >
                   Proceed to Checkout
@@ -245,7 +245,7 @@ export default function CartPage() {
 
                 <Link
                   href="/products"
-                  className="block text-center text-sm text-indigo-400 hover:text-indigo-300 mt-4 transition-colors"
+                  className="block text-center text-sm text-violet-400 hover:text-violet-300 mt-4 transition-colors"
                 >
                   Continue Shopping
                 </Link>
