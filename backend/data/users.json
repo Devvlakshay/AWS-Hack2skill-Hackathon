@@ -68,5 +68,35 @@
     "created_at": "2026-03-01T18:49:43.794530+00:00",
     "updated_at": "2026-03-01T18:49:43.794536+00:00",
     "_id": "6546103f3e684ffa86c54369f093219c"
+  },
+  {
+    "name": "Yash Tiwari",
+    "email": "yashtiwari9182@gmail.com",
+    "hashed_password": "$2b$12$unMzuoxbNY/3MAVvZ63Av./SBdYdDHeyTBRXSdAw7BYmpKMNKk4oG",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-03-02T06:58:29.269346+00:00",
+    "updated_at": "2026-03-02T06:58:29.269352+00:00",
+    "_id": "7e3de0b6a2b044659fb5cc254a8cf039"
+  },
+  {
+    "name": "YASH TIWARI",
+    "email": "yashtiwari918@gmail.com",
+    "hashed_password": "$2b$12$28rK7ZU2dDz5zG.dIURUO.83iEgSXbeVLqNmGqD8gFsWe2PQ3VxIq",
+    "phone": null,
+    "role": "customer",
+    "created_at": "2026-03-02T07:40:53.864546+00:00",
+    "updated_at": "2026-03-02T07:40:53.864550+00:00",
+    "_id": "266646bc27054d9cb27b6da6f570dad7"
+  },
+  {
+    "name": "Aragya",
+    "email": "yrevash@gmail.com",
+    "hashed_password": "$2b$12$xRdwXJ6gBYmeVJ6WnMEka.Sp3QbJC8lJTFQSmT2XXLfpTVgd1g5pW",
+    "phone": null,
+    "role": "retailer",
+    "created_at": "2026-03-02T07:55:30.525532+00:00",
+    "updated_at": "2026-03-02T07:55:30.525537+00:00",
+    "_id": "742372553db044f190a9def4dc941053"
   }
 ]

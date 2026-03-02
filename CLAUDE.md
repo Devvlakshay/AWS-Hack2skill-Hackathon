@@ -1,438 +1,352 @@
-# FitView AI - Project Guide
+# FitView AI — Claude Code Guide
 
 ## Project Overview
 
-FitView AI is an AI-powered virtual try-on platform for the Indian retail clothing market. Customers select brand-provided models and garments, and the system generates realistic try-on images using generative AI (Nano Banana + Gemini Image).
+**FitView AI** is an AI-powered virtual try-on platform for the Indian retail clothing market.
+Customers select brand-provided models, pick a garment, and receive a photorealistic AI-generated
+try-on image in under 10 seconds.
 
-**Hackathon**: AI for Bharat 2025 - Professional Track
-**Problem Statement**: 01 - AI for Retail, Commerce & Market Intelligence
+**Hackathon**: AI for Bharat 2025 — Professional Track
+**Problem Statement**: 01 — AI for Retail, Commerce & Market Intelligence
+**Brand tagline**: "Try Before You Buy"
 
-## Tech Stack
+---
 
-- **Frontend**: Next.js 14 (App Router), React 18, TailwindCSS, Zustand
-- **Backend**: FastAPI (Python 3.11+), async
-- **Database**: MongoDB Atlas (NoSQL)
-- **Cache**: Redis 7+ (sessions, try-on results, product catalog, analytics)
-- **Storage**: AWS S3 / Cloudinary (images + CDN)
-- **AI**: Nano Banana (Google) for virtual try-on, Gemini Image for style variations
-- **Auth**: JWT + bcrypt, role-based (Customer, Retailer, Admin)
+## Repository Layout
 
-## Python Libraries (Backend)
-
-| Library | Purpose |
-|---------|---------|   
-| `fastapi` + `uvicorn` | Web framework + ASGI server |
-| `motor` | Async MongoDB driver |
-| `aioredis` | Async Redis client |
-| `python-jose` | JWT token generation/validation |
-| `passlib` + `bcrypt` | Password hashing |
-| `pydantic` | Data validation, schemas, settings |
-| `httpx` | Async HTTP client for AI API calls |
-| `Pillow` | Image resize, format conversion, enhancement |
-| `OpenCV` (`cv2`) | Advanced image processing, color correction |
-| `rembg` | AI-powered background removal (U2-Net model) |
-| `numpy` | Image array manipulation for preprocessing |
-| `scikit-learn` | Collaborative/content-based filtering for recommendations |
-| `pandas` | Analytics aggregation, time-series analysis |
-| `boto3` | AWS S3 uploads |
-| `cloudinary` | Cloudinary SDK (alternative to S3) |
-| `reportlab` / `weasyprint` | PDF report generation |
-| `celery` | Background task processing (heavy jobs) |
-
-## Project Structure (Target)
-
-```text
-├── frontend/                 # Next.js 14 application
-│   ├── app/                  # App Router pages
-│   ├── components/           # Reusable UI components
-│   ├── lib/                  # Utilities, API client, stores (Zustand)
-│   └── public/               # Static assets
-├── backend/                  # FastAPI application
-│   ├── app/
-│   │   ├── main.py           # FastAPI app entry point
-│   │   ├── api/v1/           # API route handlers
-│   │   ├── services/         # Business logic
-│   │   │   ├── auth_service.py          # JWT, bcrypt, sessions
-│   │   │   ├── product_service.py       # CRUD, search, caching
-│   │   │   ├── model_service.py         # Model image management
-│   │   │   ├── tryon_service.py         # ★ CORE AI: preprocess → Nano Banana → postprocess
-│   │   │   ├── style_service.py         # ★ AI: Gemini Image style variations
-│   │   │   ├── recommendation_service.py# ★ AI: size/style recommendations
-│   │   │   └── analytics_service.py     # Data aggregation, forecasting
-│   │   ├── models/           # Pydantic schemas + MongoDB document models
-│   │   ├── core/             # Config, security, dependencies
-│   │   │   ├── config.py     # Pydantic Settings (.env loading)
-│   │   │   ├── security.py   # JWT helpers, password hashing
-│   │   │   └── deps.py       # Dependency injection (get_db, get_current_user)
-│   │   └── utils/
-│   │       ├── image_processing.py  # ★ Pillow/OpenCV/rembg preprocessing
-│   │       ├── ai_clients.py        # ★ httpx clients for Nano Banana & Gemini APIs
-│   │       ├── cache.py             # Redis helpers
-│   │       └── storage.py           # S3/Cloudinary upload helpers
-│   ├── tests/
-│   └── requirements.txt
+```
+AWS-Hack2skill-Hackathon/
+├── frontend/          ← Next.js 15 app (this session's working dir)
+├── backend/           ← FastAPI Python app
+├── docs/              ← Production guide
+├── CLAUDE.md          ← This file (loaded into every session)
+├── frontend.md        ← Frontend deep-dive reference
 ├── design.md
-├── requirements.md
-└── CLAUDE.md
+└── requirements.md
 ```
 
-## Coding Conventions
+---
 
-- **Python**: Follow PEP 8, use type hints, async/await for I/O
-- **JavaScript/TypeScript**: Use TypeScript throughout frontend, prefer named exports
-- **API**: RESTful, versioned (`/api/v1/`), consistent error responses
-- **Commits**: Conventional commits (feat:, fix:, chore:, docs:)
-- **Environment**: Use `.env` files for secrets, never commit them
+## Tech Stack (Current Actual)
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15.5, React 19, TailwindCSS 3, TypeScript 5.7 |
+| State | Zustand 5 |
+| Animations | Framer Motion 11 |
+| 3D | @react-three/fiber 9.5, @react-three/drei 10.7, Three.js 0.170 |
+| Charts | Recharts 2 |
+| Toasts | react-hot-toast 2.4 |
+| Package manager | **bun** (always use `bun`, never npm/yarn) |
+| Backend | FastAPI + uvicorn, Python 3.12+ |
+| Database | MongoDB Atlas (motor async driver) |
+| Cache | Redis 7+ (redis.asyncio — NOT aioredis) |
+| Storage | AWS S3 + CloudFront CDN |
+| AI — Try-On | Google Gemini (gemini-2.0-flash / image models) |
+| AI — Chat | Amazon Bedrock Claude 3.5 (optional fallback) |
+| AI — Image | Pillow, OpenCV (cv2), rembg (U2-Net), numpy |
+| Auth | JWT (python-jose) + bcrypt (passlib), role-based |
 
 ---
 
-## Implementation Phases
+## Running the Project
 
-### Phase 1: Foundation & Project Setup (Days 1-3)
+```bash
+# Frontend (from /frontend)
+bun --bun next dev          # dev server → http://localhost:3000
+bun --bun next build        # production build
+bun --bun next start        # serve production build
 
-**Goal**: Get both frontend and backend running with basic auth.
-
-**No AI in this phase** — pure infrastructure.
-
-**Python/FastAPI work**:
-
-- FastAPI app with async setup, CORS middleware, health check endpoint
-- MongoDB connection using `motor` (async driver)
-- Redis connection using `aioredis`
-- User model with Pydantic schemas (registration, login, response)
-- Auth endpoints: `POST /register`, `POST /login`, `GET /me`
-- JWT token generation with `python-jose`, password hashing with `passlib` + `bcrypt`
-- Role-based access control middleware (Customer, Retailer, Admin)
-- Environment config via Pydantic `BaseSettings` loading from `.env`
-
-**Frontend work**:
-
-- Initialize Next.js 14 with App Router, TailwindCSS, TypeScript
-- Build pages: Landing, Login, Register
-- Set up Zustand store for auth state
-- API client utility with JWT token handling
-
-**Deliverables**: Working auth flow end-to-end, both servers running.
-
----
-
-### Phase 2: Product & Model Management (Days 4-7)
-
-**Goal**: Retailers can upload models and manage product catalog.
-
-**Light AI** — image validation with Pillow, but no generative AI yet.
-
-**Python/FastAPI work**:
-
-- Product Service: CRUD endpoints with MongoDB queries
-  - MongoDB text indexes on `name`, `description`, `tags` for search
-  - Category-based filtering, pagination, sorting
-- Model Service: CRUD for brand-provided model images + metadata
-  - Metadata: body type, measurements, skin tone, height
-- Image upload pipeline:
-  - `boto3` for S3 uploads OR `cloudinary` SDK
-  - Generate multiple resolutions (original, thumbnail, web-optimized) using `Pillow`
-- Image validation using `Pillow`: check format, resolution (min 1024x1024), quality
-- Size chart management per product
-- Redis caching: product catalog (6h TTL), model data (6h TTL)
-
-**Frontend work**:
-
-- Retailer dashboard layout
-- Product management page (add/edit/delete products, upload images)
-- Model upload page (upload model images with metadata form)
-
-**Deliverables**: Retailer can sign in, upload models, add/edit/delete products.
-
----
-
-### Phase 3: Core Virtual Try-On Engine (Days 8-14) — HEAVY AI PHASE ✅ COMPLETE
-
-**Goal**: Working end-to-end try-on generation flow. This is the **core product**.
-
-**Status**: IMPLEMENTED. All backend services, API endpoints, and frontend pages are complete.
-
-**Python AI Pipeline** (`tryon_service.py` + `image_processing.py` + `ai_clients.py`):
-
-```text
-Step 1: IMAGE PREPROCESSING (Python + Pillow + OpenCV + rembg)
-├── Resize model image to 1024x1024 using Pillow
-├── Resize garment image to minimum 512x512
-├── Normalize pixel values to RGB format using numpy
-├── Background removal on garment using rembg (U2-Net AI model)
-└── Image segmentation for clean garment isolation
-
-Step 2: AI GENERATION (Nano Banana API via httpx)
-├── Build API request with preprocessed model + garment images
-├── Send async POST request using httpx client
-├── Nano Banana generates photorealistic try-on (~8-10 sec)
-├── Handle timeouts (15s), retries (max 2), and error fallbacks
-└── Receive generated try-on image in response
-
-Step 3: POST-PROCESSING (Python + Pillow + OpenCV)
-├── Quality enhancement: sharpening, contrast adjustment via Pillow
-├── Color correction to match original garment colors using OpenCV
-├── Artifact removal / boundary smoothing using OpenCV
-├── Final resize and WebP format optimization
-└── Upload result to S3/Cloudinary using boto3/cloudinary SDK
-
-Step 4: CACHING & STORAGE
-├── Cache result in Redis: key tryon:{model_id}:{product_id} (1h TTL)
-├── Save TryOn Session document in MongoDB (user_id, model_id, product_id, result_url, timestamp)
-└── Return CDN URL to frontend
+# Backend (from /backend)
+uvicorn app.main:app --reload --port 8000   # → http://localhost:8000
 ```
 
-**Python code structure for this phase**:
+---
 
-```python
-# utils/image_processing.py
-async def preprocess_model_image(image_bytes) -> np.ndarray:
-    """Resize to 1024x1024, normalize RGB"""
+## Key Conventions
 
-async def preprocess_garment_image(image_bytes) -> np.ndarray:
-    """Resize, remove background with rembg, normalize"""
+### General
+- **Package manager**: Always `bun`. Never `npm install` or `yarn`.
+- **Never commit** `.env` files or API keys.
+- **Conventional commits**: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`
+- All AI API calls must have graceful fallbacks (Nano Banana / Gemini down → composite image).
 
-async def postprocess_tryon_image(image_bytes) -> bytes:
-    """Enhance quality, correct colors, remove artifacts, convert to WebP"""
+### Frontend
+- TypeScript throughout — no `any` unless absolutely necessary and commented.
+- `"use client"` required for anything using hooks, event handlers, or browser APIs.
+- `dynamic(() => import(...), { ssr: false })` must live inside a `"use client"` wrapper, never in a Server Component.
+- Use `react-hot-toast` for ALL user feedback — zero `alert()` / `window.alert()` calls.
+- Zustand stores are in `src/lib/store/`. API functions in `src/lib/api/`.
+- API base URL comes from `process.env.NEXT_PUBLIC_API_URL` (fallback `http://localhost:8000`).
 
-# utils/ai_clients.py
-class NanoBananaClient:
-    """Async httpx client for Nano Banana virtual try-on API"""
-    async def generate_tryon(self, model_image, garment_image) -> bytes
-
-# services/tryon_service.py
-class TryOnService:
-    async def generate(self, model_id, product_id, user_id) -> TryOnResult:
-        # 1. Check Redis cache first
-        # 2. Fetch model + product images from S3
-        # 3. Preprocess both images
-        # 4. Call Nano Banana API
-        # 5. Postprocess result
-        # 6. Upload to S3, save to MongoDB, cache in Redis
-        # 7. Return result URL
-```
-
-**Frontend work**:
-
-- Customer-facing model selection UI (browse, filter by body type/size/skin tone)
-- Product browsing UI (categories, search, filters, sorting)
-- Try-on result viewer: zoom/pan controls, before/after comparison
-- Loading states with progress indicators for the 8-10s generation wait
-- Try-on history page: past results, mark favorites
-
-**Deliverables**: Customer selects model + garment → gets AI-generated try-on image. ✅
-
-**Phase 3 Implementation Summary (Completed)**:
-- **Backend**: `models/tryon.py` (schemas), `utils/image_processing.py` (Pillow/OpenCV/rembg preprocessing & postprocessing), `utils/ai_clients.py` (NanoBananaClient async httpx), `services/tryon_service.py` (full pipeline with cache, fallback composite), `api/v1/endpoints/tryon.py` (POST /tryon, GET /tryon/history, GET /tryon/{id}, PATCH /tryon/{id}/favorite)
-- **Frontend**: `lib/api/tryon.ts` (API functions), `lib/store/tryonStore.ts` (Zustand store), `app/tryon/page.tsx` (3-step try-on flow: model select → garment select → result viewer with before/after), `app/tryon/history/page.tsx` (history with favorites & pagination)
-- **Integration**: Product detail "Try On Virtually" button links to /tryon?product={id}, Dashboard links to try-on, Navbar includes Try-On link
-- **AI Fallback**: When Nano Banana API is unavailable, creates composite overlay image as graceful degradation
+### Backend
+- Async everywhere — `motor` for MongoDB, `redis.asyncio` for Redis, `httpx` for external APIs.
+- `aioredis` is NOT used (removed, incompatible with Python 3.12). Use `redis.asyncio`.
+- PEP 8, type hints on all functions.
+- Pydantic v2 validation errors return `detail` as **array** `[{type, loc, msg, input}]` — not a string.
+- JWT `verify_token()` checks `payload.get("type") == "access"` — refresh tokens rejected.
+- `datetime.now(timezone.utc)` — never `datetime.utcnow()` (deprecated).
 
 ---
 
-### Phase 4: Intelligence Layer (Days 15-20) — AI ENHANCEMENT PHASE
+## User Roles
 
-**Goal**: Style variations, size/style recommendations, cart/wishlist.
-
-**4a. Gemini Image Integration** (`style_service.py` + `ai_clients.py`):
-
-```python
-# utils/ai_clients.py
-class GeminiImageClient:
-    """Async httpx client for Gemini Image style generation API"""
-
-    # Prompt engineering for different contexts
-    STYLE_PROMPTS = {
-        "casual":  "Show this outfit in a casual street setting, natural lighting...",
-        "formal":  "Show this outfit in a formal office environment...",
-        "party":   "Show this outfit in an evening party setting, warm lighting..."
-    }
-
-    async def generate_style_variation(self, base_image, style: str) -> bytes
-    async def generate_color_variation(self, garment_image, target_color) -> bytes
-```
-
-**4b. Size Recommendation** (`recommendation_service.py` + `scikit-learn`):
-
-```python
-# Collaborative filtering approach
-# Input: user body measurements + product size chart + historical feedback from similar users
-# Method: users with similar measurements who bought this product chose size X
-# Output: recommended size + confidence score (e.g., "M — 87% confidence")
-
-class SizeRecommendationEngine:
-    async def recommend(self, user_id, product_id) -> SizeRecommendation:
-        # 1. Get user measurements from MongoDB
-        # 2. Get product size chart
-        # 3. Find similar users (by measurements) who bought this product
-        # 4. Apply collaborative filtering (scikit-learn NearestNeighbors)
-        # 5. Return size + confidence score
-```
-
-**4c. Style Recommendation** (`recommendation_service.py` + `scikit-learn`):
-
-```python
-# Content-based + collaborative filtering
-# Uses product attributes (color, category, tags, material) as feature vectors
-
-class StyleRecommendationEngine:
-    async def recommend(self, user_id, limit=10) -> list[Product]:
-        # 1. Get user's try-on history from MongoDB
-        # 2. Build feature vectors from tried products (TF-IDF on tags/categories)
-        # 3. Find similar products using cosine similarity (scikit-learn)
-        # 4. Also apply collaborative: "users who tried X also liked Y"
-        # 5. Merge and rank results
-        # 6. Cache in Redis (1h TTL)
-```
-
-**Frontend work**:
-
-- Style variation carousel (casual/formal/party toggle)
-- Size recommendation widget on product page
-- "You may also like" / "Complete the look" sections
-- Shopping cart (with try-on images for tried items)
-- Wishlist functionality
-- Side-by-side garment comparison
-
-**Deliverables**: AI-powered recommendations, style variations, functional cart/wishlist.
+| Role | Capabilities |
+|------|-------------|
+| `customer` | Browse products, try-on, cart, wishlist, purchase |
+| `retailer` | All of customer + upload models/products, analytics dashboard |
+| `admin` | Full access |
 
 ---
 
-### Phase 5: Retailer Analytics Dashboard (Days 21-25) — DATA PROCESSING PHASE
+## API Endpoints (All 46+)
 
-**Goal**: Full analytics with real-time tracking and export.
+### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register (returns JWT) |
+| POST | `/api/v1/auth/login` | Login (returns JWT) |
+| GET | `/api/v1/auth/me` | Current user profile |
+| POST | `/api/v1/auth/refresh` | Refresh access token |
+| GET | `/api/v1/users/me/export` | DPDPA data export |
+| DELETE | `/api/v1/users/me` | Account deletion |
 
-**Python/FastAPI work** (`analytics_service.py` + `pandas`):
+### Products
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/products` | List/search/filter (paginated) |
+| POST | `/api/v1/products` | Create product (retailer) |
+| GET | `/api/v1/products/{id}` | Product detail |
+| PUT | `/api/v1/products/{id}` | Update product (retailer) |
+| DELETE | `/api/v1/products/{id}` | Soft-delete product |
 
-```python
-class AnalyticsService:
-    # Event tracking — buffer in memory, batch write to MongoDB
-    event_buffer: list = []  # in-memory buffer
+### Models (Fashion Models)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/models` | List models (filterable) |
+| POST | `/api/v1/models` | Upload model (retailer) |
+| GET | `/api/v1/models/{id}` | Model detail |
+| PUT | `/api/v1/models/{id}` | Update model |
+| DELETE | `/api/v1/models/{id}` | Delete model |
 
-    async def track_event(self, event_type, user_id, product_id, metadata):
-        self.event_buffer.append(event)
-        if len(self.event_buffer) >= 100:
-            await self.flush_events()
+### Try-On
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/tryon` | Generate try-on image |
+| GET | `/api/v1/tryon/history` | User's try-on history |
+| GET | `/api/v1/tryon/{id}` | Single session detail |
+| PATCH | `/api/v1/tryon/{id}/favorite` | Toggle favorite |
+| POST | `/api/v1/tryon/style-variation` | Gemini style variation |
 
-    # Runs every 5 minutes via BackgroundTasks or Celery
-    async def flush_events(self):
-        # Aggregate events by retailer/product/date using pandas
-        # Upsert aggregated data into MongoDB Analytics collection
-        # Invalidate Redis analytics cache
+### Cart & Wishlist
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/cart` | Get cart |
+| POST | `/api/v1/cart/items` | Add item |
+| PUT | `/api/v1/cart/items/{id}` | Update qty/size |
+| DELETE | `/api/v1/cart/items/{id}` | Remove item |
+| DELETE | `/api/v1/cart` | Clear cart |
+| GET | `/api/v1/wishlist` | Get wishlist |
+| POST | `/api/v1/wishlist` | Add to wishlist |
+| DELETE | `/api/v1/wishlist/{product_id}` | Remove from wishlist |
 
-    async def get_dashboard_data(self, retailer_id, date_range) -> DashboardData:
-        # Check Redis cache first (30min TTL)
-        # Query MongoDB Analytics collection
-        # Return: try-on counts, conversion rates, popular products,
-        #         model preferences, size distribution
+### Recommendations & Style
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/recommendations/size` | Size recommendation |
+| GET | `/api/v1/recommendations/style` | Style recommendations |
+| POST | `/api/v1/style/variation` | Generate style variation |
 
-    async def get_demand_forecast(self, retailer_id, product_id) -> Forecast:
-        # Simple time-series analysis using pandas
-        # Based on try-on patterns over time
+### Analytics (Retailer)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/analytics/dashboard` | Dashboard data |
+| GET | `/api/v1/analytics/export` | Export CSV/PDF |
+| POST | `/api/v1/analytics/events` | Track event |
 
-    async def export_csv(self, retailer_id, date_range) -> bytes:
-        # Generate CSV using Python csv module
+### Chatbot
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/chatbot/message` | Send message, get response |
+| GET | `/api/v1/chatbot/history` | Conversation history |
+| DELETE | `/api/v1/chatbot/session` | Clear session |
 
-    async def export_pdf(self, retailer_id, date_range) -> bytes:
-        # Generate PDF report using reportlab or weasyprint
+### Health
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Server health (MongoDB + Redis status) |
+
+---
+
+## MongoDB Collections & Indexes
+
+```
+users:            email (unique), role, created_at
+products:         (retailer_id, is_deleted), category, price
+                  text index: name + description + tags
+models:           (retailer_id, is_deleted), body_type, skin_tone
+tryon_sessions:   (user_id, created_at DESC), (retailer_id, created_at DESC)
+                  TTL index: expires_at (90-day auto-deletion)
+carts:            user_id (unique)
+wishlists:        (user_id, product_id) unique
+analytics_events: (event_type, created_at DESC), (user_id, created_at DESC)
+chat_sessions:    user_id (unique), updated_at
+audit_logs:       (user_id, created_at DESC), (action, created_at DESC)
 ```
 
-**Frontend work**:
+---
 
-- Dashboard UI with charts (Recharts or Chart.js)
-- Try-on counts, conversion funnels, popular products
-- Model preference analytics per category
-- Size distribution charts
-- Date range filtering, period-over-period comparison
-- Export buttons (CSV, PDF)
+## Redis Key Patterns & TTLs
 
-**Deliverables**: Retailer sees comprehensive dashboard with actionable insights.
+```
+session:{session_id}                  24h
+tryon:{model_id}:{product_id}         1h
+product:{product_id}                  6h
+products:category:{category}          6h
+model:{model_id}                      6h
+models:retailer:{retailer_id}         6h
+cart:{user_id}                        1h
+wishlist:{user_id}                    6h
+analytics:retailer:{id}:{date}        30min
+chat:{user_id}:history                24h   (list, max 20 messages)
+```
 
 ---
 
-### Phase 6: Polish, Security & Demo Prep (Days 26-30)
+## AI Pipeline (Core Try-On)
 
-**Goal**: Production-ready quality, performance, and demo.
-
-**Python work**:
-
-- Rate limiting middleware: 10 try-ons/min, 5 logins/min per IP
-- Input validation and sanitization across all endpoints
-- Graceful degradation: fallback responses when Nano Banana / Gemini APIs are down
-- TTL index on `tryon_sessions.expires_at` for auto-deletion after 90 days
-- DPDPA compliance endpoints: `GET /api/v1/users/me/export`, `DELETE /api/v1/users/me`
-- Demo data seeding script (sample retailers, products, models, try-on results)
-
-**Frontend work**:
-
-- Mobile-responsive polish (< 640px, 640-1024px, > 1024px breakpoints)
-- Performance: lazy loading, code splitting, image optimization (WebP via Next.js Image)
-- Hindi language support (i18n with `next-intl` or similar)
-- Onboarding tutorial for first-time users
-
-**Both**:
-
-- End-to-end testing of critical flows
-- Documentation and demo preparation
-
-**Deliverables**: Polished, secure, demo-ready application.
-
----
-
-## AI Touchpoints Summary
-
-The project has **3 distinct AI integration points**:
-
-| AI Component | Phase | Python Libraries | Purpose |
-|--------------|-------|------------------|---------|
-| **Nano Banana** (Google) | Phase 3 | `httpx`, `Pillow`, `OpenCV`, `rembg`, `numpy` | Core virtual try-on generation |
-| **Gemini Image** | Phase 4 | `httpx`, `Pillow` | Style/context variations (casual, formal, party) |
-| **ML Recommendations** | Phase 4 | `scikit-learn`, `numpy`, `pandas` | Size & style suggestions via collaborative/content filtering |
-
-Supporting AI utilities:
-
-- `rembg` — uses U2-Net deep learning model for background removal (preprocessing step)
-- `OpenCV` — color correction, artifact removal, boundary smoothing (postprocessing step)
+```
+User selects model + garment
+        ↓
+1. CHECK REDIS CACHE  →  hit: return cached URL immediately
+        ↓ miss
+2. FETCH IMAGES  from S3/Cloudinary (model 1024×1024, garment 512×512+)
+        ↓
+3. PREPROCESS
+   • Pillow: resize, normalize RGB
+   • rembg (U2-Net): remove garment background
+   • numpy: pixel array manipulation
+        ↓
+4. AI GENERATION
+   • Primary:  Gemini Image API (httpx async, 15s timeout, 2 retries)
+   • Fallback: AWS Bedrock Claude Vision
+   • Final:    Composite overlay (Pillow)
+        ↓
+5. POSTPROCESS
+   • Pillow: sharpen, contrast
+   • OpenCV: color correction, artifact removal, boundary smooth
+   • Convert to WebP
+        ↓
+6. STORE & CACHE
+   • Upload to S3, get CDN URL
+   • Cache in Redis (1h TTL)
+   • Save TryOnSession to MongoDB
+        ↓
+7. RETURN CDN URL  (~8–10 seconds total)
+```
 
 ---
 
-## Key API Endpoints (Reference)
+## Environment Variables
 
-| Method | Endpoint | Service | Description |
-|--------|----------|---------|-------------|
-| POST | /api/v1/auth/register | Auth | User registration |
-| POST | /api/v1/auth/login | Auth | Login, returns JWT |
-| GET | /api/v1/products | Product | List/search products |
-| POST | /api/v1/products | Product | Create product (retailer) |
-| GET | /api/v1/models | Model | List models with filters |
-| POST | /api/v1/models | Model | Upload model (retailer) |
-| POST | /api/v1/tryon | TryOn | Generate try-on image |
-| GET | /api/v1/tryon/history | TryOn | User's try-on history |
-| POST | /api/v1/tryon/style-variation | TryOn | Generate style variation |
-| GET | /api/v1/recommendations/size | Recommendation | Size recommendation |
-| GET | /api/v1/recommendations/style | Recommendation | Style recommendation |
-| GET | /api/v1/analytics/dashboard | Analytics | Retailer dashboard data |
-| GET | /api/v1/analytics/export | Analytics | Export reports |
+### Backend `.env`
+```env
+# App
+APP_NAME=FitView AI
+DEBUG=false
+API_V1_PREFIX=/api/v1
+BASE_URL=http://localhost:8000
 
-## MongoDB Collections
+# Auth
+JWT_SECRET_KEY=<generate: python -c "import secrets; print(secrets.token_urlsafe(32))">
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-- **users**: indexes on `email` (unique), `role`, `created_at`
-- **models**: indexes on `retailer_id`, `body_type`, `is_active`
-- **products**: indexes on `retailer_id`, `category`, text index on `name`+`description`+`tags`
-- **tryon_sessions**: indexes on `user_id`, `product_id`, `created_at`; TTL on `expires_at` (90 days)
-- **analytics**: indexes on `date`+`retailer_id`, `date`+`product_id`
+# MongoDB Atlas
+MONGODB_URL=mongodb+srv://user:pass@cluster.mongodb.net/fitview?retryWrites=true
+MONGODB_DB_NAME=fitview_prod
 
-## Redis Key Patterns
+# Redis
+REDIS_URL=redis://localhost:6379
 
-- `session:{session_id}` — 24h TTL
-- `tryon:{model_id}:{product_id}` — 1h TTL
-- `product:{product_id}` — 6h TTL
-- `analytics:retailer:{retailer_id}:{date}` — 30min TTL
+# AWS
+AWS_REGION=ap-south-1
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+AWS_S3_BUCKET=fitview-assets
+CLOUDFRONT_URL=https://cdn.fitview.ai
+
+# AI
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.0-flash
+GEMINI_IMAGE_MODEL=gemini-3.1-flash-image-preview
+USE_BEDROCK=false
+BEDROCK_REGION=us-east-1
+BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+BEDROCK_CHAT_MODEL_ID=anthropic.claude-3-5-haiku-20241022
+
+# Security
+ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+### Frontend `.env.local`
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+---
+
+## Known Bugs Fixed (Do Not Re-Introduce)
+
+1. **aioredis on Python 3.12** — use `redis.asyncio` (from `redis` package), not `aioredis`.
+2. **Pydantic v2 detail array** — `error.response.data.detail` is an array, extract `.msg` from each item.
+3. **`datetime.utcnow()`** — always use `datetime.now(timezone.utc)` instead.
+4. **JWT type check** — `verify_token()` must reject refresh tokens used as access tokens.
+5. **`ssr: false` in Server Components** — always wrap `dynamic(..., {ssr:false})` in a `"use client"` file.
+6. **R3F v8 + React 19** — project uses @react-three/fiber **v9.5+** which supports React 19.
+7. **PresentationControls drei v10** — `snap` is `boolean`, `config` prop removed.
+8. **Stale `.next` cache** — if getting 500 after layout changes: `rm -rf .next` then restart.
+9. **Checkout missing hydrate** — `CheckoutPage` must call `hydrate()` in `useEffect` — fixed.
+10. **`clear?.()` in checkout** — `clear` is always defined in cartStore; use `clear()` not `clear?.()`.
+11. **cartStore.updateItem** — must `throw error` after setting error state (matches `addItem` behavior).
+12. **wishlist handleAddToCart** — must show `toast.error(...)` in catch (was silently swallowing errors).
+13. **toggleFavorite state divergence** — optimistic update + revert-on-failure pattern; do not use simple fire-and-forget.
+
+---
+
+## Frontend Architecture Notes
+
+- **Navbar layout (desktop)**: CSS Grid 3-col `1fr auto 1fr` — LEFT: nav links | CENTER: animated FV logo | RIGHT: icons + auth
+- **Logo animation**: framer-motion spring entrance (`[0.34, 1.56, 0.64, 1]` cubic bezier), wiggle on hover, gold ring shimmer
+- **Logo file**: `/public/fitview.png` — white background PNG; wrap in cream pill on dark surfaces
+- **Mobile Navbar**: logo LEFT, cart+hamburger RIGHT; mobile menu slides down with staggered link animations
+- **BottomTabBar**: shown on mobile only (`flex md:hidden`), height `calc(64px + env(safe-area-inset-bottom, 0px))`
+- **Auth guard pattern**: pages call `hydrate()` in `useEffect`, show sign-in card (not hard redirect) when `!isAuthenticated` until hydration resolves
+- **Toast**: all user feedback via `react-hot-toast` — zero `alert()` calls
+
+---
+
+## Security Hardening Done
+
+- Rate limiting: `/auth/login` 5/min, `/tryon` 10/min, `/uploads` 20/min
+- JWT secret: required env var (no default)
+- Debug: defaults to `false`
+- Password: min 12 chars + complexity
+- CORS: loaded from `ALLOWED_ORIGINS` env var
+- Security headers: HSTS, X-Frame-Options, CSP, X-Content-Type-Options
+- EXIF stripping on uploaded images
+- Audit logging (`audit_logs` collection)
+- Input sanitization (bleach)
+- DPDPA compliance: data export + account deletion endpoints
+
+---
 
 ## Important Notes
 
-- Never commit `.env` files or API keys
-- All AI generation (Nano Banana, Gemini Image) depends on external APIs — always handle failures gracefully
-- Images must be preprocessed to 1024x1024 before sending to Nano Banana
-- Use async throughout the backend — `motor` for MongoDB, `aioredis` for Redis, `httpx` for external API calls
-- Mobile-first responsive design with 3 breakpoints
+- Frontend uses **bun** exclusively — `bun --bun next dev/build/start`
+- No dark mode — design is warm cream editorial (light only)
+- No `alert()` anywhere — use `react-hot-toast`
+- No `ParticleBackground` on production pages (replaced with editorial layout)
+- `ThemeToggle` returns `null` — intentionally disabled
+- `ThemeProvider` removed from layout — no longer needed

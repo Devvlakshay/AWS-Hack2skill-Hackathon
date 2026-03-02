@@ -43,14 +43,43 @@ export default function CartPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[rgb(var(--bg-primary))] flex items-center justify-center">
-        <div className="glass-card p-8 text-center">
-          <h2 className="text-xl font-bold text-[rgb(var(--text-primary))] mb-4">Please log in to view your cart</h2>
-          <Link
-            href="/login"
-            className="btn-primary px-6 py-3 rounded-lg inline-block"
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#FAFAF8",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #E8E8E4",
+            borderRadius: "16px",
+            padding: "48px",
+            textAlign: "center",
+            maxWidth: "360px",
+            width: "100%",
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#1a1a1a",
+              marginBottom: "8px",
+            }}
           >
-            Login
+            Sign in to view your cart
+          </h2>
+          <p style={{ color: "#6b6b6b", fontSize: "14px", marginBottom: "24px" }}>
+            Your items are waiting for you.
+          </p>
+          <Link href="/login" className="btn-ink" style={{ display: "inline-block", padding: "12px 32px", textDecoration: "none", fontSize: "14px", fontWeight: 600 }}>
+            Sign In
           </Link>
         </div>
       </div>
@@ -58,15 +87,74 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--bg-primary))]">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#FAFAF8",
+        fontFamily: "'DM Sans', sans-serif",
+      }}
+    >
+      {/* Extra bottom padding on mobile clears the 64px BottomTabBar + breathing room */}
+      <div
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          paddingTop: "48px",
+          paddingLeft: "24px",
+          paddingRight: "24px",
+          // Bottom padding: 96px on mobile (BottomTabBar 64px + 32px room), 48px on sm+
+          paddingBottom: "96px",
+        }}
+        className="sm:!pb-12"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(var(--text-primary))]">Shopping Cart</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: "48px",
+            paddingBottom: "24px",
+            borderBottom: "1px solid #E8E8E4",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                color: "#B8860B",
+                fontSize: "11px",
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                fontWeight: 500,
+                marginBottom: "8px",
+              }}
+            >
+              Review
+            </div>
+            <h1
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "40px",
+                fontWeight: 700,
+                color: "#1a1a1a",
+                margin: 0,
+              }}
+            >
+              Your Cart
+            </h1>
+          </div>
           {items.length > 0 && (
             <button
               onClick={() => clear()}
-              className="text-sm text-red-400 hover:text-red-300 transition-colors"
+              style={{
+                fontSize: "12px",
+                color: "#DC2626",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                letterSpacing: "0.5px",
+                fontFamily: "'DM Sans', sans-serif",
+              }}
             >
               Clear Cart
             </button>
@@ -74,178 +162,393 @@ export default function CartPage() {
         </div>
 
         {error && (
-          <div className="bg-red-900/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg mb-6 backdrop-blur-sm">
+          <div
+            style={{
+              background: "#FEF2F2",
+              border: "1px solid #FECACA",
+              color: "#DC2626",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              fontSize: "14px",
+              marginBottom: "24px",
+            }}
+          >
             {error}
           </div>
         )}
 
         {loading && items.length === 0 ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
+          <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                border: "2px solid #E8E8E4",
+                borderTopColor: "#1a1a1a",
+                animation: "spin 0.8s linear infinite",
+              }}
+            />
           </div>
         ) : items.length === 0 ? (
-          <div className="glass-card p-12 text-center">
-            <svg
-              className="w-16 h-16 text-[rgb(var(--text-muted))] mx-auto mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div
+            style={{
+              background: "#fff",
+              border: "1px solid #E8E8E4",
+              borderRadius: "16px",
+              padding: "80px 24px",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: "80px",
+                height: "80px",
+                margin: "0 auto 24px",
+                borderRadius: "50%",
+                background: "#F5F5F3",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
-              />
-            </svg>
-            <h2 className="text-xl font-semibold text-[rgb(var(--text-secondary))] mb-2">Your cart is empty</h2>
-            <p className="text-[rgb(var(--text-muted))] mb-6">Browse products and add them to your cart</p>
+              <svg className="w-8 h-8" style={{ color: "#B8860B" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+              </svg>
+            </div>
+            <p
+              style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "24px",
+                fontWeight: 600,
+                color: "#1a1a1a",
+                marginBottom: "8px",
+              }}
+            >
+              Your cart is empty
+            </p>
+            <p style={{ color: "#6b6b6b", fontSize: "14px", marginBottom: "32px" }}>
+              Browse our collection and add pieces you love
+            </p>
             <Link
               href="/products"
-              className="btn-accent px-6 py-3 rounded-lg inline-block"
+              className="btn-ink"
+              style={{ display: "inline-block", padding: "12px 32px", textDecoration: "none", fontSize: "14px", fontWeight: 600 }}
             >
-              Browse Products
+              Browse Collection
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div
+            className="grid grid-cols-1 lg:grid-cols-3"
+            style={{ gap: "32px", alignItems: "flex-start" }}
+          >
             {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => {
-                const itemPrice = new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                }).format(item.product_price);
+            <div style={{ gridColumn: "span 2" }}>
+              {/* Column headers */}
+              <div
+                className="hidden lg:grid"
+                style={{
+                  gridTemplateColumns: "1fr auto",
+                  padding: "0 0 12px 0",
+                  marginBottom: "0",
+                  borderBottom: "1px solid #E8E8E4",
+                  gap: "16px",
+                }}
+              >
+                <span style={{ fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", color: "#6b6b6b", fontWeight: 600 }}>
+                  Product
+                </span>
+                <span style={{ fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", color: "#6b6b6b", fontWeight: 600 }}>
+                  Total
+                </span>
+              </div>
 
-                const itemTotal = new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                }).format(item.product_price * item.quantity);
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {items.map((item, idx) => {
+                  const itemPrice = new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(item.product_price);
 
-                return (
-                  <div
-                    key={`${item.product_id}-${item.size}`}
-                    className="glass-card p-4 flex gap-4"
-                  >
-                    {/* Product Image */}
-                    <div className="flex-shrink-0">
-                      <Link href={`/products/${item.product_id}`}>
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 bg-[rgb(var(--bg-secondary))] rounded-lg overflow-hidden">
+                  const itemTotal = new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(item.product_price * item.quantity);
+
+                  return (
+                    <div
+                      key={`${item.product_id}-${item.size}`}
+                      style={{
+                        display: "flex",
+                        gap: "20px",
+                        padding: "24px 0",
+                        borderBottom: idx < items.length - 1 ? "1px solid #E8E8E4" : "none",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      {/* Product Image */}
+                      <Link href={`/products/${item.product_id}`} style={{ flexShrink: 0 }}>
+                        <div
+                          style={{
+                            width: "100px",
+                            height: "120px",
+                            background: "#F5F5F3",
+                            borderRadius: "10px",
+                            overflow: "hidden",
+                            border: "1px solid #E8E8E4",
+                          }}
+                        >
                           {item.product_image ? (
                             <img
                               src={item.product_image}
                               alt={item.product_name}
-                              className="w-full h-full object-cover"
+                              style={{ width: "100%", height: "100%", objectFit: "cover" }}
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[rgb(var(--text-muted))]">
-                              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <svg className="w-8 h-8" style={{ color: "#C8C8C4" }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                             </div>
                           )}
                         </div>
-                      </Link>
-                      {/* Try-on image thumbnail */}
-                      {item.tryon_image_url && (
-                        <div className="mt-2 w-24 sm:w-28">
-                          <p className="text-[10px] text-[rgb(var(--text-muted))] mb-1">Try-on preview</p>
-                          <div className="w-full h-16 bg-[rgb(var(--bg-secondary))] rounded overflow-hidden">
-                            <img
-                              src={item.tryon_image_url}
-                              alt="Try-on"
-                              className="w-full h-full object-cover"
-                            />
+                        {/* Try-on image thumbnail */}
+                        {item.tryon_image_url && (
+                          <div style={{ marginTop: "8px" }}>
+                            <p style={{ fontSize: "10px", color: "#6b6b6b", marginBottom: "4px", letterSpacing: "0.5px" }}>Try-on preview</p>
+                            <div style={{ width: "100px", height: "60px", background: "#F5F5F3", borderRadius: "6px", overflow: "hidden", border: "1px solid #E8E8E4" }}>
+                              <img src={item.tryon_image_url} alt="Try-on" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <Link href={`/products/${item.product_id}`}>
-                        <h3 className="text-[rgb(var(--text-primary))] font-medium hover:text-violet-400 transition-colors truncate">
-                          {item.product_name}
-                        </h3>
+                        )}
                       </Link>
-                      <p className="text-[rgb(var(--text-secondary))] text-sm mt-1">
-                        Size: <span className="text-[rgb(var(--text-primary))]">{item.size}</span>
-                      </p>
-                      <p className="text-[rgb(var(--text-secondary))] text-sm">
-                        Price: <span className="text-[rgb(var(--text-primary))]">{itemPrice}</span>
-                      </p>
 
-                      {/* Quantity Controls */}
-                      <div className="flex items-center gap-3 mt-3">
-                        <button
-                          onClick={() =>
-                            item.quantity > 1
-                              ? updateItem(item.product_id, { quantity: item.quantity - 1 })
-                              : removeItem(item.product_id)
-                          }
-                          className="w-8 h-8 rounded-lg glass-input flex items-center justify-center text-[rgb(var(--text-secondary))] hover:border-violet-500/50 transition-colors"
+                      {/* Details */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <Link href={`/products/${item.product_id}`} style={{ textDecoration: "none" }}>
+                          <h3
+                            style={{
+                              fontSize: "15px",
+                              fontWeight: 600,
+                              color: "#1a1a1a",
+                              marginBottom: "6px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {item.product_name}
+                          </h3>
+                        </Link>
+                        <p style={{ fontSize: "13px", color: "#6b6b6b", marginBottom: "4px" }}>
+                          Size: <span style={{ color: "#1a1a1a", fontWeight: 500 }}>{item.size}</span>
+                        </p>
+                        <p style={{ fontSize: "13px", color: "#6b6b6b", marginBottom: "16px" }}>
+                          Unit price: <span style={{ color: "#1a1a1a", fontWeight: 500 }}>{itemPrice}</span>
+                        </p>
+
+                        {/* Quantity Controls — 36px min touch targets */}
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <button
+                            onClick={() =>
+                              item.quantity > 1
+                                ? updateItem(item.product_id, { quantity: item.quantity - 1 })
+                                : removeItem(item.product_id)
+                            }
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              border: "1px solid #E8E8E4",
+                              borderRadius: "6px 0 0 6px",
+                              background: "#fff",
+                              cursor: "pointer",
+                              fontSize: "18px",
+                              color: "#1a1a1a",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontFamily: "'DM Sans', sans-serif",
+                              transition: "background 0.15s",
+                              flexShrink: 0,
+                            }}
+                            aria-label="Decrease quantity"
+                          >
+                            &minus;
+                          </button>
+                          <span
+                            style={{
+                              width: "44px",
+                              height: "36px",
+                              border: "1px solid #E8E8E4",
+                              borderLeft: "none",
+                              borderRight: "none",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "14px",
+                              fontWeight: 600,
+                              color: "#1a1a1a",
+                              background: "#fff",
+                              userSelect: "none",
+                            }}
+                          >
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              updateItem(item.product_id, { quantity: item.quantity + 1 })
+                            }
+                            style={{
+                              width: "36px",
+                              height: "36px",
+                              border: "1px solid #E8E8E4",
+                              borderRadius: "0 6px 6px 0",
+                              background: "#fff",
+                              cursor: "pointer",
+                              fontSize: "18px",
+                              color: "#1a1a1a",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontFamily: "'DM Sans', sans-serif",
+                              transition: "background 0.15s",
+                              flexShrink: 0,
+                            }}
+                            aria-label="Increase quantity"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Price + Remove */}
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-end",
+                          justifyContent: "space-between",
+                          alignSelf: "stretch",
+                          minWidth: "80px",
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontFamily: "'Playfair Display', serif",
+                            fontSize: "16px",
+                            fontWeight: 700,
+                            color: "#1a1a1a",
+                          }}
                         >
-                          -
-                        </button>
-                        <span className="text-[rgb(var(--text-primary))] font-medium w-8 text-center">
-                          {item.quantity}
-                        </span>
+                          {itemTotal}
+                        </p>
                         <button
-                          onClick={() =>
-                            updateItem(item.product_id, { quantity: item.quantity + 1 })
-                          }
-                          className="w-8 h-8 rounded-lg glass-input flex items-center justify-center text-[rgb(var(--text-secondary))] hover:border-violet-500/50 transition-colors"
+                          onClick={() => removeItem(item.product_id)}
+                          style={{
+                            fontSize: "12px",
+                            color: "#DC2626",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            fontFamily: "'DM Sans', sans-serif",
+                            letterSpacing: "0.3px",
+                          }}
                         >
-                          +
+                          Remove
                         </button>
                       </div>
                     </div>
-
-                    {/* Price + Remove */}
-                    <div className="flex flex-col items-end justify-between">
-                      <p className="text-[rgb(var(--text-primary))] font-semibold">{itemTotal}</p>
-                      <button
-                        onClick={() => removeItem(item.product_id)}
-                        className="text-sm text-red-400 hover:text-red-300 transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
             {/* Order Summary */}
             <div>
-              <div className="glass-card-lg p-6 sticky top-24">
-                <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Order Summary</h2>
+              <div
+                style={{
+                  background: "#fff",
+                  border: "1px solid #E8E8E4",
+                  borderRadius: "16px",
+                  padding: "28px",
+                  position: "sticky",
+                  top: "24px",
+                }}
+              >
+                <h2
+                  style={{
+                    fontSize: "11px",
+                    letterSpacing: "3px",
+                    textTransform: "uppercase",
+                    color: "#B8860B",
+                    fontWeight: 600,
+                    marginBottom: "20px",
+                  }}
+                >
+                  Order Summary
+                </h2>
 
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[rgb(var(--text-secondary))]">Items ({totalItems})</span>
-                    <span className="text-[rgb(var(--text-primary))]">{formattedTotal}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
+                    <span style={{ color: "#6b6b6b" }}>Subtotal ({totalItems} item{totalItems !== 1 ? "s" : ""})</span>
+                    <span style={{ color: "#1a1a1a", fontWeight: 500 }}>{formattedTotal}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[rgb(var(--text-secondary))]">Shipping</span>
-                    <span className="text-green-400">Free</span>
-                  </div>
-                  <div className="border-t border-[rgba(var(--glass-border))] pt-3 flex justify-between">
-                    <span className="text-[rgb(var(--text-primary))] font-semibold">Total</span>
-                    <span className="text-[rgb(var(--text-primary))] font-bold text-lg">{formattedTotal}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px" }}>
+                    <span style={{ color: "#6b6b6b" }}>Shipping</span>
+                    <span style={{ color: "#15803D", fontWeight: 500 }}>Free</span>
                   </div>
                 </div>
 
+                <div
+                  style={{
+                    borderTop: "1px solid #E8E8E4",
+                    paddingTop: "16px",
+                    marginBottom: "24px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                  }}
+                >
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a1a", letterSpacing: "0.5px" }}>Total</span>
+                  <span
+                    style={{
+                      fontFamily: "'Playfair Display', serif",
+                      fontSize: "22px",
+                      fontWeight: 700,
+                      color: "#1a1a1a",
+                    }}
+                  >
+                    {formattedTotal}
+                  </span>
+                </div>
+
                 <button
-                  className="btn-accent w-full py-3 rounded-xl font-medium"
-                  onClick={() => alert("Checkout functionality coming soon!")}
+                  className="btn-ink"
+                  style={{
+                    width: "100%",
+                    padding: "14px 24px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    letterSpacing: "0.5px",
+                  }}
+                  onClick={() => router.push("/checkout")}
                 >
                   Proceed to Checkout
                 </button>
 
                 <Link
                   href="/products"
-                  className="block text-center text-sm text-violet-400 hover:text-violet-300 mt-4 transition-colors"
+                  style={{
+                    display: "block",
+                    textAlign: "center",
+                    fontSize: "13px",
+                    color: "#6b6b6b",
+                    marginTop: "16px",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#B8860B")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b6b")}
                 >
                   Continue Shopping
                 </Link>

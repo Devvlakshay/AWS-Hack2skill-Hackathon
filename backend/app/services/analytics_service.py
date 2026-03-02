@@ -125,7 +125,7 @@ async def get_dashboard_summary(
         product = products_map.get(pid, {})
         top_products.append({
             "product_id": pid,
-            "name": product.get("name", s.get("product_name", "Unknown")),
+            "name": product.get("name", "Unknown"),
             "tryon_count": count,
             "favorite_count": product_fav_counter.get(pid, 0),
         })
@@ -142,7 +142,7 @@ async def get_dashboard_summary(
         model = models_map.get(mid, {})
         top_models.append({
             "model_id": mid,
-            "name": model.get("name", s.get("model_name", "Unknown")),
+            "name": model.get("name", "Unknown"),
             "tryon_count": count,
         })
 

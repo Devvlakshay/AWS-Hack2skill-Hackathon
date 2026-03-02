@@ -88,6 +88,7 @@ export const useCartStore = create<CartState>((set) => ({
         error: error.message || "Failed to update cart item",
         loading: false,
       });
+      throw error;
     }
   },
 

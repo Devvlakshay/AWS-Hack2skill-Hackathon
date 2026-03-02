@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import HTTPException, status
 
-from app.core.security import create_access_token, hash_password, verify_password
+from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password
 from app.models.user import UserCreate, UserLogin, UserResponse, UserInDB, TokenResponse
 from app.utils.json_store import JsonStore
 
@@ -36,9 +36,9 @@ async def register_user(store: JsonStore, user_data: UserCreate) -> TokenRespons
         doc["role"] = doc["role"].value
     inserted_id = await store.insert_one("users", doc)
 
-    access_token = create_access_token(
-        data={"sub": user_data.email, "role": user_data.role.value}
-    )
+    token_data = {"sub": user_data.email, "role": user_data.role.value}
+    access_token = create_access_token(data=token_data)
+    refresh_token = create_refresh_token(data=token_data)
 
     user_response = UserResponse(
         id=inserted_id,
@@ -50,6 +50,7 @@ async def register_user(store: JsonStore, user_data: UserCreate) -> TokenRespons
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=user_response,
     )
 
@@ -68,9 +69,9 @@ async def login_user(store: JsonStore, credentials: UserLogin) -> TokenResponse:
             detail="Invalid email or password",
         )
 
-    access_token = create_access_token(
-        data={"sub": user["email"], "role": user["role"]}
-    )
+    token_data = {"sub": user["email"], "role": user["role"]}
+    access_token = create_access_token(data=token_data)
+    refresh_token = create_refresh_token(data=token_data)
 
     user_response = UserResponse(
         id=user["_id"],
@@ -82,5 +83,6 @@ async def login_user(store: JsonStore, credentials: UserLogin) -> TokenResponse:
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=user_response,
     )

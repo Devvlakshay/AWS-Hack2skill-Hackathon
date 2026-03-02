@@ -10,6 +10,7 @@ import uuid
 from PIL import Image
 
 from app.core.config import settings
+from app.utils.s3_storage import strip_exif
 
 # Constraints
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
@@ -19,6 +20,9 @@ ALLOWED_FORMATS = {"JPEG", "PNG", "WEBP"}
 # Thumbnail and web-optimized sizes
 THUMBNAIL_SIZE = (300, 300)
 WEB_OPTIMIZED_SIZE = (1024, 1024)
+
+# Allowed upload folder names — prevent path traversal or arbitrary writes
+ALLOWED_FOLDERS = {"products", "models", "user_photos", "tryon_results"}
 
 
 def validate_image(file_bytes: bytes) -> bool:
@@ -77,6 +81,14 @@ def generate_optimized(file_bytes: bytes) -> bytes:
     return _resize_image(file_bytes, WEB_OPTIMIZED_SIZE)
 
 
+def _validate_folder(folder: str) -> None:
+    """Ensure the folder name is in the allowed list to prevent path traversal."""
+    if folder not in ALLOWED_FOLDERS:
+        raise ValueError(
+            f"Invalid upload folder '{folder}'. Allowed folders: {', '.join(sorted(ALLOWED_FOLDERS))}"
+        )
+
+
 def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "png") -> str:
     """Save image bytes to local filesystem. Returns the URL path."""
     upload_dir = os.path.join(settings.UPLOAD_DIR, folder)
@@ -90,8 +102,10 @@ def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "png")
 
 
 def upload_image(file_bytes: bytes, folder: str, filename: str) -> str:
-    """Upload an image to local storage. Returns the URL."""
-    return _save_local(file_bytes, folder, filename)
+    """Upload an image to local storage. Strips EXIF metadata before saving. Returns the URL."""
+    _validate_folder(folder)
+    clean_bytes = strip_exif(file_bytes)
+    return _save_local(clean_bytes, folder, filename)
 
 
 def upload_image_multiple_sizes(
@@ -101,17 +115,23 @@ def upload_image_multiple_sizes(
 ) -> dict[str, str]:
     """
     Upload original image plus thumbnail (300x300) and web-optimized (1024x1024).
+    Strips EXIF metadata from the original before saving.
     Returns dict with keys: original, thumbnail, web_optimized.
     """
-    # Save original (detect format)
-    img = Image.open(io.BytesIO(file_bytes))
+    _validate_folder(folder)
+
+    # Strip EXIF from original before any processing
+    clean_bytes = strip_exif(file_bytes)
+
+    # Save original (detect format from cleaned bytes)
+    img = Image.open(io.BytesIO(clean_bytes))
     original_ext = (img.format or "JPEG").lower()
     if original_ext == "jpeg":
         original_ext = "jpg"
 
     urls: dict[str, str] = {}
-    urls["original"] = _save_local(file_bytes, folder, f"{filename}_original", original_ext)
-    urls["thumbnail"] = _save_local(generate_thumbnail(file_bytes), folder, f"{filename}_thumb")
-    urls["web_optimized"] = _save_local(generate_optimized(file_bytes), folder, f"{filename}_web")
+    urls["original"] = _save_local(clean_bytes, folder, f"{filename}_original", original_ext)
+    urls["thumbnail"] = _save_local(generate_thumbnail(clean_bytes), folder, f"{filename}_thumb")
+    urls["web_optimized"] = _save_local(generate_optimized(clean_bytes), folder, f"{filename}_web")
 
     return urls

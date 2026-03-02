@@ -172,6 +172,17 @@ class JsonStore:
                     return 1
             return 0
 
+    async def delete_many(self, collection: str, query: dict) -> int:
+        """Delete all matching docs. Returns number of deleted documents."""
+        async with self._get_lock(collection):
+            docs = self._ensure_collection(collection)
+            original_len = len(docs)
+            self._collections[collection] = [d for d in docs if not self._match(d, query)]
+            deleted = original_len - len(self._collections[collection])
+            if deleted:
+                self._persist(collection)
+            return deleted
+
 
 # ------------------------------------------------------------------
 # Helpers

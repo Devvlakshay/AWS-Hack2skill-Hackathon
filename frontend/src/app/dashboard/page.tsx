@@ -1,9 +1,17 @@
 "use client";
 
+/**
+ * Dashboard Page for FitView AI.
+ * Customer: stats, quick links, recent try-ons.
+ * Retailer: analytics dashboard with charts.
+ * Design: Luxury editorial — Playfair Display / DM Sans, cream bg, gold accent.
+ */
+
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import toast from "react-hot-toast";
 import { useAuthStore } from "@/lib/store/authStore";
 import {
   getDashboard,
@@ -16,8 +24,24 @@ import {
 const AnalyticsCharts = dynamic(() => import("./AnalyticsCharts"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 flex items-center justify-center text-[rgb(var(--text-muted))]">
-      Loading charts...
+    <div
+      style={{
+        minHeight: "400px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#FFFFFF",
+        border: "1px solid #E8E8E4",
+        borderRadius: "16px",
+        marginBottom: "24px",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+        <div className="w-8 h-8 border-2 border-[#B8860B] border-t-transparent rounded-full animate-spin" />
+        <span style={{ color: "#888888", fontSize: "13px", fontFamily: "'DM Sans', sans-serif" }}>
+          Loading charts&hellip;
+        </span>
+      </div>
     </div>
   ),
 });
@@ -40,7 +64,6 @@ function getQuickDateRange(preset: string): { from: string; to: string } {
     d.setDate(d.getDate() - 30);
     from = d.toISOString().slice(0, 10);
   } else {
-    // "all" — no date range
     return { from: "", to: "" };
   }
   return { from, to };
@@ -57,78 +80,121 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-// ---------- Customer Dashboard ----------
-function CustomerDashboard({ user }: { user: { name: string; email: string; role: string; created_at: string } }) {
+// ─── Customer Dashboard ─────────────────────────────────────────────────────
+
+function CustomerDashboard({
+  user,
+}: {
+  user: { name: string; email: string; role: string; created_at: string };
+}) {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="glass-card-lg p-8 mb-8">
+      {/* Welcome Banner */}
+      <div className="bg-white border border-[#E8E4DC] rounded-2xl p-8 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">
-              Welcome back, {user.name}
+            <p className="text-xs font-medium tracking-[0.2em] text-[#B8860B] uppercase mb-1">
+              Welcome back
+            </p>
+            <h1
+              className="text-3xl text-[#1a1a1a]"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              {user.name}
             </h1>
-            <p className="mt-1 text-[rgb(var(--text-secondary))]">{user.email}</p>
+            <p className="text-sm text-[#9A9A9A] mt-1">{user.email}</p>
           </div>
-          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold bg-green-500/10 text-green-400 border border-green-500/20 self-start">
+          <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-center">
             Customer
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <Link
-          href="/products"
-          className="glass-card p-6 border-t-2 border-t-violet-500 hover:-translate-y-1 transition-all duration-300"
-        >
-          <h3 className="font-semibold text-lg text-[rgb(var(--text-primary))]">Browse Products</h3>
-          <p className="text-violet-400 text-sm mt-1">
-            Explore our curated clothing collection
-          </p>
-        </Link>
-        <Link
-          href="/tryon"
-          className="glass-card p-6 border-t-2 border-t-amber-500 hover:-translate-y-1 transition-all duration-300"
-        >
-          <h3 className="font-semibold text-lg text-[rgb(var(--text-primary))]">Virtual Try-On</h3>
-          <p className="text-amber-400 text-sm mt-1">
-            Try on clothes with AI-powered virtual fitting
-          </p>
-        </Link>
+      {/* Quick Links */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        {[
+          {
+            href: "/products",
+            label: "Browse Products",
+            sub: "Explore our curated clothing collection",
+            accent: "#B8860B",
+          },
+          {
+            href: "/tryon",
+            label: "Virtual Try-On",
+            sub: "Try on clothes with AI-powered fitting",
+            accent: "#1a1a1a",
+          },
+          {
+            href: "/tryon/history",
+            label: "My History",
+            sub: "View your past try-ons and favourites",
+            accent: "#6B6B6B",
+          },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="group bg-white border border-[#E8E4DC] rounded-xl p-6 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+            style={{ borderTopColor: item.accent, borderTopWidth: 2 }}
+          >
+            <h3 className="text-sm font-semibold text-[#1a1a1a] mb-1">{item.label}</h3>
+            <p className="text-xs text-[#9A9A9A] leading-relaxed">{item.sub}</p>
+          </Link>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="glass-card p-8">
-          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-6">Account Details</h2>
+      {/* Account Details + Features */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white border border-[#E8E4DC] rounded-xl p-7">
+          <h2
+            className="text-base font-medium text-[#1a1a1a] mb-5"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Account Details
+          </h2>
           <dl className="space-y-4">
-            <div>
-              <dt className="text-sm text-[rgb(var(--text-secondary))]">Full Name</dt>
-              <dd className="text-[rgb(var(--text-primary))] font-medium">{user.name}</dd>
-            </div>
-            <div>
-              <dt className="text-sm text-[rgb(var(--text-secondary))]">Email</dt>
-              <dd className="text-[rgb(var(--text-primary))] font-medium">{user.email}</dd>
-            </div>
-            <div>
-              <dt className="text-sm text-[rgb(var(--text-secondary))]">Member Since</dt>
-              <dd className="text-[rgb(var(--text-primary))] font-medium">
-                {new Date(user.created_at).toLocaleDateString("en-IN", {
+            {[
+              { label: "Full Name", value: user.name },
+              { label: "Email", value: user.email },
+              {
+                label: "Member Since",
+                value: new Date(user.created_at).toLocaleDateString("en-IN", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
-                })}
-              </dd>
-            </div>
+                }),
+              },
+            ].map((row) => (
+              <div key={row.label}>
+                <dt className="text-xs text-[#9A9A9A] mb-0.5">{row.label}</dt>
+                <dd className="text-sm font-medium text-[#1a1a1a]">{row.value}</dd>
+              </div>
+            ))}
           </dl>
         </div>
-        <div className="glass-card p-8">
-          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-6">Available Features</h2>
+
+        <div className="bg-white border border-[#E8E4DC] rounded-xl p-7">
+          <h2
+            className="text-base font-medium text-[#1a1a1a] mb-5"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            What You Can Do
+          </h2>
           <ul className="space-y-3">
-            {["Browse product catalog", "Virtual try-on with AI", "Get size recommendations", "Save favorites and wishlist"].map((f, i) => (
+            {[
+              "Browse the product catalog",
+              "Try on garments with AI",
+              "Receive personalised size recommendations",
+              "Save favourites to your wishlist",
+            ].map((feature, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="mt-0.5 w-5 h-5 bg-violet-500/20 text-violet-400 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">
-                  &#10003;
+                <span className="mt-0.5 w-4 h-4 bg-[#FAF6EE] border border-[#B8860B] rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-2.5 h-2.5 text-[#B8860B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                  </svg>
                 </span>
-                <span className="text-[rgb(var(--text-secondary))]">{f}</span>
+                <span className="text-sm text-[#6B6B6B]">{feature}</span>
               </li>
             ))}
           </ul>
@@ -138,8 +204,37 @@ function CustomerDashboard({ user }: { user: { name: string; email: string; role
   );
 }
 
-// ---------- Retailer Analytics Dashboard ----------
-function RetailerDashboard({ user }: { user: { name: string; email: string; role: string; created_at: string } }) {
+// ─── Summary Card ────────────────────────────────────────────────────────────
+
+function SummaryCard({
+  label,
+  value,
+  accentColor,
+}: {
+  label: string;
+  value: string | number;
+  accentColor: string;
+}) {
+  return (
+    <div
+      className="bg-white border border-[#E8E4DC] rounded-xl p-5"
+      style={{ borderTopColor: accentColor, borderTopWidth: 2 }}
+    >
+      <p className="text-xs text-[#9A9A9A] mb-1.5">{label}</p>
+      <p className="text-2xl font-bold" style={{ color: accentColor }}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+// ─── Retailer Analytics Dashboard ────────────────────────────────────────────
+
+function RetailerDashboard({
+  user,
+}: {
+  user: { name: string; email: string; role: string; created_at: string };
+}) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,9 +257,7 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
     }
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const handlePreset = (preset: string) => {
     setActivePreset(preset);
@@ -185,7 +278,7 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       const blob = await exportCSV(dateFrom || undefined, dateTo || undefined);
       downloadBlob(blob, "fitview_analytics.csv");
     } catch {
-      alert("Failed to export CSV");
+      toast.error("Failed to export CSV");
     } finally {
       setExporting(null);
     }
@@ -197,30 +290,41 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       const blob = await exportReport(dateFrom || undefined, dateTo || undefined);
       downloadBlob(blob, "fitview_analytics_report.html");
     } catch {
-      alert("Failed to export report");
+      toast.error("Failed to export report");
     } finally {
       setExporting(null);
     }
   };
 
+  const inputClass =
+    "bg-white border border-[#D4C9B0] text-[#1a1a1a] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#B8860B] focus:ring-1 focus:ring-[#B8860B] transition-colors";
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[rgb(var(--text-primary))]">Analytics Dashboard</h1>
-          <p className="text-[rgb(var(--text-secondary))] mt-1">Welcome back, {user.name}</p>
+          <p className="text-xs font-medium tracking-[0.2em] text-[#B8860B] uppercase mb-1">
+            Retailer Portal
+          </p>
+          <h1
+            className="text-3xl text-[#1a1a1a]"
+            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+          >
+            Analytics Dashboard
+          </h1>
+          <p className="text-sm text-[#9A9A9A] mt-1">Welcome back, {user.name}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Link
             href="/retailer/products"
-            className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+            className="text-sm text-[#B8860B] hover:text-[#9A6C00] font-medium transition-colors"
           >
             Manage Products
           </Link>
           <Link
             href="/retailer/models"
-            className="text-sm text-violet-400 hover:text-violet-300 transition-colors"
+            className="text-sm text-[#B8860B] hover:text-[#9A6C00] font-medium transition-colors"
           >
             Manage Models
           </Link>
@@ -228,57 +332,44 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
       </div>
 
       {/* Date Range Filter */}
-      <div className="glass-card p-4 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <div className="bg-white border border-[#E8E4DC] rounded-xl p-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => handlePreset("7d")}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                activePreset === "7d"
-                  ? "bg-violet-600 text-white"
-                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
-              }`}
-            >
-              Last 7 days
-            </button>
-            <button
-              onClick={() => handlePreset("30d")}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                activePreset === "30d"
-                  ? "bg-violet-600 text-white"
-                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
-              }`}
-            >
-              Last 30 days
-            </button>
-            <button
-              onClick={() => handlePreset("all")}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                activePreset === "all"
-                  ? "bg-violet-600 text-white"
-                  : "bg-white/5 text-[rgb(var(--text-secondary))] hover:text-[rgb(var(--text-primary))]"
-              }`}
-            >
-              All time
-            </button>
+            {[
+              { key: "7d", label: "Last 7 days" },
+              { key: "30d", label: "Last 30 days" },
+              { key: "all", label: "All time" },
+            ].map((p) => (
+              <button
+                key={p.key}
+                onClick={() => handlePreset(p.key)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
+                  ${activePreset === p.key
+                    ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
+                    : "bg-white text-[#6B6B6B] border-[#D4C9B0] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+                  }`}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
-          <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="flex items-center gap-2 sm:ml-auto flex-wrap">
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="glass-input rounded-lg px-3 py-1.5 text-sm"
+              className={inputClass}
             />
-            <span className="text-[rgb(var(--text-muted))] text-sm">to</span>
+            <span className="text-[#C4BFB4] text-sm">to</span>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="glass-input rounded-lg px-3 py-1.5 text-sm"
+              className={inputClass}
             />
             <button
               onClick={handleFilter}
-              className="btn-primary px-3 py-1.5 rounded-lg text-sm font-medium"
+              className="bg-[#1a1a1a] text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-[#2d2d2d] transition-colors"
             >
               Filter
             </button>
@@ -286,19 +377,20 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
         </div>
       </div>
 
-      {/* Loading / Error */}
+      {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <div className="text-[rgb(var(--text-secondary))]">Loading analytics...</div>
+          <div className="w-8 h-8 border-2 border-[#B8860B] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
 
+      {/* Error */}
       {error && (
-        <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-6 backdrop-blur-sm">
-          <p className="text-red-400 text-sm">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+          <p className="text-sm text-red-600">{error}</p>
           <button
             onClick={() => fetchData(dateFrom, dateTo)}
-            className="mt-2 text-sm text-red-300 hover:text-red-200 underline"
+            className="mt-2 text-sm font-medium text-[#B8860B] hover:text-[#9A6C00] transition-colors"
           >
             Retry
           </button>
@@ -309,61 +401,48 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <SummaryCard
-              label="Total Try-Ons"
-              value={data.total_tryons}
-              color="violet"
-            />
-            <SummaryCard
-              label="Total Products"
-              value={data.total_products}
-              color="blue"
-            />
-            <SummaryCard
-              label="Favorites"
-              value={data.total_favorites}
-              color="pink"
-            />
-            <SummaryCard
-              label="Avg Processing"
-              value={formatMs(data.avg_processing_time_ms)}
-              color="amber"
-            />
+            <SummaryCard label="Total Try-Ons" value={data.total_tryons} accentColor="#B8860B" />
+            <SummaryCard label="Total Products" value={data.total_products} accentColor="#4B7CF3" />
+            <SummaryCard label="Favourites" value={data.total_favorites} accentColor="#E05C7A" />
+            <SummaryCard label="Avg Processing" value={formatMs(data.avg_processing_time_ms)} accentColor="#2A9D5C" />
           </div>
 
           {/* Charts */}
           <AnalyticsCharts data={data} />
 
-          {/* Top Products Table */}
+          {/* Tables */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="glass-card p-6">
-              <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Top Products</h2>
+            {/* Top Products */}
+            <div className="bg-white border border-[#E8E4DC] rounded-xl p-6">
+              <h2
+                className="text-base font-medium text-[#1a1a1a] mb-4"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Top Products
+              </h2>
               {data.top_products.length === 0 ? (
-                <p className="text-[rgb(var(--text-muted))] text-sm py-4">No try-on data yet.</p>
+                <p className="text-sm text-[#9A9A9A] py-4">No try-on data yet.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-[rgb(var(--text-secondary))] border-b border-[rgba(var(--glass-border))]">
-                        <th className="text-left py-2 pr-4">#</th>
-                        <th className="text-left py-2 pr-4">Product</th>
-                        <th className="text-center py-2 pr-4">Try-Ons</th>
-                        <th className="text-center py-2">Favs</th>
+                      <tr className="border-b border-[#E8E4DC]">
+                        {["#", "Product", "Try-Ons", "Favs"].map((h) => (
+                          <th key={h} className="text-left text-xs font-medium text-[#9A9A9A] pb-2 pr-4 last:pr-0">
+                            {h}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
                       {data.top_products.map((p, i) => (
-                        <tr key={p.product_id} className="border-b border-[rgba(var(--glass-border))]/50">
-                          <td className="py-2.5 pr-4 text-[rgb(var(--text-muted))]">{i + 1}</td>
-                          <td className="py-2.5 pr-4 text-[rgb(var(--text-primary))] font-medium truncate max-w-[200px]">
+                        <tr key={p.product_id} className="border-b border-[#F0EDE6] last:border-0">
+                          <td className="py-2.5 pr-4 text-xs text-[#C4BFB4]">{i + 1}</td>
+                          <td className="py-2.5 pr-4 text-[#1a1a1a] font-medium truncate max-w-[160px] text-xs">
                             {p.name}
                           </td>
-                          <td className="py-2.5 pr-4 text-center text-violet-400 font-semibold">
-                            {p.tryon_count}
-                          </td>
-                          <td className="py-2.5 text-center text-pink-400">
-                            {p.favorite_count}
-                          </td>
+                          <td className="py-2.5 pr-4 text-xs font-semibold text-[#B8860B]">{p.tryon_count}</td>
+                          <td className="py-2.5 text-xs text-rose-500">{p.favorite_count}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -372,31 +451,34 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
               )}
             </div>
 
-            {/* Top Models Table */}
-            <div className="glass-card p-6">
-              <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Top Models</h2>
+            {/* Top Models */}
+            <div className="bg-white border border-[#E8E4DC] rounded-xl p-6">
+              <h2
+                className="text-base font-medium text-[#1a1a1a] mb-4"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Top Models
+              </h2>
               {data.top_models.length === 0 ? (
-                <p className="text-[rgb(var(--text-muted))] text-sm py-4">No try-on data yet.</p>
+                <p className="text-sm text-[#9A9A9A] py-4">No try-on data yet.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-[rgb(var(--text-secondary))] border-b border-[rgba(var(--glass-border))]">
-                        <th className="text-left py-2 pr-4">#</th>
-                        <th className="text-left py-2 pr-4">Model</th>
-                        <th className="text-center py-2">Try-Ons</th>
+                      <tr className="border-b border-[#E8E4DC]">
+                        {["#", "Model", "Try-Ons"].map((h) => (
+                          <th key={h} className="text-left text-xs font-medium text-[#9A9A9A] pb-2 pr-4 last:pr-0">
+                            {h}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
                       {data.top_models.map((m, i) => (
-                        <tr key={m.model_id} className="border-b border-[rgba(var(--glass-border))]/50">
-                          <td className="py-2.5 pr-4 text-[rgb(var(--text-muted))]">{i + 1}</td>
-                          <td className="py-2.5 pr-4 text-[rgb(var(--text-primary))] font-medium">
-                            {m.name}
-                          </td>
-                          <td className="py-2.5 text-center text-violet-400 font-semibold">
-                            {m.tryon_count}
-                          </td>
+                        <tr key={m.model_id} className="border-b border-[#F0EDE6] last:border-0">
+                          <td className="py-2.5 pr-4 text-xs text-[#C4BFB4]">{i + 1}</td>
+                          <td className="py-2.5 pr-4 text-[#1a1a1a] font-medium text-xs">{m.name}</td>
+                          <td className="py-2.5 text-xs font-semibold text-[#B8860B]">{m.tryon_count}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -406,23 +488,28 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
             </div>
           </div>
 
-          {/* Export Buttons */}
-          <div className="glass-card p-6 mb-8">
-            <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">Export Data</h2>
+          {/* Export */}
+          <div className="bg-white border border-[#E8E4DC] rounded-xl p-6 mb-10">
+            <h2
+              className="text-base font-medium text-[#1a1a1a] mb-4"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Export Data
+            </h2>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={handleExportCSV}
                 disabled={exporting === "csv"}
-                className="btn-secondary px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-wait"
+                className="bg-white border border-[#D4C9B0] text-[#1a1a1a] text-sm font-medium px-5 py-2.5 rounded-xl hover:border-[#1a1a1a] transition-colors disabled:opacity-50 disabled:cursor-wait"
               >
-                {exporting === "csv" ? "Exporting..." : "Export CSV"}
+                {exporting === "csv" ? "Exporting…" : "Export CSV"}
               </button>
               <button
                 onClick={handleExportReport}
                 disabled={exporting === "report"}
-                className="btn-primary px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-wait"
+                className="bg-[#1a1a1a] text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-[#2d2d2d] transition-colors disabled:opacity-50 disabled:cursor-wait"
               >
-                {exporting === "report" ? "Exporting..." : "Export Report"}
+                {exporting === "report" ? "Exporting…" : "Export Report"}
               </button>
             </div>
           </div>
@@ -432,47 +519,13 @@ function RetailerDashboard({ user }: { user: { name: string; email: string; role
   );
 }
 
-// ---------- Summary Card ----------
-function SummaryCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: string | number;
-  color: "violet" | "blue" | "pink" | "amber";
-}) {
-  const colorMap = {
-    violet: "border-t-violet-500",
-    blue: "border-t-blue-500",
-    pink: "border-t-pink-500",
-    amber: "border-t-amber-500",
-  };
-  const valueColorMap = {
-    violet: "text-violet-400",
-    blue: "text-blue-400",
-    pink: "text-pink-400",
-    amber: "text-amber-400",
-  };
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
-  return (
-    <div
-      className={`glass-card border-t-2 ${colorMap[color]} p-5`}
-    >
-      <p className="text-sm text-[rgb(var(--text-secondary))] mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${valueColorMap[color]}`}>{value}</p>
-    </div>
-  );
-}
-
-// ---------- Main Page ----------
 export default function DashboardPage() {
   const { user, isAuthenticated, hydrate, fetchMe } = useAuthStore();
   const router = useRouter();
 
-  useEffect(() => {
-    hydrate();
-  }, [hydrate]);
+  useEffect(() => { hydrate(); }, [hydrate]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -484,8 +537,8 @@ export default function DashboardPage() {
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
-        <div className="text-[rgb(var(--text-secondary))]">Loading...</div>
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-[#FAFAF8]">
+        <div className="w-8 h-8 border-2 border-[#B8860B] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -493,7 +546,8 @@ export default function DashboardPage() {
   const isRetailer = user.role === "retailer" || user.role === "admin";
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-[rgb(var(--bg-primary))] py-10">
+    /* pb-24 on mobile clears BottomTabBar; sm:pb-10 restores normal spacing */
+    <div className="min-h-[calc(100vh-64px)] bg-[#FAFAF8] py-10 pb-24 sm:pb-10">
       {isRetailer ? (
         <RetailerDashboard user={user} />
       ) : (

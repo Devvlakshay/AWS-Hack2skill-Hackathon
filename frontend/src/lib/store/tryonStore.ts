@@ -228,8 +228,20 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
   },
 
   toggleFavorite: async (sessionId, isFavorite) => {
+    // Optimistic update
+    set((state) => ({
+      history: state.history.map((s) =>
+        (s._id === sessionId || s.id === sessionId) ? { ...s, is_favorite: isFavorite } : s
+      ),
+      currentResult:
+        state.currentResult &&
+        (state.currentResult._id === sessionId || state.currentResult.id === sessionId)
+          ? { ...state.currentResult, is_favorite: isFavorite }
+          : state.currentResult,
+    }));
     try {
       const updated = await toggleTryOnFavorite(sessionId, isFavorite);
+      // Confirm with server response
       set((state) => ({
         history: state.history.map((s) =>
           (s._id === sessionId || s.id === sessionId) ? updated : s
@@ -241,6 +253,17 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
             : state.currentResult,
       }));
     } catch (error: any) {
+      // Revert on failure
+      set((state) => ({
+        history: state.history.map((s) =>
+          (s._id === sessionId || s.id === sessionId) ? { ...s, is_favorite: !isFavorite } : s
+        ),
+        currentResult:
+          state.currentResult &&
+          (state.currentResult._id === sessionId || state.currentResult.id === sessionId)
+            ? { ...state.currentResult, is_favorite: !isFavorite }
+            : state.currentResult,
+      }));
       console.error("Failed to toggle favorite:", error);
     }
   },

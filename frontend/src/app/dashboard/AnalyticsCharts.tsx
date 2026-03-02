@@ -16,7 +16,31 @@ import {
 } from "recharts";
 import type { DashboardData } from "@/lib/api/analytics";
 
-const COLORS = ["#8b5cf6", "#a78bfa", "#c4b5fd", "#f59e0b", "#fbbf24", "#fde68a"];
+// ─── Design-token aligned palette — no violet ────────────────
+const CHART_COLORS = [
+  "#B8860B", // gold
+  "#1a1a1a", // ink
+  "#4B7CF3", // blue accent
+  "#E05C7A", // rose
+  "#2A9D5C", // green
+  "#E8973A", // amber
+];
+
+const TOOLTIP_STYLE = {
+  backgroundColor: "#FFFFFF",
+  border: "1px solid #E8E8E4",
+  borderRadius: "10px",
+  color: "#1a1a1a",
+  fontSize: "13px",
+  fontFamily: "'DM Sans', sans-serif",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+};
+
+const AXIS_STYLE = {
+  stroke: "#888888",
+  fontSize: 12,
+  fontFamily: "'DM Sans', sans-serif",
+};
 
 interface Props {
   data: DashboardData;
@@ -44,55 +68,73 @@ export default function AnalyticsCharts({ data }: Props) {
   const hasCategoryData = categoryData.length > 0;
   const hasAiData = aiData.length > 0;
 
+  // Shared card wrapper style
+  const cardStyle: React.CSSProperties = {
+    background: "#FFFFFF",
+    border: "1px solid #E8E8E4",
+    borderRadius: "16px",
+    padding: "24px",
+  };
+
+  const cardTitleStyle: React.CSSProperties = {
+    fontFamily: "'Playfair Display', serif",
+    fontSize: "16px",
+    fontWeight: 600,
+    color: "#1a1a1a",
+    marginBottom: "20px",
+  };
+
+  const emptyStyle: React.CSSProperties = {
+    height: "280px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#888888",
+    fontSize: "13px",
+    fontFamily: "'DM Sans', sans-serif",
+  };
+
   return (
-    <div className="space-y-6 mb-6">
-      {/* Try-Ons Over Time */}
-      <div className="glass-card p-6">
-        <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
-          Try-Ons Over Time
-        </h2>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginBottom: "24px" }}>
+      {/* Try-Ons Over Time — min 400px chart height */}
+      <div style={cardStyle}>
+        <h2 style={cardTitleStyle}>Try-Ons Over Time</h2>
         {!hasLineData ? (
-          <div className="h-64 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
-            No try-on data available for this period.
-          </div>
+          <div style={emptyStyle}>No try-on data available for this period.</div>
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={lineData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--glass-border))" />
+          <ResponsiveContainer width="100%" height={400} minHeight={400}>
+            <LineChart data={lineData} margin={{ top: 8, right: 24, bottom: 8, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E4" vertical={false} />
               <XAxis
                 dataKey="date"
-                stroke="rgb(var(--text-muted))"
-                fontSize={12}
+                tick={{ ...AXIS_STYLE, fill: "#888888" }}
                 tickLine={false}
+                axisLine={{ stroke: "#E8E8E4" }}
               />
               <YAxis
-                stroke="rgb(var(--text-muted))"
-                fontSize={12}
+                tick={{ ...AXIS_STYLE, fill: "#888888" }}
                 tickLine={false}
+                axisLine={false}
                 allowDecimals={false}
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(15, 15, 25, 0.85)",
-                  border: "1px solid rgba(var(--glass-border))",
-                  borderRadius: "12px",
-                  color: "rgb(var(--text-primary))",
-                  backdropFilter: "blur(12px)",
-                }}
+                contentStyle={TOOLTIP_STYLE}
+                labelStyle={{ fontWeight: 600, color: "#1a1a1a", marginBottom: "4px" }}
                 labelFormatter={(label, payload) => {
                   if (payload && payload.length > 0) {
                     return payload[0]?.payload?.fullDate || label;
                   }
                   return label;
                 }}
+                formatter={(value: number) => [value, "Try-Ons"]}
               />
               <Line
                 type="monotone"
                 dataKey="count"
-                stroke="#8b5cf6"
-                strokeWidth={2}
-                dot={{ fill: "#8b5cf6", r: 4 }}
-                activeDot={{ r: 6 }}
+                stroke="#B8860B"
+                strokeWidth={2.5}
+                dot={{ fill: "#B8860B", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#B8860B", stroke: "#FAF6EE", strokeWidth: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -100,50 +142,45 @@ export default function AnalyticsCharts({ data }: Props) {
       </div>
 
       {/* Category Distribution + AI Provider */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div
+        className="grid grid-cols-1 lg:grid-cols-2"
+        style={{ gap: "24px" }}
+      >
         {/* Category Distribution */}
-        <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
-            Category Distribution
-          </h2>
+        <div style={cardStyle}>
+          <h2 style={cardTitleStyle}>Category Distribution</h2>
           {!hasCategoryData ? (
-            <div className="h-56 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
-              No category data available.
-            </div>
+            <div style={{ ...emptyStyle, height: "240px" }}>No category data available.</div>
           ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={categoryData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(var(--glass-border))" />
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={categoryData} margin={{ top: 8, right: 16, bottom: 16, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E8E8E4" vertical={false} />
                 <XAxis
                   dataKey="name"
-                  stroke="rgb(var(--text-muted))"
-                  fontSize={11}
+                  tick={{ ...AXIS_STYLE, fill: "#888888", fontSize: 11 }}
                   tickLine={false}
+                  axisLine={{ stroke: "#E8E8E4" }}
                   interval={0}
-                  angle={-20}
+                  angle={-15}
                   textAnchor="end"
                   height={50}
                 />
                 <YAxis
-                  stroke="rgb(var(--text-muted))"
-                  fontSize={12}
+                  tick={{ ...AXIS_STYLE, fill: "#888888" }}
                   tickLine={false}
+                  axisLine={false}
                   allowDecimals={false}
                 />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "rgba(15, 15, 25, 0.85)",
-                    border: "1px solid rgba(var(--glass-border))",
-                    borderRadius: "12px",
-                    color: "rgb(var(--text-primary))",
-                    backdropFilter: "blur(12px)",
-                  }}
+                  contentStyle={TOOLTIP_STYLE}
+                  labelStyle={{ fontWeight: 600, color: "#1a1a1a" }}
+                  formatter={(value: number) => [value, "Try-Ons"]}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {categoryData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+                      fill={CHART_COLORS[index % CHART_COLORS.length]}
                     />
                   ))}
                 </Bar>
@@ -153,49 +190,40 @@ export default function AnalyticsCharts({ data }: Props) {
         </div>
 
         {/* AI Provider Distribution */}
-        <div className="glass-card p-6">
-          <h2 className="text-lg font-semibold text-[rgb(var(--text-primary))] mb-4">
-            AI Provider Usage
-          </h2>
+        <div style={cardStyle}>
+          <h2 style={cardTitleStyle}>AI Provider Usage</h2>
           {!hasAiData ? (
-            <div className="h-56 flex items-center justify-center text-[rgb(var(--text-muted))] text-sm">
-              No AI provider data available.
-            </div>
+            <div style={{ ...emptyStyle, height: "240px" }}>No AI provider data available.</div>
           ) : (
-            <div className="flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={240}>
-                <PieChart>
-                  <Pie
-                    data={aiData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={4}
-                    dataKey="value"
-                    label={({ name, percent }) =>
-                      `${name} (${(percent * 100).toFixed(0)}%)`
-                    }
-                  >
-                    {aiData.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(15, 15, 25, 0.85)",
-                      border: "1px solid rgba(var(--glass-border))",
-                      borderRadius: "12px",
-                      color: "rgb(var(--text-primary))",
-                      backdropFilter: "blur(12px)",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={aiData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={4}
+                  dataKey="value"
+                  label={({ name, percent }) =>
+                    `${name} (${(percent * 100).toFixed(0)}%)`
+                  }
+                  labelLine={{ stroke: "#E8E8E4", strokeWidth: 1 }}
+                >
+                  {aiData.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={CHART_COLORS[index % CHART_COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={TOOLTIP_STYLE}
+                  labelStyle={{ fontWeight: 600, color: "#1a1a1a" }}
+                  formatter={(value: number) => [value, "Try-Ons"]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           )}
         </div>
       </div>
