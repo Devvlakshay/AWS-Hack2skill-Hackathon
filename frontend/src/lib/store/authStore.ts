@@ -65,8 +65,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
       });
     } catch (error: any) {
-      const message =
-        error.response?.data?.detail || "Login failed. Please try again.";
+      const detail = error.response?.data?.detail;
+      const message = Array.isArray(detail)
+        ? detail.map((e: any) => e.msg || String(e)).join("; ")
+        : typeof detail === "string"
+        ? detail
+        : "Login failed. Please try again.";
       set({ error: message, isLoading: false });
       throw error;
     }
@@ -96,9 +100,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
       });
     } catch (error: any) {
-      const message =
-        error.response?.data?.detail ||
-        "Registration failed. Please try again.";
+      const detail = error.response?.data?.detail;
+      const message = Array.isArray(detail)
+        ? detail.map((e: any) => e.msg || String(e)).join("; ")
+        : typeof detail === "string"
+        ? detail
+        : "Registration failed. Please try again.";
       set({ error: message, isLoading: false });
       throw error;
     }

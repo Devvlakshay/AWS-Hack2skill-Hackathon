@@ -6,49 +6,68 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
+  darkMode: ["class", "[data-theme='dark']"],
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          200: "#ddd6fe",
-          300: "#c4b5fd",
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
-          800: "#5b21b6",
-          900: "#4c1d95",
-          950: "#2e1065",
+        cream: {
+          DEFAULT: "#FAFAF8",
+          dark:    "#F0ECE3",
         },
-        accent: {
-          50: "#fffbeb",
-          100: "#fef3c7",
-          200: "#fde68a",
-          300: "#fcd34d",
-          400: "#fbbf24",
-          500: "#f59e0b",
-          600: "#d97706",
-          700: "#b45309",
-          800: "#92400e",
-          900: "#78350f",
-          950: "#451a03",
+        ink: {
+          DEFAULT: "#1a1a1a",
+          soft:    "#333333",
         },
+        muted: "#888888",
+        border: "#E8E8E4",
+        gold: {
+          DEFAULT: "#B8860B",
+          light:   "#D4A820",
+        },
+        "red-sale": "#E53935",
+      },
+      fontFamily: {
+        playfair: ["Playfair Display", "Georgia", "serif"],
+        dmsans:   ["DM Sans", "system-ui", "sans-serif"],
+        sans:     ["DM Sans", "system-ui", "sans-serif"],
+        serif:    ["Playfair Display", "Georgia", "serif"],
       },
       boxShadow: {
-        glass: "0 4px 30px rgba(0, 0, 0, 0.1)",
-        "glass-lg": "0 8px 40px rgba(0, 0, 0, 0.15)",
-        "glow-violet": "0 0 20px rgba(139, 92, 246, 0.3)",
-        "glow-amber": "0 0 20px rgba(245, 158, 11, 0.3)",
+        card:        "0 2px 16px rgba(0, 0, 0, 0.05)",
+        "card-raised": "0 12px 40px rgba(0, 0, 0, 0.10)",
+        gold:        "0 8px 24px rgba(184, 134, 11, 0.28)",
+        ink:         "0 8px 24px rgba(26, 26, 26, 0.22)",
       },
-      backdropBlur: {
-        glass: "12px",
-        "glass-lg": "20px",
+      borderRadius: {
+        pill: "9999px",
+      },
+      animation: {
+        marquee:  "marquee 28s linear infinite",
+        fadeUp:   "fadeUp 0.6s ease forwards",
+        float:    "float 4s ease-in-out infinite",
+        shimmer:  "shimmer 1.8s linear infinite",
+      },
+      keyframes: {
+        marquee: {
+          "0%":   { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        fadeUp: {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%":      { transform: "translateY(-8px)" },
+        },
+        shimmer: {
+          "0%":   { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition:  "200% 0" },
+        },
       },
     },
   },
   plugins: [],
 };
+
 export default config;

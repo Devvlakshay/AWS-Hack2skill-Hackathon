@@ -48,7 +48,7 @@ class GeminiImageClient:
 
     def _endpoint(self, model: Optional[str] = None) -> str:
         m = model or self._model
-        return f"{GEMINI_API_BASE}/models/{m}:generateContent?key={self._api_key}"
+        return f"{GEMINI_API_BASE}/models/{m}:generateContent"
 
     async def generate_image(self, prompt: str, aspect_ratio: str = "1:1") -> bytes:
         """
@@ -197,7 +197,10 @@ class GeminiImageClient:
                     response = await client.post(
                         self._endpoint(),
                         json=payload,
-                        headers={"Content-Type": "application/json"},
+                        headers={
+                            "Content-Type": "application/json",
+                            "X-Goog-Api-Key": self._api_key or "",
+                        },
                     )
 
                 elapsed = time.time() - start_time
@@ -266,7 +269,10 @@ class GeminiImageClient:
                 response = await client.post(
                     self._endpoint(),
                     json=payload,
-                    headers={"Content-Type": "application/json"},
+                    headers={
+                        "Content-Type": "application/json",
+                        "X-Goog-Api-Key": self._api_key or "",
+                    },
                 )
                 return response.status_code == 200
         except Exception:

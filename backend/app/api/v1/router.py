@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import auth, products, models, tryon
 from app.api.v1.endpoints import style, recommendations, cart, wishlist
 from app.api.v1.endpoints import analytics
+from app.api.v1.endpoints import chatbot
 
 api_router = APIRouter()
 
@@ -24,3 +25,6 @@ api_router.include_router(wishlist.router)
 
 # Phase 5: Analytics
 api_router.include_router(analytics.router)
+
+# Phase 6 (Bedrock): AI Chatbot
+api_router.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])

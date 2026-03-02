@@ -124,7 +124,7 @@ async def generate_tryon(
     preprocessed_garment = await preprocess_garment_image(garment_image_bytes)
 
     # Step 5: Call AI API for generation
-    # Priority: Gemini -> Fallback composite
+    # Priority: Gemini -> Bedrock -> Fallback composite
     generated_image = None
     ai_provider = "fallback"
 
@@ -138,6 +138,19 @@ async def generate_tryon(
             logger.info("Try-on generated via Gemini API")
         except GeminiImageError as e:
             logger.warning(f"Gemini API failed: {e}. Using fallback composite.")
+
+    # Try Bedrock as fallback if Gemini fails
+    if generated_image is None and settings.USE_BEDROCK:
+        try:
+            from app.utils.bedrock_client import bedrock_image_client
+            logger.info("Trying Bedrock for try-on generation...")
+            generated_image = await bedrock_image_client.generate_tryon(
+                preprocessed_model, preprocessed_garment
+            )
+            ai_provider = "bedrock"
+            logger.info("Try-on generated successfully via Bedrock")
+        except Exception as bedrock_error:
+            logger.warning(f"Bedrock failed: {bedrock_error}, using fallback...")
 
     if generated_image is None:
         logger.warning("Gemini API unavailable. Using fallback composite.")
@@ -276,7 +289,7 @@ async def _generate_combined_outfit(
         preprocessed = await preprocess_garment_image(garment_raw)
         garment_bytes_list.append(preprocessed)
 
-    # Try Gemini multi-garment, fall back to composite
+    # Try Gemini multi-garment, fall back to Bedrock, then composite
     generated_image = None
     ai_provider = "fallback"
 
@@ -290,6 +303,20 @@ async def _generate_combined_outfit(
             logger.info("Combined outfit generated via Gemini API")
         except GeminiImageError as e:
             logger.warning(f"Gemini multi-garment failed: {e}. Using fallback.")
+
+    # Try Bedrock as fallback if Gemini fails
+    if generated_image is None and settings.USE_BEDROCK:
+        try:
+            from app.utils.bedrock_client import bedrock_image_client
+            logger.info("Trying Bedrock for combined outfit generation...")
+            # Use first garment for Bedrock single-garment try-on
+            generated_image = await bedrock_image_client.generate_tryon(
+                preprocessed_model, garment_bytes_list[0]
+            )
+            ai_provider = "bedrock"
+            logger.info("Combined outfit generated successfully via Bedrock")
+        except Exception as bedrock_error:
+            logger.warning(f"Bedrock failed: {bedrock_error}, using fallback...")
 
     if generated_image is None:
         generated_image = await _create_multi_fallback_composite(
@@ -354,7 +381,7 @@ async def generate_tryon_with_user_photo(
     preprocessed_model = await preprocess_model_image(user_photo_bytes)
     preprocessed_garment = await preprocess_garment_image(garment_image_bytes)
 
-    # Call AI API for generation: Gemini -> Fallback composite
+    # Call AI API for generation: Gemini -> Bedrock -> Fallback composite
     generated_image = None
     ai_provider = "fallback"
 
@@ -368,6 +395,19 @@ async def generate_tryon_with_user_photo(
             logger.info("Try-on (user photo) generated via Gemini API")
         except GeminiImageError as e:
             logger.warning(f"Gemini API failed: {e}. Using fallback composite.")
+
+    # Try Bedrock as fallback if Gemini fails
+    if generated_image is None and settings.USE_BEDROCK:
+        try:
+            from app.utils.bedrock_client import bedrock_image_client
+            logger.info("Trying Bedrock for user photo try-on generation...")
+            generated_image = await bedrock_image_client.generate_tryon(
+                preprocessed_model, preprocessed_garment
+            )
+            ai_provider = "bedrock"
+            logger.info("Try-on generated successfully via Bedrock")
+        except Exception as bedrock_error:
+            logger.warning(f"Bedrock failed: {bedrock_error}, using fallback...")
 
     if generated_image is None:
         logger.warning("Gemini API unavailable. Using fallback composite for user photo.")
