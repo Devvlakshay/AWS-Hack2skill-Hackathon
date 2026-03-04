@@ -169,6 +169,10 @@ export async function deleteProduct(id: string): Promise<void> {
 }
 
 export async function uploadProductImages(id: string, files: File[]): Promise<Product> {
+  if (files.length === 0) {
+    throw new Error("No files provided for upload");
+  }
+
   // Upload files one at a time (backend accepts single file per request)
   let result: Product | null = null;
   for (const file of files) {

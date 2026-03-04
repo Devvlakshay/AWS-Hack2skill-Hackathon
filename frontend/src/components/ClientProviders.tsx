@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Toaster } from "react-hot-toast";
 
 const ChatBot = dynamic(() => import("@/components/ChatBot"), { ssr: false });
+const BottomTabBar = dynamic(() => import("@/components/BottomTabBar"), { ssr: false });
 
 export default function ClientProviders() {
   return (
@@ -20,6 +21,7 @@ export default function ClientProviders() {
           duration: 3000,
         }}
       />
+      <BottomTabBar />
       <ChatBot />
     </>
   );

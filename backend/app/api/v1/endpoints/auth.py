@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Body, HTTPException, status
 
 from app.core.deps import get_store, get_current_user
 from app.core.security import create_access_token, create_refresh_token, verify_refresh_token
-from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse
+from app.models.user import UserCreate, UserLogin, UserResponse, TokenResponse, AmazonCallbackRequest
 from app.services import auth_service
 from app.utils.json_store import JsonStore
 
@@ -23,6 +23,15 @@ async def login(
     store: JsonStore = Depends(get_store),
 ):
     return await auth_service.login_user(store, credentials)
+
+
+@router.post("/amazon/callback", response_model=TokenResponse)
+async def amazon_callback(
+    body: AmazonCallbackRequest,
+    store: JsonStore = Depends(get_store),
+):
+    """Exchange Login with Amazon auth code for JWT tokens."""
+    return await auth_service.amazon_oauth_callback(store, body.code, body.redirect_uri)
 
 
 @router.get("/me", response_model=UserResponse)

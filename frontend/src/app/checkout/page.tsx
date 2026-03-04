@@ -39,6 +39,13 @@ export default function CheckoutPage() {
     state: "",
   });
 
+  // Update form name when user data becomes available after hydration
+  useEffect(() => {
+    if (user?.name && !form.name) {
+      setForm((prev) => ({ ...prev, name: user.name }));
+    }
+  }, [user]);
+
   const formattedTotal = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -48,7 +55,7 @@ export default function CheckoutPage() {
     setIsProcessing(true);
     await new Promise((r) => setTimeout(r, 1800));
     setOrderPlaced(true);
-    clear();
+    await clear();
     setIsProcessing(false);
   };
 

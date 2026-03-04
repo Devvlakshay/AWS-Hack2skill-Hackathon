@@ -53,7 +53,7 @@ class BedrockImageClient:
         return json.loads(response["body"].read())
 
     async def _invoke_model(self, body: dict) -> dict:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self._invoke_model_sync, body)
 
     async def generate_tryon(self, model_image: bytes, garment_image: bytes) -> bytes:
@@ -207,7 +207,7 @@ class BedrockChatClient:
         if system_prompt:
             body["system"] = system_prompt
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         try:
             result = await loop.run_in_executor(None, self._invoke_sync, body)
             content = result.get("content", [])

@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = "http://localhost:3000"
     ALLOWED_HOSTS: str = "localhost,127.0.0.1"
 
+    # Login with Amazon (OAuth)
+    LWA_CLIENT_ID: str = ""
+    LWA_CLIENT_SECRET: str = ""
+
     # Bedrock
     BEDROCK_REGION: str = "us-east-1"
     BEDROCK_MODEL_ID: str = "anthropic.claude-3-5-sonnet-20241022-v2:0"

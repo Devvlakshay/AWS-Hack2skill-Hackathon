@@ -22,7 +22,7 @@ THUMBNAIL_SIZE = (300, 300)
 WEB_OPTIMIZED_SIZE = (1024, 1024)
 
 # Allowed upload folder names — prevent path traversal or arbitrary writes
-ALLOWED_FOLDERS = {"products", "models", "user_photos", "tryon_results"}
+ALLOWED_FOLDERS = {"products", "models", "user_photos", "tryon_results", "style_variations"}
 
 
 def validate_image(file_bytes: bytes) -> bool:

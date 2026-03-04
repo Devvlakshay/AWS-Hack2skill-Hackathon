@@ -57,8 +57,15 @@ class UserInDB(BaseModel):
     hashed_password: str
     phone: Optional[str] = None
     role: UserRole = UserRole.CUSTOMER
+    auth_provider: str = "local"
+    amazon_user_id: Optional[str] = None
     created_at: datetime = Field(default_factory=_utc_now)
     updated_at: datetime = Field(default_factory=_utc_now)
+
+
+class AmazonCallbackRequest(BaseModel):
+    code: str
+    redirect_uri: str
 
 
 class TokenResponse(BaseModel):
