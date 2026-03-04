@@ -14,6 +14,15 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("customer");
+  const [passwordError, setPasswordError] = useState("");
+
+  const validatePassword = (pw: string): string => {
+    if (pw.length < 12) return "Password must be at least 12 characters";
+    if (!/[A-Z]/.test(pw)) return "Password must contain an uppercase letter";
+    if (!/[a-z]/.test(pw)) return "Password must contain a lowercase letter";
+    if (!/[0-9]/.test(pw)) return "Password must contain a number";
+    return "";
+  };
 
   useEffect(() => {
     hydrate();
@@ -31,6 +40,12 @@ export default function RegisterPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    const pwError = validatePassword(password);
+    if (pwError) {
+      setPasswordError(pwError);
+      return;
+    }
+    setPasswordError("");
     try {
       await register(name, email, password, role);
       router.push("/dashboard");
@@ -350,20 +365,36 @@ export default function RegisterPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (passwordError) setPasswordError(validatePassword(e.target.value));
+                }}
                 required
-                minLength={6}
-                placeholder="At least 6 characters"
-                style={inputStyle}
+                minLength={12}
+                placeholder="Min 12 chars, uppercase, lowercase, number"
+                style={{
+                  ...inputStyle,
+                  borderColor: passwordError ? "#DC2626" : inputStyle.border ? undefined : "#E8E8E4",
+                }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = "#B8860B";
-                  e.target.style.boxShadow = "0 0 0 3px rgba(184,134,11,0.10)";
+                  e.target.style.borderColor = passwordError ? "#DC2626" : "#B8860B";
+                  e.target.style.boxShadow = passwordError
+                    ? "0 0 0 3px rgba(220,38,38,0.10)"
+                    : "0 0 0 3px rgba(184,134,11,0.10)";
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = "#E8E8E4";
+                  e.target.style.borderColor = passwordError ? "#DC2626" : "#E8E8E4";
                   e.target.style.boxShadow = "none";
                 }}
               />
+              {passwordError && (
+                <p style={{ color: "#DC2626", fontSize: "12px", marginTop: "6px", lineHeight: 1.4 }}>
+                  {passwordError}
+                </p>
+              )}
+              <p style={{ color: "#888", fontSize: "11px", marginTop: "4px" }}>
+                12+ characters with uppercase, lowercase, and a number
+              </p>
             </div>
 
             <div style={{ marginBottom: "28px" }}>
