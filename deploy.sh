@@ -40,7 +40,7 @@ echo "Starting backend (port 8000)..."
 # Kill existing backend if running
 pkill -f "uvicorn app.main:app" 2>/dev/null || true
 sleep 1
-nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2 > "$PROJECT_DIR/backend.log" 2>&1 &
+nohup uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 > "$PROJECT_DIR/backend.log" 2>&1 &
 echo "Backend PID: $!"
 
 # ---- Frontend Setup ----
