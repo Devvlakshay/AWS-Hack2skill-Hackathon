@@ -3,7 +3,8 @@
 import Link from "next/link";
 
 const TEAM = [
-  { name: "Lakshya", role: "Full-Stack Developer & AI Engineer" },
+  { name: "Yash Tiwari", role: "Team Leader — Full Stack AI & Robotics Engineer" },
+  { name: "Lakshya Borasi", role: "Full Stack Developer & AI Engineer" },
 ];
 
 const TECH_STACK = [
