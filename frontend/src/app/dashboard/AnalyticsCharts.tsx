@@ -256,8 +256,9 @@ export default function AnalyticsCharts({ data }: Props) {
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
                   labelStyle={{ fontWeight: 600, color: "#1a1a1a" }}
-                  formatter={(value: number, _name: string, props: { payload: { fullName: string; views: number; tryons: number; favorites: number } }) => {
-                    const p = props.payload;
+                  formatter={(value: number, _name: string, props: any) => {
+                    const p = props?.payload;
+                    if (!p) return [`${value} pts`, ""];
                     return [
                       `${value} pts (${p.views}V / ${p.tryons}T / ${p.favorites}F)`,
                       p.fullName,
@@ -314,8 +315,9 @@ export default function AnalyticsCharts({ data }: Props) {
                 <Tooltip
                   contentStyle={TOOLTIP_STYLE}
                   labelStyle={{ fontWeight: 600, color: "#1a1a1a" }}
-                  formatter={(value: number, _name: string, props: { payload: { fullName: string; views: number; tryons: number } }) => {
-                    const p = props.payload;
+                  formatter={(value: number, _name: string, props: any) => {
+                    const p = props?.payload;
+                    if (!p) return [`${value}%`, ""];
                     return [
                       `${value}% (${p.tryons} of ${p.views} views)`,
                       p.fullName,
