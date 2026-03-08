@@ -1,27 +1,27 @@
 [
   {
-    "user_id": "9a563789bb9c4506afb8251577cbd349",
+    "user_id": "ede1f34464b040af81455f24d6dbe498",
     "items": [
       {
-        "product_id": "prod003",
+        "product_id": "prod001",
+        "size": "M",
+        "quantity": 1,
+        "added_at": "2026-03-08T09:39:18.420310+00:00"
+      },
+      {
+        "product_id": "prod002",
         "size": "L",
         "quantity": 2,
-        "added_at": "2026-03-01T16:27:28.618395+00:00"
+        "added_at": "2026-03-08T09:39:18.429160+00:00"
+      },
+      {
+        "product_id": "prod004",
+        "size": "M",
+        "quantity": 1,
+        "added_at": "2026-03-08T09:39:18.436173+00:00"
       }
     ],
-    "updated_at": "2026-03-01T16:27:28.676020+00:00",
-    "_id": "ad191464b8ab4950ace99a6b102620fd"
-  },
-  {
-    "user_id": "bcc90881c42b43a8b30dbbb6b1415f99",
-    "items": [],
-    "updated_at": "2026-03-01T16:32:42.540169+00:00",
-    "_id": "96afc1eb3155426a8633799bda13ba4a"
-  },
-  {
-    "user_id": "c447fbc508d4485592f9fabe5d8da113",
-    "items": [],
-    "updated_at": "2026-03-01T18:41:45.909184+00:00",
-    "_id": "986064f9cdba42aeb7e6b9509ae22d88"
+    "updated_at": "2026-03-08T09:39:18.436173+00:00",
+    "_id": "c9ef2a5ce68645e0af50669dacc695cd"
   }
 ]

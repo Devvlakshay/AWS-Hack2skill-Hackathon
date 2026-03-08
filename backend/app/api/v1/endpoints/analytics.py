@@ -1,14 +1,19 @@
 """
 Analytics API Endpoints for FitView AI.
 Phase 5: Retailer Analytics Dashboard.
+Phase 6: Enhanced analytics — product visit tracking, events.
 
 GET  /analytics/dashboard           - Get retailer analytics dashboard data
 GET  /analytics/products/{id}       - Get analytics for a specific product
 GET  /analytics/export/csv          - Export analytics as CSV
 GET  /analytics/export/report       - Export analytics as HTML report
+POST /analytics/events              - Track an analytics event (product_view, etc.)
 """
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from pydantic import BaseModel, Field
 
 from app.core.deps import get_current_user, get_store
 from app.services.analytics_service import (
@@ -16,8 +21,16 @@ from app.services.analytics_service import (
     export_analytics_report,
     get_dashboard_summary,
     get_product_analytics,
+    track_event,
 )
 from app.utils.json_store import JsonStore
+
+
+class TrackEventRequest(BaseModel):
+    """Request body for tracking an analytics event."""
+    event_type: str = Field(..., description="Event type: product_view, product_tryon, product_favorite")
+    product_id: str = Field(..., description="Product ID")
+    metadata: Optional[dict] = Field(default=None, description="Extra metadata, e.g. {source: 'catalog'}")
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
@@ -94,3 +107,32 @@ async def export_report(
         media_type="text/html",
         headers={"Content-Disposition": "attachment; filename=fitview_analytics_report.html"},
     )
+
+
+@router.post("/events", status_code=status.HTTP_201_CREATED)
+async def track_analytics_event(
+    body: TrackEventRequest,
+    current_user: dict = Depends(get_current_user),
+    store: JsonStore = Depends(get_store),
+):
+    """
+    Track an analytics event (product_view, product_tryon, product_favorite).
+
+    Any authenticated user can trigger product_view events.
+    This endpoint is called by the frontend when a user views a product page.
+    """
+    allowed_types = {"product_view", "product_tryon", "product_favorite", "product_cart_add"}
+    if body.event_type not in allowed_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid event_type. Must be one of: {', '.join(sorted(allowed_types))}",
+        )
+
+    event_id = await track_event(
+        store=store,
+        event_type=body.event_type,
+        user_id=current_user["_id"],
+        product_id=body.product_id,
+        metadata=body.metadata,
+    )
+    return {"event_id": event_id, "status": "tracked"}

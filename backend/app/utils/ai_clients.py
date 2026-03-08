@@ -113,11 +113,21 @@ class GeminiImageClient:
                 "parts": [
                     {
                         "text": (
-                            "You are a virtual try-on AI. Given the model photo (first image) "
-                            "and the garment photo (second image), generate a photorealistic image "
-                            "of the model wearing the garment. Maintain the model's face, body, "
-                            "and pose exactly. The garment should look natural on the model with "
-                            "proper fit, wrinkles, and lighting. Output only the final image."
+                            "Virtual try-on task: Replace ONLY the clothing on the person in Image 1 "
+                            "with the garment shown in Image 2. "
+                            "ABSOLUTE RULES — VIOLATING ANY OF THESE IS A FAILURE: "
+                            "1. SHOW THE FULL BODY from head to toe. The ENTIRE face, head, hair, and feet MUST be visible. "
+                            "DO NOT crop or cut off any part of the person — the full figure must appear in frame. "
+                            "2. DO NOT CHANGE THE FACE. The face must be pixel-perfect identical to Image 1 — "
+                            "same eyes, nose, mouth, skin texture, expression, facial features. No alteration whatsoever. "
+                            "3. DO NOT change the hair — same style, color, length, and position. "
+                            "4. DO NOT change the skin tone, body shape, or pose. "
+                            "5. Output EXACTLY ONE person — never duplicate, mirror, or add extra people. "
+                            "6. ONLY replace the clothing area with the garment from Image 2. "
+                            "7. The garment must fit naturally with realistic wrinkles and draping. "
+                            "8. Keep the EXACT same background, camera angle, and framing as Image 1. "
+                            "9. The output image must be PORTRAIT orientation (3:4 aspect ratio) showing the complete person. "
+                            "10. Think of this as a clothing swap — everything except the clothes stays identical."
                         )
                     },
                     {"inline_data": {"mime_type": "image/png", "data": model_b64}},
@@ -146,12 +156,17 @@ class GeminiImageClient:
         parts: list[dict] = [
             {
                 "text": (
-                    "You are a virtual try-on AI. Given the model photo (first image) "
-                    "and the following garment photos, generate a single photorealistic image "
-                    "of the model wearing ALL the garments together as a complete outfit. "
-                    "Maintain the model's face, body, and pose exactly. Each garment should "
-                    "look natural on the model with proper fit, wrinkles, and lighting. "
-                    "Combine all garments into one cohesive outfit. Output only the final image."
+                    "Virtual try-on task: Dress the person in Image 1 with ALL the garments "
+                    "shown in the following images, combined as one complete outfit. "
+                    "CRITICAL RULES: "
+                    "1. SHOW THE FULL BODY from head to toe — the entire face, head, hair, and feet MUST be visible. "
+                    "DO NOT crop or cut off any part of the person. "
+                    "2. Output EXACTLY ONE person — never duplicate or mirror the person. "
+                    "3. Keep the person's face, skin tone, hair, body shape, and pose identical to Image 1. "
+                    "4. Combine all garments into one cohesive, natural-looking outfit. "
+                    "5. Preserve the original background from Image 1. "
+                    "6. The output image must be PORTRAIT orientation (3:4 aspect ratio). "
+                    "7. Output a single clean photorealistic image."
                 )
             },
             {"inline_data": {"mime_type": "image/png", "data": model_b64}},

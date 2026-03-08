@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     # AI APIs (Phase 3+)
     GEMINI_API_KEY: Optional[str] = None
-    GEMINI_MODEL: str = "gemini-2.0-flash"
+    GEMINI_MODEL: str = "gemini-2.5-flash"
     GEMINI_IMAGE_MODEL: str = "gemini-3.1-flash-image-preview"
 
     # Database
@@ -50,8 +50,8 @@ class Settings(BaseSettings):
 
     # Bedrock
     BEDROCK_REGION: str = "us-east-1"
-    BEDROCK_MODEL_ID: str = "anthropic.claude-3-5-sonnet-20241022-v2:0"
-    BEDROCK_CHAT_MODEL_ID: str = "anthropic.claude-3-5-haiku-20241022"
+    BEDROCK_MODEL_ID: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
+    BEDROCK_CHAT_MODEL_ID: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
     USE_BEDROCK: bool = False
 
     model_config = {

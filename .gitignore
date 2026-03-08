@@ -36,7 +36,7 @@ out/
 Thumbs.db
 
 # Uploads (local dev storage)
-uploads/
+# uploads/
 
 # Build artifacts
 *.tsbuildinfo

@@ -38,10 +38,10 @@
     ],
     "material": "100% Pure Silk",
     "images": [
-      "http://localhost:8000/uploads/products/prod001_web.png"
+      "http://localhost:8000/uploads/products/prod_001_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-10T10:00:00+00:00",
     "updated_at": "2026-02-10T10:00:00+00:00"
@@ -85,10 +85,10 @@
     ],
     "material": "100% Premium Cotton",
     "images": [
-      "http://localhost:8000/uploads/products/prod002_web.png"
+      "http://localhost:8000/uploads/products/prod_002_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-11T10:00:00+00:00",
     "updated_at": "2026-02-11T10:00:00+00:00"
@@ -132,10 +132,10 @@
     ],
     "material": "Georgette with Net Dupatta",
     "images": [
-      "http://localhost:8000/uploads/products/prod003_web.png"
+      "http://localhost:8000/uploads/products/prod_003_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-12T10:00:00+00:00",
     "updated_at": "2026-02-12T10:00:00+00:00"
@@ -178,10 +178,10 @@
     ],
     "material": "98% Cotton, 2% Elastane",
     "images": [
-      "http://localhost:8000/uploads/products/prod004_web.png"
+      "http://localhost:8000/uploads/products/prod_004_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-13T10:00:00+00:00",
     "updated_at": "2026-02-13T10:00:00+00:00"
@@ -214,10 +214,10 @@
     ],
     "material": "Pure Banarasi Silk",
     "images": [
-      "http://localhost:8000/uploads/products/prod005_web.png"
+      "http://localhost:8000/uploads/products/prod_005_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-14T10:00:00+00:00",
     "updated_at": "2026-02-14T10:00:00+00:00"
@@ -257,10 +257,10 @@
     ],
     "material": "100% Cotton, 220 GSM",
     "images": [
-      "http://localhost:8000/uploads/products/prod006_web.png"
+      "http://localhost:8000/uploads/products/prod_006_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-15T10:00:00+00:00",
     "updated_at": "2026-02-15T10:00:00+00:00"
@@ -304,10 +304,10 @@
     ],
     "material": "Polyester Shell, Polyester Fill",
     "images": [
-      "http://localhost:8000/uploads/products/prod007_web.png"
+      "http://localhost:8000/uploads/products/prod_007_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-16T10:00:00+00:00",
     "updated_at": "2026-02-16T10:00:00+00:00"
@@ -352,10 +352,10 @@
     ],
     "material": "Pure Cotton with Chikankari Embroidery",
     "images": [
-      "http://localhost:8000/uploads/products/prod008_web.png"
+      "http://localhost:8000/uploads/products/prod_008_web.png"
     ],
     "size_chart": {},
-    "retailer_id": "retailer001",
+    "retailer_id": "e312ae4a53d547af94efa11cf1f709c2",
     "is_deleted": false,
     "created_at": "2026-02-17T10:00:00+00:00",
     "updated_at": "2026-02-17T10:00:00+00:00"
@@ -399,5 +399,4 @@
     "updated_at": "2026-03-01T18:33:28.544847+00:00",
     "_id": "72599c1f67cc470584139ff86eb67816"
   }
-
 ]

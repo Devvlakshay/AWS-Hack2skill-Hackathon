@@ -17,6 +17,27 @@ from app.utils.json_store import JsonStore
 
 PRODUCT_COLLECTION = "products"
 
+# In-memory cache for retailer names to avoid repeated lookups
+_retailer_name_cache: dict[str, str] = {}
+
+
+async def _get_retailer_name(store: JsonStore, retailer_id: str) -> str:
+    """Look up retailer name from users collection, with caching."""
+    if retailer_id in _retailer_name_cache:
+        return _retailer_name_cache[retailer_id]
+    user = await store.find_one("users", {"_id": retailer_id})
+    name = user.get("name", "") if user else ""
+    _retailer_name_cache[retailer_id] = name
+    return name
+
+
+async def _enrich_product(store: JsonStore, doc: dict) -> dict:
+    """Add retailer_name to a product document."""
+    retailer_id = doc.get("retailer_id", "")
+    if retailer_id:
+        doc["retailer_name"] = await _get_retailer_name(store, retailer_id)
+    return doc
+
 
 async def create_product(
     store: JsonStore,
@@ -36,6 +57,7 @@ async def create_product(
 
     inserted_id = await store.insert_one(PRODUCT_COLLECTION, product_dict)
     product_dict["_id"] = inserted_id
+    await _enrich_product(store, product_dict)
     return ProductResponse(**product_dict)
 
 
@@ -77,6 +99,8 @@ async def get_products(
         skip=skip, limit=limit,
     )
 
+    for doc in products_data:
+        await _enrich_product(store, doc)
     products = [ProductResponse(**doc) for doc in products_data]
     return ProductListResponse(products=products, total=total, page=page, limit=limit)
 
@@ -89,6 +113,7 @@ async def get_product_by_id(
     doc = await store.find_one(PRODUCT_COLLECTION, {"_id": product_id, "is_deleted": False})
     if not doc:
         return None
+    await _enrich_product(store, doc)
     return ProductResponse(**doc)
 
 
@@ -119,6 +144,7 @@ async def update_product(
     )
     if not result:
         return None
+    await _enrich_product(store, result)
     return ProductResponse(**result)
 
 

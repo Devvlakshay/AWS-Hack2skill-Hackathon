@@ -32,6 +32,7 @@ from app.utils.image_processing import (
     postprocess_tryon_image,
     preprocess_garment_image,
     preprocess_model_image,
+    preprocess_user_photo,
 )
 from app.utils.json_store import JsonStore
 from app.utils.storage import upload_image
@@ -121,7 +122,8 @@ async def generate_tryon(
 
     # Step 4: Preprocess images
     preprocessed_model = await preprocess_model_image(model_image_bytes)
-    preprocessed_garment = await preprocess_garment_image(garment_image_bytes)
+    # For AI models, send the original garment (no bg removal) — they understand context better
+    preprocessed_garment_for_ai = await preprocess_model_image(garment_image_bytes)
 
     # Step 5: Call AI API for generation
     # Priority: Gemini -> Bedrock -> Fallback composite
@@ -132,7 +134,7 @@ async def generate_tryon(
         try:
             generated_image = await gemini_image_client.generate_tryon(
                 model_image=preprocessed_model,
-                garment_image=preprocessed_garment,
+                garment_image=preprocessed_garment_for_ai,
             )
             ai_provider = "gemini"
             logger.info("Try-on generated via Gemini API")
@@ -145,7 +147,7 @@ async def generate_tryon(
             from app.utils.bedrock_client import bedrock_image_client
             logger.info("Trying Bedrock for try-on generation...")
             generated_image = await bedrock_image_client.generate_tryon(
-                preprocessed_model, preprocessed_garment
+                preprocessed_model, preprocessed_garment_for_ai
             )
             ai_provider = "bedrock"
             logger.info("Try-on generated successfully via Bedrock")
@@ -154,8 +156,10 @@ async def generate_tryon(
 
     if generated_image is None:
         logger.warning("Gemini API unavailable. Using fallback composite.")
+        # Only use bg-removed garment for the crude composite fallback
+        preprocessed_garment_bg_removed = await preprocess_garment_image(garment_image_bytes)
         generated_image = await _create_fallback_composite(
-            preprocessed_model, preprocessed_garment
+            preprocessed_model, preprocessed_garment_bg_removed
         )
 
     # Step 6: Postprocess the result
@@ -210,18 +214,19 @@ async def generate_batch_tryon(
     start_time = time.time()
     batch_id = uuid.uuid4().hex
 
-    # Step 1: Generate individual try-ons for each product
     individual_results: list[TryOnResponse] = []
-    for product_id in product_ids:
-        result = await generate_tryon(store, model_id, product_id, user_id)
-        individual_results.append(result)
-
-    # Step 2: Generate combined outfit if 2+ garments
     combined_result = None
+
     if len(product_ids) >= 2:
+        # Multiple items: only generate ONE combined outfit image (e.g. shirt + pant together)
         combined_result = await _generate_combined_outfit(
             store, model_id, product_ids, user_id
         )
+    else:
+        # Single item: generate individual try-on
+        for product_id in product_ids:
+            result = await generate_tryon(store, model_id, product_id, user_id)
+            individual_results.append(result)
 
     total_ms = int((time.time() - start_time) * 1000)
     return BatchTryOnResponse(
@@ -286,7 +291,8 @@ async def _generate_combined_outfit(
         garment_raw = _load_image_from_url(product_images[0])
         if not garment_raw:
             raise TryOnError(f"Failed to load image for product {pid}")
-        preprocessed = await preprocess_garment_image(garment_raw)
+        # Send original garment to AI (no bg removal — AI handles it better)
+        preprocessed = await preprocess_model_image(garment_raw)
         garment_bytes_list.append(preprocessed)
 
     # Try Gemini multi-garment, fall back to Bedrock, then composite
@@ -378,8 +384,10 @@ async def generate_tryon_with_user_photo(
         raise TryOnError("Failed to load garment image")
 
     # Preprocess images
-    preprocessed_model = await preprocess_model_image(user_photo_bytes)
-    preprocessed_garment = await preprocess_garment_image(garment_image_bytes)
+    # User photos get full enhancement: bg removal, studio backdrop, upscale, denoise
+    preprocessed_model = await preprocess_user_photo(user_photo_bytes)
+    # Send original garment to AI (no bg removal — AI handles it better)
+    preprocessed_garment_for_ai = await preprocess_model_image(garment_image_bytes)
 
     # Call AI API for generation: Gemini -> Bedrock -> Fallback composite
     generated_image = None
@@ -389,7 +397,7 @@ async def generate_tryon_with_user_photo(
         try:
             generated_image = await gemini_image_client.generate_tryon(
                 model_image=preprocessed_model,
-                garment_image=preprocessed_garment,
+                garment_image=preprocessed_garment_for_ai,
             )
             ai_provider = "gemini"
             logger.info("Try-on (user photo) generated via Gemini API")
@@ -402,7 +410,7 @@ async def generate_tryon_with_user_photo(
             from app.utils.bedrock_client import bedrock_image_client
             logger.info("Trying Bedrock for user photo try-on generation...")
             generated_image = await bedrock_image_client.generate_tryon(
-                preprocessed_model, preprocessed_garment
+                preprocessed_model, preprocessed_garment_for_ai
             )
             ai_provider = "bedrock"
             logger.info("Try-on generated successfully via Bedrock")
@@ -411,8 +419,9 @@ async def generate_tryon_with_user_photo(
 
     if generated_image is None:
         logger.warning("Gemini API unavailable. Using fallback composite for user photo.")
+        preprocessed_garment_bg_removed = await preprocess_garment_image(garment_image_bytes)
         generated_image = await _create_fallback_composite(
-            preprocessed_model, preprocessed_garment
+            preprocessed_model, preprocessed_garment_bg_removed
         )
 
     # Postprocess the result
@@ -530,15 +539,36 @@ async def _create_session(
 
 
 def _load_image_from_url(url: str) -> Optional[bytes]:
-    """Load image bytes from a local upload URL."""
-    # Convert URL to local file path
-    # URL format: http://localhost:8000/uploads/folder/filename.ext
-    if "/uploads/" in url:
+    """Load image bytes from S3 URL, local URL, or local file path."""
+    import httpx
+
+    # S3 or any remote URL — fetch via HTTP
+    if url.startswith("https://") or url.startswith("http://"):
+        # Try local file first if it's a localhost URL
+        if "/uploads/" in url and "localhost" in url:
+            relative_path = url.split("/uploads/", 1)[1]
+            local_path = os.path.join(settings.UPLOAD_DIR, relative_path)
+            if os.path.exists(local_path):
+                with open(local_path, "rb") as f:
+                    return f.read()
+
+        # Fetch from remote (S3, CloudFront, etc.)
+        try:
+            resp = httpx.get(url, timeout=15.0, follow_redirects=True)
+            if resp.status_code == 200:
+                return resp.content
+            logger.warning(f"Failed to fetch image from {url}: HTTP {resp.status_code}")
+        except Exception as e:
+            logger.warning(f"Failed to fetch image from {url}: {e}")
+
+    # Legacy local path fallback
+    elif "/uploads/" in url:
         relative_path = url.split("/uploads/", 1)[1]
         local_path = os.path.join(settings.UPLOAD_DIR, relative_path)
         if os.path.exists(local_path):
             with open(local_path, "rb") as f:
                 return f.read()
+
     return None
 
 

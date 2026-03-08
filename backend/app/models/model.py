@@ -75,8 +75,8 @@ class ModelResponse(BaseModel):
     name: str
     gender: Gender = Gender.FEMALE
     body_type: BodyType
-    height_cm: float
-    measurements: Measurements
+    height_cm: Optional[float] = None
+    measurements: Optional[Measurements] = None
     skin_tone: SkinTone
     size: ModelSize
     retailer_id: str

@@ -61,6 +61,7 @@ class ProductResponse(BaseModel):
     images: list[str] = []
     size_chart: dict = {}
     retailer_id: str
+    retailer_name: str = ""
     is_deleted: bool = False
     created_at: datetime
     updated_at: datetime

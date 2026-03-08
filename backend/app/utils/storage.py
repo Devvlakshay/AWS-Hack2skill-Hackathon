@@ -1,16 +1,19 @@
 """
 Image Storage Utility for FitView AI.
-Handles image upload (local filesystem), validation, and resizing.
+Handles image upload to AWS S3 (primary) with local filesystem fallback.
 """
 
 import io
+import logging
 import os
 import uuid
 
 from PIL import Image
 
 from app.core.config import settings
-from app.utils.s3_storage import strip_exif
+from app.utils.s3_storage import is_s3_available, get_s3_client, strip_exif
+
+logger = logging.getLogger(__name__)
 
 # Constraints
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
@@ -24,11 +27,19 @@ WEB_OPTIMIZED_SIZE = (1024, 1024)
 # Allowed upload folder names — prevent path traversal or arbitrary writes
 ALLOWED_FOLDERS = {"products", "models", "user_photos", "tryon_results", "style_variations"}
 
+# Content type mapping
+EXT_CONTENT_TYPE = {
+    "png": "image/png",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "webp": "image/webp",
+}
+
 
 def validate_image(file_bytes: bytes) -> bool:
     """
     Validate an image file.
-    Checks: format (JPEG/PNG/WebP), minimum resolution (512x512), max file size (10MB).
+    Checks: format (JPEG/PNG/WebP), minimum resolution (100x100), max file size (10MB).
     Returns True if valid, raises ValueError otherwise.
     """
     if len(file_bytes) > MAX_FILE_SIZE:
@@ -89,6 +100,25 @@ def _validate_folder(folder: str) -> None:
         )
 
 
+def _save_to_s3(file_bytes: bytes, folder: str, filename: str, ext: str = "png") -> str:
+    """Upload image bytes to S3. Returns the public S3 URL."""
+    key = f"{folder}/{filename}.{ext}"
+    content_type = EXT_CONTENT_TYPE.get(ext, "image/png")
+
+    client = get_s3_client()
+    client.put_object(
+        Bucket=settings.AWS_S3_BUCKET,
+        Key=key,
+        Body=file_bytes,
+        ContentType=content_type,
+    )
+
+    # Return CloudFront URL if configured, otherwise direct S3 URL
+    if settings.CLOUDFRONT_URL and not settings.CLOUDFRONT_URL.startswith("https://your-"):
+        return f"{settings.CLOUDFRONT_URL}/{key}"
+    return f"https://{settings.AWS_S3_BUCKET}.s3.{settings.AWS_REGION}.amazonaws.com/{key}"
+
+
 def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "png") -> str:
     """Save image bytes to local filesystem. Returns the URL path."""
     upload_dir = os.path.join(settings.UPLOAD_DIR, folder)
@@ -101,11 +131,24 @@ def _save_local(file_bytes: bytes, folder: str, filename: str, ext: str = "png")
     return f"{settings.BASE_URL}/uploads/{folder}/{filename}.{ext}"
 
 
+def _save(file_bytes: bytes, folder: str, filename: str, ext: str = "png") -> str:
+    """Save to S3 if available, otherwise fall back to local storage."""
+    if is_s3_available():
+        try:
+            url = _save_to_s3(file_bytes, folder, filename, ext)
+            logger.info(f"Uploaded to S3: {folder}/{filename}.{ext}")
+            return url
+        except Exception as e:
+            logger.warning(f"S3 upload failed, falling back to local: {e}")
+
+    return _save_local(file_bytes, folder, filename, ext)
+
+
 def upload_image(file_bytes: bytes, folder: str, filename: str) -> str:
-    """Upload an image to local storage. Strips EXIF metadata before saving. Returns the URL."""
+    """Upload an image. Uses S3 when configured, local storage as fallback. Strips EXIF metadata."""
     _validate_folder(folder)
     clean_bytes = strip_exif(file_bytes)
-    return _save_local(clean_bytes, folder, filename)
+    return _save(clean_bytes, folder, filename)
 
 
 def upload_image_multiple_sizes(
@@ -130,8 +173,8 @@ def upload_image_multiple_sizes(
         original_ext = "jpg"
 
     urls: dict[str, str] = {}
-    urls["original"] = _save_local(clean_bytes, folder, f"{filename}_original", original_ext)
-    urls["thumbnail"] = _save_local(generate_thumbnail(clean_bytes), folder, f"{filename}_thumb")
-    urls["web_optimized"] = _save_local(generate_optimized(clean_bytes), folder, f"{filename}_web")
+    urls["original"] = _save(clean_bytes, folder, f"{filename}_original", original_ext)
+    urls["thumbnail"] = _save(generate_thumbnail(clean_bytes), folder, f"{filename}_thumb")
+    urls["web_optimized"] = _save(generate_optimized(clean_bytes), folder, f"{filename}_web")
 
     return urls

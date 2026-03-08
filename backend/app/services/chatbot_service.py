@@ -1,5 +1,5 @@
 """
-Chatbot service using AWS Bedrock (Claude 3.5 Haiku).
+Chatbot service using AWS Bedrock (Claude) with Gemini fallback.
 Manages conversation sessions in Redis with product context.
 """
 import json
@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+import httpx
 from app.models.chatbot import ChatMessage, MessageRole
 from app.utils.bedrock_client import bedrock_chat_client, BedrockError
 from app.core.config import settings
@@ -63,6 +64,45 @@ Guidelines:
 - Keep responses under 150 words unless detailed help is needed
 - If asked about something outside fashion/shopping, politely redirect
 """
+
+
+async def _gemini_chat_fallback(messages: list[dict], system_prompt: str) -> str:
+    """Use Gemini API as chat fallback when Bedrock is unavailable."""
+    # Build conversation text for Gemini
+    parts = []
+    if system_prompt:
+        parts.append({"text": f"System instructions:\n{system_prompt}\n\nConversation:"})
+    for msg in messages:
+        role_label = "User" if msg["role"] == "user" else "Assistant"
+        parts.append({"text": f"{role_label}: {msg['content']}"})
+    parts.append({"text": "Assistant:"})
+
+    payload = {
+        "contents": [{"parts": parts}],
+        "generationConfig": {"maxOutputTokens": 512, "thinkingConfig": {"thinkingBudget": 0}},
+    }
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.GEMINI_MODEL}:generateContent"
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.post(
+            url,
+            json=payload,
+            headers={
+                "Content-Type": "application/json",
+                "X-Goog-Api-Key": settings.GEMINI_API_KEY or "",
+            },
+        )
+    if response.status_code != 200:
+        raise Exception(f"Gemini chat error: {response.status_code} {response.text[:200]}")
+
+    data = response.json()
+    candidates = data.get("candidates", [])
+    if candidates:
+        parts_out = candidates[0].get("content", {}).get("parts", [])
+        for part in parts_out:
+            if "text" in part:
+                return part["text"]
+    raise Exception("No text in Gemini chat response")
 
 
 async def get_or_create_session(redis_client, session_id: Optional[str]) -> str:
@@ -160,16 +200,28 @@ async def send_message(
 
     system_prompt = _build_system_prompt(user, context)
 
-    # Get AI response
-    try:
-        response_text = await bedrock_chat_client.chat(
-            messages=messages,
-            system_prompt=system_prompt,
-            max_tokens=512,
-        )
-    except BedrockError as e:
-        logger.error(f"Bedrock chat error: {e}")
-        # Fallback response
+    # Get AI response — try Gemini first (faster, reliable), Bedrock as fallback
+    response_text = None
+
+    # Try Gemini first
+    if settings.GEMINI_API_KEY:
+        try:
+            response_text = await _gemini_chat_fallback(messages, system_prompt)
+        except Exception as e:
+            logger.warning(f"Gemini chat failed: {e}")
+
+    # Bedrock fallback (only if enabled and Gemini failed)
+    if not response_text and settings.USE_BEDROCK:
+        try:
+            response_text = await bedrock_chat_client.chat(
+                messages=messages,
+                system_prompt=system_prompt,
+                max_tokens=512,
+            )
+        except BedrockError as e:
+            logger.warning(f"Bedrock chat also failed: {e}")
+
+    if not response_text:
         response_text = (
             "I'm having trouble connecting right now. Please try again in a moment, "
             "or browse our product catalog directly!"
