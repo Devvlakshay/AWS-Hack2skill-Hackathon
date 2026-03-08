@@ -3,6 +3,8 @@
  * Phase 4: Intelligence Layer.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface StyleVariation {
@@ -42,6 +44,7 @@ export async function generateStyleVariation(
     body: JSON.stringify({ session_id: sessionId, style }),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Style variation generation failed" }));
     throw new Error(error.detail || "Style variation generation failed");
   }
@@ -55,6 +58,7 @@ export async function getStyleVariations(
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch style variations" }));
     throw new Error(error.detail || "Failed to fetch style variations");
   }

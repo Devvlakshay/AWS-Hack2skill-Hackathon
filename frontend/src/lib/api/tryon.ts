@@ -3,6 +3,8 @@
  * Phase 3: Core Virtual Try-On Engine.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface TryOnRequest {
@@ -75,6 +77,7 @@ export async function generateTryOn(data: TryOnRequest): Promise<TryOnSession> {
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Try-on generation failed" }));
     throw new Error(error.detail || "Try-on generation failed");
   }
@@ -95,6 +98,7 @@ export async function generateTryOnWithPhoto(
     body: formData,
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Try-on generation failed" }));
     throw new Error(error.detail || "Try-on generation failed");
   }
@@ -113,6 +117,7 @@ export async function getTryOnHistory(
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch history" }));
     throw new Error(error.detail || "Failed to fetch history");
   }
@@ -124,6 +129,7 @@ export async function getTryOnSession(sessionId: string): Promise<TryOnSession> 
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch session" }));
     throw new Error(error.detail || "Failed to fetch session");
   }
@@ -137,6 +143,7 @@ export async function generateBatchTryOn(data: BatchTryOnRequest): Promise<Batch
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Batch try-on generation failed" }));
     throw new Error(error.detail || "Batch try-on generation failed");
   }
@@ -155,6 +162,7 @@ export async function getRetailerTryOnHistory(
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch retailer try-on history" }));
     throw new Error(error.detail || "Failed to fetch retailer try-on history");
   }
@@ -171,6 +179,7 @@ export async function toggleTryOnFavorite(
     body: JSON.stringify({ is_favorite: isFavorite }),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to update favorite" }));
     throw new Error(error.detail || "Failed to update favorite");
   }

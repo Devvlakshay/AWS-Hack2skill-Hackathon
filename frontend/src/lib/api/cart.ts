@@ -3,6 +3,8 @@
  * Phase 4: Intelligence Layer.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface CartItem {
@@ -38,6 +40,7 @@ export async function getCart(): Promise<CartResponse> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch cart" }));
     throw new Error(error.detail || "Failed to fetch cart");
   }
@@ -55,6 +58,7 @@ export async function addToCart(
     body: JSON.stringify({ product_id: productId, size, quantity }),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to add to cart" }));
     throw new Error(error.detail || "Failed to add to cart");
   }
@@ -71,6 +75,7 @@ export async function updateCartItem(
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to update cart item" }));
     throw new Error(error.detail || "Failed to update cart item");
   }
@@ -83,6 +88,7 @@ export async function removeFromCart(productId: string): Promise<CartResponse> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to remove from cart" }));
     throw new Error(error.detail || "Failed to remove from cart");
   }
@@ -95,6 +101,7 @@ export async function clearCart(): Promise<CartResponse> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to clear cart" }));
     throw new Error(error.detail || "Failed to clear cart");
   }

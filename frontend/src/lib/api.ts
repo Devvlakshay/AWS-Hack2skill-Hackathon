@@ -7,6 +7,19 @@ const api = axios.create({
   },
 });
 
+/**
+ * Handle 401 globally — clear stale token and redirect to login.
+ * Called by both axios interceptor and fetch-based API functions.
+ */
+export function handleUnauthorized() {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  if (window.location.pathname !== "/login") {
+    window.location.href = "/login";
+  }
+}
+
 // Request interceptor: attach JWT token if available
 api.interceptors.request.use(
   (config) => {
@@ -26,14 +39,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        // Redirect to login if not already there
-        if (window.location.pathname !== "/login") {
-          window.location.href = "/login";
-        }
-      }
+      handleUnauthorized();
     }
     return Promise.reject(error);
   }

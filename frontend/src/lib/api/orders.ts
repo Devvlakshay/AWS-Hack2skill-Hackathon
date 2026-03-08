@@ -2,6 +2,8 @@
  * Orders API functions for FitView AI.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface OrderItem {
@@ -57,6 +59,7 @@ export async function placeOrder(data: {
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to place order" }));
     throw new Error(error.detail || "Failed to place order");
   }
@@ -68,6 +71,7 @@ export async function getUserOrders(page = 1, limit = 20): Promise<OrderListResp
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch orders" }));
     throw new Error(error.detail || "Failed to fetch orders");
   }
@@ -79,6 +83,7 @@ export async function getRetailerOrders(page = 1, limit = 20): Promise<OrderList
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch retailer orders" }));
     throw new Error(error.detail || "Failed to fetch retailer orders");
   }

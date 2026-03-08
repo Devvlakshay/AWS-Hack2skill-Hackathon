@@ -3,6 +3,8 @@
  * Phase 5: Retailer Analytics Dashboard.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface TopProduct {
@@ -131,6 +133,7 @@ export async function getDashboard(
   const url = `${API_BASE}/analytics/dashboard${params.toString() ? "?" + params.toString() : ""}`;
   const res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch dashboard" }));
     throw new Error(error.detail || "Failed to fetch dashboard");
   }
@@ -142,6 +145,7 @@ export async function getProductAnalytics(productId: string): Promise<ProductAna
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch product analytics" }));
     throw new Error(error.detail || "Failed to fetch product analytics");
   }
@@ -156,6 +160,7 @@ export async function exportCSV(dateFrom?: string, dateTo?: string): Promise<Blo
   const url = `${API_BASE}/analytics/export/csv${params.toString() ? "?" + params.toString() : ""}`;
   const res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     throw new Error("Failed to export CSV");
   }
   return res.blob();
@@ -169,6 +174,7 @@ export async function exportReport(dateFrom?: string, dateTo?: string): Promise<
   const url = `${API_BASE}/analytics/export/report${params.toString() ? "?" + params.toString() : ""}`;
   const res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     throw new Error("Failed to export report");
   }
   return res.blob();
@@ -189,6 +195,7 @@ export async function trackEvent(
     }),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     throw new Error("Failed to track event");
   }
   return res.json();

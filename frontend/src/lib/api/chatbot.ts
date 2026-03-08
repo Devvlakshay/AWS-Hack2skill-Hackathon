@@ -1,3 +1,5 @@
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface ChatMessage {
@@ -39,7 +41,10 @@ export async function sendChatMessage(
     },
     body: JSON.stringify({ message, session_id: sessionId }),
   });
-  if (!res.ok) throw new Error(`Chat request failed: ${res.status}`);
+  if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
+    throw new Error(`Chat request failed: ${res.status}`);
+  }
   return res.json();
 }
 
@@ -51,7 +56,10 @@ export async function getChatHistory(
     `${API_BASE}/chatbot/history?session_id=${encodeURIComponent(sessionId)}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
-  if (!res.ok) throw new Error("Failed to fetch chat history");
+  if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
+    throw new Error("Failed to fetch chat history");
+  }
   return res.json();
 }
 

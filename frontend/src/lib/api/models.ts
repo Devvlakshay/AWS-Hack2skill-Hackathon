@@ -3,6 +3,8 @@
  * Phase 2: Product & Model Management.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 type BodyType = "slim" | "average" | "curvy" | "plus_size" | "athletic";
@@ -104,6 +106,7 @@ export async function getModels(filters: ModelFilters = {}): Promise<ModelListRe
 
   const res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch models" }));
     throw new Error(error.detail || "Failed to fetch models");
   }
@@ -115,6 +118,7 @@ export async function getModel(id: string): Promise<FashionModel> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch model" }));
     throw new Error(error.detail || "Failed to fetch model");
   }
@@ -128,6 +132,7 @@ export async function createModel(data: ModelCreateData): Promise<FashionModel> 
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to create model" }));
     throw new Error(error.detail || "Failed to create model");
   }
@@ -141,6 +146,7 @@ export async function updateModel(id: string, data: ModelUpdateData): Promise<Fa
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to update model" }));
     throw new Error(error.detail || "Failed to update model");
   }
@@ -153,6 +159,7 @@ export async function deleteModel(id: string): Promise<void> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to delete model" }));
     throw new Error(error.detail || "Failed to delete model");
   }
@@ -168,6 +175,7 @@ export async function uploadModelImage(id: string, file: File): Promise<FashionM
     body: formData,
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to upload image" }));
     throw new Error(error.detail || "Failed to upload image");
   }

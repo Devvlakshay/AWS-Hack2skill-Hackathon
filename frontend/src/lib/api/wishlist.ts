@@ -3,6 +3,8 @@
  * Phase 4: Intelligence Layer.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface WishlistItem {
@@ -39,6 +41,7 @@ export async function getWishlist(): Promise<WishlistResponse> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch wishlist" }));
     throw new Error(error.detail || "Failed to fetch wishlist");
   }
@@ -58,6 +61,7 @@ export async function addToWishlist(
     }),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to add to wishlist" }));
     throw new Error(error.detail || "Failed to add to wishlist");
   }
@@ -70,6 +74,7 @@ export async function removeFromWishlist(productId: string): Promise<WishlistRes
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to remove from wishlist" }));
     throw new Error(error.detail || "Failed to remove from wishlist");
   }

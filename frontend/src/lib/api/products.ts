@@ -3,6 +3,8 @@
  * Phase 2: Product & Model Management.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 interface ProductFilters {
@@ -115,6 +117,7 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
 
   const res = await fetch(url, { headers: getAuthHeaders() });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch products" }));
     throw new Error(error.detail || "Failed to fetch products");
   }
@@ -126,6 +129,7 @@ export async function getProduct(id: string): Promise<Product> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to fetch product" }));
     throw new Error(error.detail || "Failed to fetch product");
   }
@@ -139,6 +143,7 @@ export async function createProduct(data: ProductCreateData): Promise<Product> {
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to create product" }));
     throw new Error(error.detail || "Failed to create product");
   }
@@ -152,6 +157,7 @@ export async function updateProduct(id: string, data: ProductUpdateData): Promis
     body: JSON.stringify(data),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to update product" }));
     throw new Error(error.detail || "Failed to update product");
   }
@@ -164,6 +170,7 @@ export async function deleteProduct(id: string): Promise<void> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to delete product" }));
     throw new Error(error.detail || "Failed to delete product");
   }
@@ -186,6 +193,7 @@ export async function uploadProductImages(id: string, files: File[]): Promise<Pr
       body: formData,
     });
     if (!res.ok) {
+      if (res.status === 401) { handleUnauthorized(); return null as never; }
       const error = await res.json().catch(() => ({ detail: "Failed to upload image" }));
       throw new Error(error.detail || "Failed to upload image");
     }

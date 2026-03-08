@@ -3,6 +3,8 @@
  * Phase 4: Intelligence Layer.
  */
 
+import { handleUnauthorized } from "../api";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface SizeRecommendation {
@@ -53,6 +55,7 @@ export async function getSizeRecommendation(
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to get size recommendation" }));
     throw new Error(error.detail || "Failed to get size recommendation");
   }
@@ -66,6 +69,7 @@ export async function getStyleRecommendations(
     headers: getAuthHeaders(),
   });
   if (!res.ok) {
+    if (res.status === 401) { handleUnauthorized(); return null as never; }
     const error = await res.json().catch(() => ({ detail: "Failed to get style recommendations" }));
     throw new Error(error.detail || "Failed to get style recommendations");
   }
