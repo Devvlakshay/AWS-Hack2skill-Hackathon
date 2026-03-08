@@ -2,7 +2,7 @@
 Chatbot API endpoints.
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.models.chatbot import ChatRequest, ChatResponse, ChatHistoryResponse, ChatMessage, MessageRole
@@ -43,7 +43,7 @@ async def send_chat_message(
     return ChatResponse(
         message=response_text,
         session_id=session_id,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         suggested_products=suggested_products,
     )
 

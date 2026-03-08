@@ -302,7 +302,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-
           <p
             style={{
               marginTop: "24px",

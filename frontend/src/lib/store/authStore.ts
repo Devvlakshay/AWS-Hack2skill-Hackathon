@@ -76,7 +76,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-
   register: async (
     name: string,
     email: string,

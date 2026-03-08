@@ -200,18 +200,11 @@ async def send_message(
 
     system_prompt = _build_system_prompt(user, context)
 
-    # Get AI response — try Gemini first (faster, reliable), Bedrock as fallback
+    # Get AI response — try Bedrock Claude first (primary), Gemini as fallback
     response_text = None
 
-    # Try Gemini first
-    if settings.GEMINI_API_KEY:
-        try:
-            response_text = await _gemini_chat_fallback(messages, system_prompt)
-        except Exception as e:
-            logger.warning(f"Gemini chat failed: {e}")
-
-    # Bedrock fallback (only if enabled and Gemini failed)
-    if not response_text and settings.USE_BEDROCK:
+    # Try Bedrock Claude first (primary chatbot engine)
+    if settings.USE_BEDROCK:
         try:
             response_text = await bedrock_chat_client.chat(
                 messages=messages,
@@ -219,7 +212,14 @@ async def send_message(
                 max_tokens=512,
             )
         except BedrockError as e:
-            logger.warning(f"Bedrock chat also failed: {e}")
+            logger.warning(f"Bedrock chat failed: {e}")
+
+    # Gemini fallback (if Bedrock unavailable or failed)
+    if not response_text and settings.GEMINI_API_KEY:
+        try:
+            response_text = await _gemini_chat_fallback(messages, system_prompt)
+        except Exception as e:
+            logger.warning(f"Gemini chat fallback also failed: {e}")
 
     if not response_text:
         response_text = (

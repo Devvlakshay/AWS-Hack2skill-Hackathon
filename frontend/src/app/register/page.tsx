@@ -461,8 +461,6 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          {/* OR divider */}
-
           <p
             style={{
               marginTop: "24px",

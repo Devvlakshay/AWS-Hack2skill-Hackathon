@@ -164,7 +164,7 @@ class BedrockImageClient:
 class BedrockChatClient:
     """
     AWS Bedrock client for conversational AI (chatbot).
-    Uses Claude 3.5 Haiku for fast, cost-effective responses.
+    Uses Qwen 3.5 via Bedrock Converse API for fast responses.
     """
 
     def __init__(self):
@@ -182,15 +182,46 @@ class BedrockChatClient:
             )
         return self._client
 
-    def _invoke_sync(self, body: dict) -> dict:
+    def _converse_sync(
+        self,
+        messages: list[dict],
+        system_prompt: str,
+        max_tokens: int,
+    ) -> str:
+        """Call Bedrock Converse API (model-agnostic, works with Qwen/Claude/etc)."""
         client = self._get_client()
-        response = client.invoke_model(
-            modelId=self.model_id,
-            body=json.dumps(body),
-            contentType="application/json",
-            accept="application/json",
-        )
-        return json.loads(response["body"].read())
+
+        # Build system config
+        system_config = []
+        if system_prompt:
+            system_config = [{"text": system_prompt}]
+
+        # Convert messages to Converse format
+        converse_messages = []
+        for msg in messages:
+            converse_messages.append({
+                "role": msg["role"],
+                "content": [{"text": msg["content"]}],
+            })
+
+        kwargs: dict = {
+            "modelId": self.model_id,
+            "messages": converse_messages,
+            "inferenceConfig": {"maxTokens": max_tokens, "temperature": 0.7},
+        }
+        if system_config:
+            kwargs["system"] = system_config
+
+        response = client.converse(**kwargs)
+
+        # Extract text from response
+        output = response.get("output", {})
+        message = output.get("message", {})
+        content_blocks = message.get("content", [])
+        for block in content_blocks:
+            if "text" in block:
+                return block["text"]
+        return "I'm sorry, I couldn't generate a response. Please try again."
 
     async def chat(
         self,
@@ -199,22 +230,11 @@ class BedrockChatClient:
         max_tokens: int = 1024,
     ) -> str:
         """Send messages and get a response string."""
-        body: dict = {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": max_tokens,
-            "messages": messages,
-        }
-        if system_prompt:
-            body["system"] = system_prompt
-
         loop = asyncio.get_running_loop()
         try:
-            result = await loop.run_in_executor(None, self._invoke_sync, body)
-            content = result.get("content", [])
-            for block in content:
-                if block.get("type") == "text":
-                    return block["text"]
-            return "I'm sorry, I couldn't generate a response. Please try again."
+            return await loop.run_in_executor(
+                None, self._converse_sync, messages, system_prompt, max_tokens
+            )
         except ClientError as e:
             logger.error(f"Bedrock chat error: {e}")
             raise BedrockError(f"Chat failed: {e}") from e

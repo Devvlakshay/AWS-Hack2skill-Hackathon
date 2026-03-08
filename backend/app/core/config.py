@@ -51,8 +51,8 @@ class Settings(BaseSettings):
     # Bedrock
     BEDROCK_REGION: str = "us-east-1"
     BEDROCK_MODEL_ID: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
-    BEDROCK_CHAT_MODEL_ID: str = "us.anthropic.claude-3-haiku-20240307-v1:0"
-    USE_BEDROCK: bool = False
+    BEDROCK_CHAT_MODEL_ID: str = "qwen.qwen3-32b-v1:0"
+    USE_BEDROCK: bool = True
 
     model_config = {
         "env_file": ".env",

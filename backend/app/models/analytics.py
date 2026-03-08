@@ -3,7 +3,7 @@ Analytics Pydantic schemas for FitView AI.
 Phase 5: Retailer Analytics Dashboard.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -56,4 +56,4 @@ class AnalyticsEvent(BaseModel):
     user_id: str
     product_id: Optional[str] = None
     metadata: Optional[dict] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
