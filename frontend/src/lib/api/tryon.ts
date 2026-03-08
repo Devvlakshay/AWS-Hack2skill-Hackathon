@@ -143,6 +143,24 @@ export async function generateBatchTryOn(data: BatchTryOnRequest): Promise<Batch
   return res.json();
 }
 
+export async function getRetailerTryOnHistory(
+  page: number = 1,
+  limit: number = 20
+): Promise<TryOnHistoryResponse> {
+  const params = new URLSearchParams();
+  params.set("page", String(page));
+  params.set("limit", String(limit));
+
+  const res = await fetch(`${API_BASE}/tryon/retailer-history?${params.toString()}`, {
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Failed to fetch retailer try-on history" }));
+    throw new Error(error.detail || "Failed to fetch retailer try-on history");
+  }
+  return res.json();
+}
+
 export async function toggleTryOnFavorite(
   sessionId: string,
   isFavorite: boolean

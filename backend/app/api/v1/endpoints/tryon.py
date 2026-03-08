@@ -33,6 +33,7 @@ from app.services.tryon_service import (
     generate_tryon_with_user_photo,
     get_tryon_by_id,
     get_tryon_history,
+    get_tryon_history_for_retailer,
     toggle_favorite,
 )
 from app.utils.json_store import JsonStore
@@ -196,6 +197,27 @@ async def list_tryon_history(
     return await get_tryon_history(
         store=store,
         user_id=current_user["_id"],
+        page=page,
+        limit=limit,
+    )
+
+
+@router.get("/retailer-history", response_model=TryOnHistoryResponse)
+async def list_retailer_tryon_history(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    current_user: dict = Depends(get_current_user),
+    store: JsonStore = Depends(get_store),
+):
+    """Get try-on history for this retailer's products."""
+    if current_user.get("role") not in ("retailer", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only retailers can view retailer try-on history",
+        )
+    return await get_tryon_history_for_retailer(
+        store=store,
+        retailer_id=current_user["_id"],
         page=page,
         limit=limit,
     )

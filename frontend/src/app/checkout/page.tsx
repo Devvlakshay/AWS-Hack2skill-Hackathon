@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
+import { placeOrder } from "@/lib/api/orders";
 
 type Step = "address" | "payment" | "confirm";
 type PaymentMethod = "upi" | "card" | "cod";
@@ -53,10 +55,27 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setOrderPlaced(true);
-    await clear();
-    setIsProcessing(false);
+    try {
+      await placeOrder({
+        items: (items || []).map((item: any) => ({
+          product_id: item.product_id,
+          product_name: item.product_name || "",
+          product_price: item.product_price || 0,
+          product_image: item.product_image || "",
+          size: item.size || "",
+          quantity: item.quantity || 1,
+        })),
+        address: form,
+        payment_method: paymentMethod,
+        total_price: totalPrice || 0,
+      });
+      setOrderPlaced(true);
+      await clear();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to place order");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const inputStyle = {

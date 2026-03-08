@@ -470,6 +470,38 @@ async def get_tryon_history(
     return TryOnHistoryResponse(sessions=sessions, total=total, page=page, limit=limit)
 
 
+async def get_tryon_history_for_retailer(
+    store: JsonStore,
+    retailer_id: str,
+    page: int = 1,
+    limit: int = 20,
+) -> TryOnHistoryResponse:
+    """Get try-on history for sessions using this retailer's products."""
+    # Get retailer's product IDs
+    products = await store.find_many("products", {"retailer_id": retailer_id}, sort_field="created_at", sort_order=-1, skip=0, limit=1000)
+    product_ids = {p["_id"] for p in products}
+
+    if not product_ids:
+        return TryOnHistoryResponse(sessions=[], total=0, page=page, limit=limit)
+
+    # Get all tryon sessions and filter by retailer's products
+    all_sessions = await store.find_many(TRYON_COLLECTION, {}, sort_field="created_at", sort_order=-1, skip=0, limit=1000)
+
+    retailer_sessions = []
+    for session in all_sessions:
+        session_product_ids = session.get("product_id", "").split(",")
+        if any(pid.strip() in product_ids for pid in session_product_ids):
+            retailer_sessions.append(session)
+
+    total = len(retailer_sessions)
+    start = (page - 1) * limit
+    end = start + limit
+    page_sessions = retailer_sessions[start:end]
+
+    sessions = [TryOnResponse(**doc) for doc in page_sessions]
+    return TryOnHistoryResponse(sessions=sessions, total=total, page=page, limit=limit)
+
+
 async def get_tryon_by_id(
     store: JsonStore,
     session_id: str,
