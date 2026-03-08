@@ -4,6 +4,7 @@
  */
 
 import { create } from "zustand";
+import toast from "react-hot-toast";
 import {
   generateTryOn,
   generateTryOnWithPhoto,
@@ -176,7 +177,7 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
   },
 
   generateBatch: async () => {
-    const { selectedModelId, selectedProductIds } = get();
+    const { selectedModelId, selectedProductIds, userPhoto } = get();
 
     if (!selectedModelId) {
       set({ generateError: "Please select a model" });
@@ -191,6 +192,37 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
     if (selectedProductIds.length === 1) {
       set({ selectedProductId: selectedProductIds[0] });
       await get().generate();
+      return;
+    }
+
+    // User photo upload: generate for each product, show combined result
+    if (userPhoto && selectedModelId === "user_upload") {
+      set({ isGenerating: true, generateError: null, currentResult: null, batchResults: null });
+      try {
+        const results: TryOnSession[] = [];
+        for (const productId of selectedProductIds) {
+          const result = await generateTryOnWithPhoto(userPhoto, productId);
+          results.push(result);
+        }
+        const totalTime = results.reduce((sum, r) => sum + (r.processing_time_ms || 0), 0);
+        // Use the last result as the combined view (single combined image)
+        const combinedResult = results.length > 0 ? results[results.length - 1] : null;
+        set({
+          batchResults: {
+            batch_id: `batch_${Date.now()}`,
+            individual_results: [],
+            combined_result: combinedResult,
+            total_processing_time_ms: totalTime,
+            product_count: results.length,
+          },
+          isGenerating: false,
+        });
+      } catch (error: any) {
+        set({
+          generateError: error.message || "Try-on generation failed",
+          isGenerating: false,
+        });
+      }
       return;
     }
 
@@ -228,43 +260,55 @@ export const useTryOnStore = create<TryOnState>((set, get) => ({
   },
 
   toggleFavorite: async (sessionId, isFavorite) => {
+    const matchId = (s: TryOnSession) => s._id === sessionId || s.id === sessionId;
+
+    const updateFav = (s: TryOnSession, fav: boolean): TryOnSession => ({ ...s, is_favorite: fav });
+
+    const updateBatch = (batch: BatchTryOnResponse | null, fav: boolean): BatchTryOnResponse | null => {
+      if (!batch) return null;
+      return {
+        ...batch,
+        combined_result: batch.combined_result && matchId(batch.combined_result)
+          ? updateFav(batch.combined_result, fav) : batch.combined_result,
+        individual_results: batch.individual_results.map((s) =>
+          matchId(s) ? updateFav(s, fav) : s
+        ),
+      };
+    };
+
     // Optimistic update
     set((state) => ({
-      history: state.history.map((s) =>
-        (s._id === sessionId || s.id === sessionId) ? { ...s, is_favorite: isFavorite } : s
-      ),
-      currentResult:
-        state.currentResult &&
-        (state.currentResult._id === sessionId || state.currentResult.id === sessionId)
-          ? { ...state.currentResult, is_favorite: isFavorite }
-          : state.currentResult,
+      history: state.history.map((s) => matchId(s) ? updateFav(s, isFavorite) : s),
+      currentResult: state.currentResult && matchId(state.currentResult)
+        ? updateFav(state.currentResult, isFavorite) : state.currentResult,
+      batchResults: updateBatch(state.batchResults, isFavorite),
     }));
+
     try {
       const updated = await toggleTryOnFavorite(sessionId, isFavorite);
-      // Confirm with server response
       set((state) => ({
-        history: state.history.map((s) =>
-          (s._id === sessionId || s.id === sessionId) ? updated : s
-        ),
-        currentResult:
-          state.currentResult &&
-          (state.currentResult._id === sessionId || state.currentResult.id === sessionId)
-            ? updated
-            : state.currentResult,
+        history: state.history.map((s) => matchId(s) ? updated : s),
+        currentResult: state.currentResult && matchId(state.currentResult)
+          ? updated : state.currentResult,
+        batchResults: state.batchResults ? {
+          ...state.batchResults,
+          combined_result: state.batchResults.combined_result && matchId(state.batchResults.combined_result)
+            ? updated : state.batchResults.combined_result,
+          individual_results: state.batchResults.individual_results.map((s) =>
+            matchId(s) ? updated : s
+          ),
+        } : null,
       }));
+      toast.success(isFavorite ? "Saved to Favourites" : "Removed from Favourites");
     } catch (error: any) {
       // Revert on failure
       set((state) => ({
-        history: state.history.map((s) =>
-          (s._id === sessionId || s.id === sessionId) ? { ...s, is_favorite: !isFavorite } : s
-        ),
-        currentResult:
-          state.currentResult &&
-          (state.currentResult._id === sessionId || state.currentResult.id === sessionId)
-            ? { ...state.currentResult, is_favorite: !isFavorite }
-            : state.currentResult,
+        history: state.history.map((s) => matchId(s) ? updateFav(s, !isFavorite) : s),
+        currentResult: state.currentResult && matchId(state.currentResult)
+          ? updateFav(state.currentResult, !isFavorite) : state.currentResult,
+        batchResults: updateBatch(state.batchResults, !isFavorite),
       }));
-      console.error("Failed to toggle favorite:", error);
+      toast.error(error.message || "Failed to update favourite");
     }
   },
 

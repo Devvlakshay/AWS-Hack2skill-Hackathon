@@ -17,15 +17,9 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useTryOnStore } from "@/lib/store/tryonStore";
 import { getModels, type FashionModel } from "@/lib/api/models";
 import { getProducts, type Product } from "@/lib/api/products";
+import { trackEventSilent } from "@/lib/api/analytics";
+import { addToCart } from "@/lib/api/cart";
 
-const ThreeDViewer = dynamic(() => import("@/components/ThreeDViewer"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-[#F0EDE6] rounded-2xl">
-      <div className="w-8 h-8 border-2 border-[#B8860B] border-t-transparent rounded-full animate-spin" />
-    </div>
-  ),
-});
 
 type Step = "select-model" | "select-product" | "generating" | "result";
 
@@ -85,7 +79,9 @@ function TryOnPageInner() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
-  const [show3DView, setShow3DView] = useState(false);
+  const [cartSize, setCartSize] = useState("M");
+  const [addingToCart, setAddingToCart] = useState(false);
+
   const [resultTab, setResultTab] = useState<"combined" | "individual">("combined");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -179,6 +175,16 @@ function TryOnPageInner() {
 
   const handleGenerate = async () => {
     clearError();
+    // Track product_tryon events for analytics
+    const idsToTrack = selectedProductIds.length > 0
+      ? selectedProductIds
+      : selectedProductId ? [selectedProductId] : [];
+    for (const pid of idsToTrack) {
+      trackEventSilent("product_tryon", pid, {
+        source: "tryon_page",
+        model_id: selectedModelId || "unknown",
+      });
+    }
     if (selectedProductIds.length > 1) {
       await generateBatch();
     } else if (selectedProductIds.length === 1) {
@@ -196,7 +202,7 @@ function TryOnPageInner() {
     setSelectedModel(null);
     setSelectedProduct(null);
     setStep("select-model");
-    setShow3DView(false);
+
     setShowBeforeAfter(false);
     setResultTab("combined");
   };
@@ -205,7 +211,7 @@ function TryOnPageInner() {
     clearResult();
     clearProductSelection();
     setStep("select-product");
-    setShow3DView(false);
+
     setShowBeforeAfter(false);
     setResultTab("combined");
   };
@@ -711,9 +717,9 @@ function TryOnPageInner() {
           <div>
             {batchResults ? (
               <div>
-                {/* Batch Tab Bar */}
-                <div className="flex items-center gap-1 border border-[#E8E4DC] rounded-xl p-1 mb-6 w-fit bg-white">
-                  {batchResults.combined_result && (
+                {/* Batch Tab Bar — only show if there are both combined and individual results */}
+                {batchResults.individual_results.length > 0 && batchResults.combined_result && (
+                  <div className="flex items-center gap-1 border border-[#E8E4DC] rounded-xl p-1 mb-6 w-fit bg-white">
                     <button
                       onClick={() => setResultTab("combined")}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
@@ -724,25 +730,25 @@ function TryOnPageInner() {
                     >
                       Combined Outfit
                     </button>
-                  )}
-                  <button
-                    onClick={() => setResultTab("individual")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
-                      ${resultTab === "individual"
-                        ? "bg-[#1a1a1a] text-white"
-                        : "text-[#6B6B6B] hover:text-[#1a1a1a]"
-                      }`}
-                  >
-                    Individual ({batchResults.individual_results.length})
-                  </button>
-                </div>
+                    <button
+                      onClick={() => setResultTab("individual")}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all
+                        ${resultTab === "individual"
+                          ? "bg-[#1a1a1a] text-white"
+                          : "text-[#6B6B6B] hover:text-[#1a1a1a]"
+                        }`}
+                    >
+                      Individual ({batchResults.individual_results.length})
+                    </button>
+                  </div>
+                )}
 
                 <p className="text-xs text-[#9A9A9A] mb-6">
                   Total processing time: {batchResults.total_processing_time_ms}ms
                 </p>
 
                 {/* Combined Outfit Tab */}
-                {resultTab === "combined" && batchResults.combined_result && (
+                {(resultTab === "combined" || batchResults.individual_results.length === 0) && batchResults.combined_result && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     <div className="aspect-[3/4] border border-[#E8E4DC] rounded-2xl overflow-hidden bg-[#F0EDE6]">
                       <img src={batchResults.combined_result.result_url} alt="Combined outfit" className="w-full h-full object-cover" />
@@ -801,19 +807,37 @@ function TryOnPageInner() {
                           <div className="p-4">
                             <p className="text-[#1a1a1a] text-sm font-medium truncate">{result.product_name}</p>
                             <p className="text-[#9A9A9A] text-xs mt-0.5">{result.processing_time_ms}ms</p>
-                            <button
-                              onClick={() => toggleFavorite(result._id || result.id, !result.is_favorite)}
-                              className={`mt-3 w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-xs font-medium border transition-all
-                                ${result.is_favorite
-                                  ? "bg-rose-50 text-rose-600 border-rose-200"
-                                  : "bg-white text-[#6B6B6B] border-[#E8E4DC] hover:border-[#B8860B] hover:text-[#B8860B]"
-                                }`}
-                            >
-                              <svg className="w-3.5 h-3.5" fill={result.is_favorite ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                              </svg>
-                              {result.is_favorite ? "Favourited" : "Favourite"}
-                            </button>
+                            <div className="mt-3 flex gap-2">
+                              <button
+                                onClick={() => toggleFavorite(result._id || result.id, !result.is_favorite)}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium border transition-all
+                                  ${result.is_favorite
+                                    ? "bg-rose-50 text-rose-600 border-rose-200"
+                                    : "bg-white text-[#6B6B6B] border-[#E8E4DC] hover:border-[#B8860B] hover:text-[#B8860B]"
+                                  }`}
+                              >
+                                <svg className="w-3.5 h-3.5" fill={result.is_favorite ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                {result.is_favorite ? "Saved" : "Save"}
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    await addToCart(result.product_id, "M", 1);
+                                    toast.success(`Added ${result.product_name} to cart`);
+                                  } catch (err: any) {
+                                    toast.error(err.message || "Failed to add to cart");
+                                  }
+                                }}
+                                className="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium bg-[#B8860B] text-white hover:bg-[#9A7209] transition-all"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                                </svg>
+                                Cart
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -832,18 +856,12 @@ function TryOnPageInner() {
             ) : currentResult ? (
               /* Single Result */
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                {/* Image / 3D View */}
+                {/* Image View */}
                 <div className="relative">
-                  {show3DView ? (
-                    <div className="aspect-[3/4] border border-[#E8E4DC] rounded-2xl overflow-hidden">
-                      <ThreeDViewer imageUrl={currentResult.result_url} />
-                    </div>
-                  ) : (
-                    <div className="aspect-[3/4] border border-[#E8E4DC] rounded-2xl overflow-hidden bg-[#F0EDE6]">
-                      <img src={currentResult.result_url} alt="Try-on result" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  {showBeforeAfter && !show3DView && (
+                  <div className="aspect-[3/4] border border-[#E8E4DC] rounded-2xl overflow-hidden bg-[#F0EDE6]">
+                    <img src={currentResult.result_url} alt="Try-on result" className="w-full h-full object-cover" />
+                  </div>
+                  {showBeforeAfter && (
                     /* Before/After: side-by-side on desktop, stacked on mobile */
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-2xl overflow-hidden">
                       <div className="relative bg-[#F0EDE6] rounded-xl overflow-hidden aspect-[3/4]">
@@ -893,35 +911,20 @@ function TryOnPageInner() {
                     ))}
                   </div>
 
-                  {/* View Toggles */}
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    <button
-                      onClick={() => { setShowBeforeAfter(!showBeforeAfter); if (!showBeforeAfter) setShow3DView(false); }}
-                      className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium border transition-all
-                        ${showBeforeAfter
-                          ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
-                          : "bg-white text-[#6B6B6B] border-[#D4C9B0] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
-                        }`}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      Before / After
-                    </button>
-                    <button
-                      onClick={() => { setShow3DView(!show3DView); if (!show3DView) setShowBeforeAfter(false); }}
-                      className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium border transition-all
-                        ${show3DView
-                          ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
-                          : "bg-white text-[#6B6B6B] border-[#D4C9B0] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
-                        }`}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-                      </svg>
-                      3D View
-                    </button>
-                  </div>
+                  {/* View Toggle */}
+                  <button
+                    onClick={() => setShowBeforeAfter(!showBeforeAfter)}
+                    className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium border transition-all mb-3
+                      ${showBeforeAfter
+                        ? "bg-[#1a1a1a] text-white border-[#1a1a1a]"
+                        : "bg-white text-[#6B6B6B] border-[#D4C9B0] hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+                      }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    Before / After
+                  </button>
 
                   {/* Favourite */}
                   <button
@@ -953,6 +956,55 @@ function TryOnPageInner() {
                     </svg>
                     Download Image
                   </a>
+
+                  {/* Add to Cart */}
+                  {(() => {
+                    const product = products.find(
+                      (p) => p._id === currentResult.product_id || p.id === currentResult.product_id
+                    );
+                    const sizes = product?.sizes?.filter((s) => s.stock > 0) || [];
+                    return (
+                      <div className="flex gap-2 mb-3">
+                        <select
+                          value={cartSize}
+                          onChange={(e) => setCartSize(e.target.value)}
+                          className="px-3 py-3 rounded-xl text-sm font-medium border border-[#E8E4DC] bg-white text-[#1a1a1a] focus:outline-none focus:border-[#B8860B]"
+                        >
+                          {sizes.length > 0
+                            ? sizes.map((s) => (
+                                <option key={s.size} value={s.size}>
+                                  {s.size}
+                                </option>
+                              ))
+                            : ["S", "M", "L", "XL"].map((s) => (
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
+                              ))}
+                        </select>
+                        <button
+                          disabled={addingToCart}
+                          onClick={async () => {
+                            setAddingToCart(true);
+                            try {
+                              await addToCart(currentResult.product_id, cartSize, 1);
+                              toast.success(`Added ${currentResult.product_name} (${cartSize}) to cart`);
+                            } catch (err: any) {
+                              toast.error(err.message || "Failed to add to cart");
+                            } finally {
+                              setAddingToCart(false);
+                            }
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-medium bg-[#B8860B] text-white hover:bg-[#9A7209] transition-all disabled:opacity-50"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                          </svg>
+                          {addingToCart ? "Adding..." : "Add to Cart"}
+                        </button>
+                      </div>
+                    );
+                  })()}
 
                   {/* Navigation */}
                   <div className="grid grid-cols-2 gap-3">

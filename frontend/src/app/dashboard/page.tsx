@@ -400,11 +400,17 @@ function RetailerDashboard({
       {data && !loading && (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <SummaryCard label="Total Try-Ons" value={data.total_tryons} accentColor="#B8860B" />
             <SummaryCard label="Total Products" value={data.total_products} accentColor="#4B7CF3" />
             <SummaryCard label="Favourites" value={data.total_favorites} accentColor="#E05C7A" />
             <SummaryCard label="Avg Processing" value={formatMs(data.avg_processing_time_ms)} accentColor="#2A9D5C" />
+            <SummaryCard label="Total Models" value={data.total_models} accentColor="#E8973A" />
+            <SummaryCard
+              label="Cart Adds"
+              value={(data.cart_analytics || []).reduce((sum, ca) => sum + ca.cart_adds, 0)}
+              accentColor="#9333EA"
+            />
           </div>
 
           {/* Charts */}
@@ -487,6 +493,66 @@ function RetailerDashboard({
               )}
             </div>
           </div>
+
+          {/* Product Insights — Revenue Potential + User Engagement */}
+          {data.revenue_potential && data.revenue_potential.length > 0 && (
+            <div className="mb-6">
+              <h2
+                className="text-lg font-medium text-[#1a1a1a] mb-4"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                Product Insights
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                {data.revenue_potential.map((rp, i) => (
+                  <div
+                    key={rp.product_id}
+                    className="bg-white border border-[#E8E4DC] rounded-xl p-5"
+                    style={{
+                      borderTopColor: i === 0 ? "#B8860B" : i === 1 ? "#4B7CF3" : "#2A9D5C",
+                      borderTopWidth: 2,
+                    }}
+                  >
+                    <p className="text-xs text-[#9A9A9A] mb-1 tracking-wide uppercase">
+                      {i === 0 ? "Highest Potential" : i === 1 ? "Strong Performer" : "Rising Interest"}
+                    </p>
+                    <p
+                      className="text-sm font-semibold text-[#1a1a1a] mb-3 truncate"
+                      title={rp.name}
+                    >
+                      {rp.name}
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <span className="text-lg font-bold text-[#B8860B]">{rp.score}</span>
+                        <span className="text-xs text-[#9A9A9A] ml-1">pts</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-[#6B6B6B]">
+                        <span>{rp.tryons} try-ons</span>
+                        <span className="text-[#E05C7A]">{rp.favorites} favs</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* User engagement summary row */}
+              {data.user_engagement && (
+                <div className="bg-white border border-[#E8E4DC] rounded-xl p-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-[#9A9A9A] mb-0.5 tracking-wide uppercase">User Engagement Summary</p>
+                      <p className="text-sm text-[#6B6B6B]">
+                        <span className="font-semibold text-[#1a1a1a]">{data.user_engagement.unique_users}</span> unique users across{" "}
+                        <span className="font-semibold text-[#1a1a1a]">{data.user_engagement.total_sessions}</span> sessions, averaging{" "}
+                        <span className="font-semibold text-[#B8860B]">{data.user_engagement.avg_tryons_per_user}</span> try-ons per user.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Export */}
           <div className="bg-white border border-[#E8E4DC] rounded-xl p-6 mb-10">

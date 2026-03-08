@@ -20,6 +20,7 @@ import {
   type SizeRecommendation,
   type RecommendedProduct,
 } from "@/lib/api/recommendations";
+import { trackEventSilent } from "@/lib/api/analytics";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -68,6 +69,13 @@ export default function ProductDetailPage() {
       clearCurrentProduct();
     };
   }, [productId, fetchProduct, clearCurrentProduct]);
+
+  // Track product view for analytics
+  useEffect(() => {
+    if (isAuthenticated && productId) {
+      trackEventSilent("product_view", productId, { source: "catalog" });
+    }
+  }, [isAuthenticated, productId]);
 
   // Fetch recommendations and wishlist status when authenticated
   useEffect(() => {
@@ -409,6 +417,31 @@ export default function ProductDetailPage() {
             >
               {product.name}
             </h1>
+
+            {product.retailer_name && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  marginTop: "10px",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span
+                  style={{
+                    fontSize: "13px",
+                    color: "#B8860B",
+                    fontWeight: 600,
+                  }}
+                >
+                  Sold by {product.retailer_name}
+                </span>
+              </div>
+            )}
 
             <p
               style={{

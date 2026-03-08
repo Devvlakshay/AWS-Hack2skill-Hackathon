@@ -3,7 +3,7 @@
  * Phase 2: Product & Model Management.
  */
 
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1`;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 interface ProductFilters {
   category?: string;
@@ -65,6 +65,7 @@ export interface Product {
   images: string[];
   size_chart: Record<string, unknown>;
   retailer_id: string;
+  retailer_name: string;
   is_deleted: boolean;
   created_at: string;
   updated_at: string;

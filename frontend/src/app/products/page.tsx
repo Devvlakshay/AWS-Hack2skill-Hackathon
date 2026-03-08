@@ -630,6 +630,32 @@ export default function ProductCatalogPage() {
                           {product.description}
                         </p>
 
+                        {product.retailer_name && (
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                              marginTop: "8px",
+                            }}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8860B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                              <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                            <span
+                              style={{
+                                fontSize: "11px",
+                                color: "#B8860B",
+                                fontWeight: 600,
+                                letterSpacing: "0.3px",
+                              }}
+                            >
+                              {product.retailer_name}
+                            </span>
+                          </div>
+                        )}
+
                         <div
                           style={{
                             display: "flex",

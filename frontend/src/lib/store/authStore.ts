@@ -17,7 +17,6 @@ interface AuthState {
   error: string | null;
 
   login: (email: string, password: string) => Promise<void>;
-  loginWithAmazon: (code: string, redirectUri: string) => Promise<void>;
   register: (
     name: string,
     email: string,
@@ -77,33 +76,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  loginWithAmazon: async (code: string, redirectUri: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await api.post("/auth/amazon/callback", {
-        code,
-        redirect_uri: redirectUri,
-      });
-      const { access_token, user } = response.data;
-      localStorage.setItem("token", access_token);
-      localStorage.setItem("user", JSON.stringify(user));
-      set({
-        token: access_token,
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } catch (error: any) {
-      const detail = error.response?.data?.detail;
-      const message = Array.isArray(detail)
-        ? detail.map((e: any) => e.msg || String(e)).join("; ")
-        : typeof detail === "string"
-        ? detail
-        : "Amazon sign-in failed. Please try again.";
-      set({ error: message, isLoading: false });
-      throw error;
-    }
-  },
 
   register: async (
     name: string,

@@ -8,7 +8,7 @@ interface Message {
   timestamp: Date;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 const QUICK_REPLIES = [
   "Show me party dresses",
@@ -62,7 +62,7 @@ export default function ChatBot() {
     setIsLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/v1/chatbot/message`, {
+      const res = await fetch(`${API_BASE}/chatbot/message`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

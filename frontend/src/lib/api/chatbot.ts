@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -31,7 +31,7 @@ export async function sendChatMessage(
   message: string,
   sessionId?: string | null
 ): Promise<ChatResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/chatbot/message`, {
+  const res = await fetch(`${API_BASE}/chatbot/message`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export async function getChatHistory(
   sessionId: string
 ): Promise<ChatHistoryResponse> {
   const res = await fetch(
-    `${API_BASE}/api/v1/chatbot/history?session_id=${encodeURIComponent(sessionId)}`,
+    `${API_BASE}/chatbot/history?session_id=${encodeURIComponent(sessionId)}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   if (!res.ok) throw new Error("Failed to fetch chat history");
@@ -57,7 +57,7 @@ export async function getChatHistory(
 
 export async function clearChatSession(token: string, sessionId: string): Promise<void> {
   await fetch(
-    `${API_BASE}/api/v1/chatbot/session?session_id=${encodeURIComponent(sessionId)}`,
+    `${API_BASE}/chatbot/session?session_id=${encodeURIComponent(sessionId)}`,
     {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
