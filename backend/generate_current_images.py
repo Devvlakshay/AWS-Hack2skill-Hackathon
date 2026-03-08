@@ -8,7 +8,7 @@ import time
 from google import genai
 from google.genai import types
 
-API_KEY = os.environ.get("GEMINI_API_KEY", "your-gemini-api-key")
+API_KEY = os.environ.get("GEMINI_API_KEY", "")
 MODEL_NAME = "gemini-2.0-flash-exp-image-generation"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

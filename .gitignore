@@ -56,6 +56,10 @@ yarn-error.log*
 # Backend test/scratch files
 backend/image.py
 backend/krishna_divine.png
+backend/test_api_flows.py
+backend/test_production_flows.py
+backend/generate_images.py
+backend/generate_real_images.py
 
 # Claude
 .claude/
