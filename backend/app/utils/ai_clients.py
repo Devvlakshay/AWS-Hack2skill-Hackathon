@@ -113,21 +113,26 @@ class GeminiImageClient:
                 "parts": [
                     {
                         "text": (
-                            "Virtual try-on task: Replace ONLY the clothing on the person in Image 1 "
-                            "with the garment shown in Image 2. "
+                            "Virtual try-on task: Dress the person in Image 1 with the garment shown in Image 2. "
+                            "IMPORTANT — INPUT HANDLING: "
+                            "If Image 1 shows only a face, head, or upper body (half photo / selfie / passport photo), "
+                            "you MUST generate a natural full body for the person — infer a proportional body, natural standing pose, "
+                            "and neutral background. Match the skin tone, complexion, and gender visible in the face photo. "
+                            "If Image 1 already shows a full body, keep the original pose and background. "
                             "ABSOLUTE RULES — VIOLATING ANY OF THESE IS A FAILURE: "
                             "1. SHOW THE FULL BODY from head to toe. The ENTIRE face, head, hair, and feet MUST be visible. "
                             "DO NOT crop or cut off any part of the person — the full figure must appear in frame. "
                             "2. DO NOT CHANGE THE FACE. The face must be pixel-perfect identical to Image 1 — "
                             "same eyes, nose, mouth, skin texture, expression, facial features. No alteration whatsoever. "
                             "3. DO NOT change the hair — same style, color, length, and position. "
-                            "4. DO NOT change the skin tone, body shape, or pose. "
+                            "4. DO NOT change the skin tone. "
                             "5. Output EXACTLY ONE person — never duplicate, mirror, or add extra people. "
-                            "6. ONLY replace the clothing area with the garment from Image 2. "
+                            "6. Dress the person with the garment from Image 2. "
                             "7. The garment must fit naturally with realistic wrinkles and draping. "
-                            "8. Keep the EXACT same background, camera angle, and framing as Image 1. "
+                            "8. If the original is a full body photo, keep the EXACT same background and camera angle. "
+                            "If the original is a face/half photo, use a clean neutral background. "
                             "9. The output image must be PORTRAIT orientation (3:4 aspect ratio) showing the complete person. "
-                            "10. Think of this as a clothing swap — everything except the clothes stays identical."
+                            "10. Think of this as a clothing swap — the face and identity stay identical, only clothes change."
                         )
                     },
                     {"inline_data": {"mime_type": "image/png", "data": model_b64}},
@@ -158,13 +163,18 @@ class GeminiImageClient:
                 "text": (
                     "Virtual try-on task: Dress the person in Image 1 with ALL the garments "
                     "shown in the following images, combined as one complete outfit. "
+                    "IMPORTANT — INPUT HANDLING: "
+                    "If Image 1 shows only a face, head, or upper body (half photo / selfie / passport photo), "
+                    "you MUST generate a natural full body for the person — infer a proportional body, natural standing pose, "
+                    "and neutral background. Match the skin tone, complexion, and gender visible in the face photo. "
+                    "If Image 1 already shows a full body, keep the original pose and background. "
                     "CRITICAL RULES: "
                     "1. SHOW THE FULL BODY from head to toe — the entire face, head, hair, and feet MUST be visible. "
                     "DO NOT crop or cut off any part of the person. "
                     "2. Output EXACTLY ONE person — never duplicate or mirror the person. "
-                    "3. Keep the person's face, skin tone, hair, body shape, and pose identical to Image 1. "
+                    "3. Keep the person's face, skin tone, and hair identical to Image 1. "
                     "4. Combine all garments into one cohesive, natural-looking outfit. "
-                    "5. Preserve the original background from Image 1. "
+                    "5. If full body input, preserve the original background. If face/half photo, use a clean neutral background. "
                     "6. The output image must be PORTRAIT orientation (3:4 aspect ratio). "
                     "7. Output a single clean photorealistic image."
                 )

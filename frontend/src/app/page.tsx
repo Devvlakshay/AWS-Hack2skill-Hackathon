@@ -210,7 +210,7 @@ export default function Home() {
               margin: 0,
             }}
           >
-            India&apos;s first AI-powered virtual try-on platform. See any outfit on a realistic model before you buy — no fitting room needed.
+            India&apos;s first virtual try-on platform. See any outfit on a realistic model before you buy — no fitting room needed.
           </p>
 
           {/* Buttons */}
@@ -745,7 +745,7 @@ export default function Home() {
                   marginBottom: "0.5rem",
                 }}
               >
-                AI Powered
+                Smart Fitting
               </p>
               <h3
                 style={{

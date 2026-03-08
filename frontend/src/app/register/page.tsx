@@ -171,7 +171,7 @@ export default function RegisterPage() {
             }}
           >
             Join thousands of fashion-forward shoppers who try before they buy
-            using AI-powered virtual fitting.
+            using virtual fitting.
           </p>
           {/* Three feature pills */}
           <div

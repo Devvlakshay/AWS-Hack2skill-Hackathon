@@ -122,7 +122,7 @@ function CustomerDashboard({
           {
             href: "/tryon",
             label: "Virtual Try-On",
-            sub: "Try on clothes with AI-powered fitting",
+            sub: "Try on clothes with virtual fitting",
             accent: "#1a1a1a",
           },
           {

@@ -252,7 +252,7 @@ function TryOnPageInner() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium tracking-[0.2em] text-[#B8860B] uppercase mb-1">
-                AI-Powered
+                Smart Fitting
               </p>
               <h1
                 className="text-3xl text-[#1a1a1a]"
@@ -681,11 +681,11 @@ function TryOnPageInner() {
                 Generating your look&hellip;
               </h2>
               <p className="text-sm text-[#6B6B6B] leading-relaxed">
-                Our AI is crafting a photorealistic try-on. This typically takes 8&ndash;10 seconds.
+                Crafting a photorealistic try-on for you. This typically takes 8&ndash;10 seconds.
               </p>
               <div className="mt-6 flex items-center gap-2 text-xs text-[#9A9A9A]">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#B8860B] animate-pulse" />
-                Powered by Gemini AI
+                Processing your try-on
               </div>
             </div>
           </div>

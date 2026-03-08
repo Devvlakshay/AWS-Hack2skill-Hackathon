@@ -22,7 +22,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "FitView AI — Try Before You Buy",
   description:
-    "AI-powered virtual try-on platform for Indian retail clothing. Try before you buy.",
+    "Virtual try-on platform for Indian retail clothing. Try before you buy.",
   icons: {
     icon: "/fitview.png",
     shortcut: "/fitview.png",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "FitView AI — Try Before You Buy",
-    description: "AI-powered virtual try-on for Indian fashion. See any outfit on you in seconds.",
+    description: "Virtual try-on for Indian fashion. See any outfit on you in seconds.",
     images: [{ url: "/fitview.png", width: 1200, height: 630, alt: "FitView AI" }],
   },
 };
