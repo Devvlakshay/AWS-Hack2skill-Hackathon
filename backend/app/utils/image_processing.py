@@ -36,20 +36,19 @@ OUTPUT_QUALITY = 90
 async def preprocess_model_image(image_bytes: bytes) -> bytes:
     """
     Preprocess model image for try-on generation.
-    - Resize to 1024x1024
-    - Normalize to RGB format
-    - Return processed bytes
+    - Convert to RGB PNG format
+    - Only resize if image is excessively large (>2048px) to stay within API limits
+    - NO cropping, NO padding, NO filters — preserve the original image as-is
     """
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert("RGB")
 
-    # Resize to target size maintaining aspect ratio, then center crop
-    img = _resize_and_crop(img, MODEL_TARGET_SIZE)
-
-    # Normalize pixel values
-    img_array = np.array(img, dtype=np.float32)
-    img_array = np.clip(img_array, 0, 255).astype(np.uint8)
-    img = Image.fromarray(img_array)
+    # Only downscale if too large for API (keep original quality otherwise)
+    max_dim = 2048
+    orig_w, orig_h = img.size
+    if orig_w > max_dim or orig_h > max_dim:
+        scale = min(max_dim / orig_w, max_dim / orig_h)
+        img = img.resize((int(orig_w * scale), int(orig_h * scale)), Image.Resampling.LANCZOS)
 
     output = io.BytesIO()
     img.save(output, format="PNG", quality=95)
@@ -60,76 +59,28 @@ async def preprocess_model_image(image_bytes: bytes) -> bytes:
 async def preprocess_user_photo(image_bytes: bytes) -> bytes:
     """
     Preprocess user-uploaded photo for try-on generation.
-    User photos often have messy backgrounds (beach, trees, forest, etc.)
-    and lower quality than professional model photos. This function:
-    1. Removes background and replaces with clean studio backdrop
-    2. Upscales if resolution is too low
-    3. Enhances quality (sharpen, denoise, exposure correction)
-    4. Normalizes to 1024x1024 to match model photo quality
+    Minimal processing to preserve the original face and identity.
+    The AI model handles background/context understanding on its own.
     """
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert("RGB")
     orig_w, orig_h = img.size
 
-    # Step 1: Upscale if too small (below 768px on either side)
+    # Upscale only if very small (below 512px)
     min_dimension = min(orig_w, orig_h)
-    if min_dimension < 768:
-        scale = 768 / min_dimension
+    if min_dimension < 512:
+        scale = 512 / min_dimension
         img = img.resize(
             (int(orig_w * scale), int(orig_h * scale)),
             Image.Resampling.LANCZOS,
         )
 
-    # Step 2: Remove background and replace with clean studio backdrop
-    if HAS_REMBG:
-        # Get the person with transparent background
-        img_bytes_buf = io.BytesIO()
-        img.save(img_bytes_buf, format="PNG")
-        img_bytes_buf.seek(0)
-        fg_bytes = rembg_remove(img_bytes_buf.read())
-        fg_img = Image.open(io.BytesIO(fg_bytes)).convert("RGBA")
-
-        # Create a clean studio-like gradient background
-        studio_bg = _create_studio_background(fg_img.size)
-
-        # Composite the person onto the studio background
-        img = Image.alpha_composite(studio_bg, fg_img).convert("RGB")
-
-    # Step 3: Enhance image quality
-    # Denoise with slight blur then sharpen for clarity
-    img = img.filter(ImageFilter.SMOOTH)
-    img = img.filter(ImageFilter.SHARPEN)
-
-    # Fix exposure / brightness
-    brightness_enhancer = ImageEnhance.Brightness(img)
-    img_array = np.array(img)
-    mean_brightness = img_array.mean()
-    if mean_brightness < 100:
-        # Too dark — brighten
-        img = brightness_enhancer.enhance(1.2)
-    elif mean_brightness > 200:
-        # Too bright — darken slightly
-        img = brightness_enhancer.enhance(0.9)
-
-    # Subtle contrast boost
-    contrast_enhancer = ImageEnhance.Contrast(img)
-    img = contrast_enhancer.enhance(1.1)
-
-    # Subtle sharpening pass
-    sharpness_enhancer = ImageEnhance.Sharpness(img)
-    img = sharpness_enhancer.enhance(1.3)
-
-    # OpenCV-based denoising if available
-    if HAS_OPENCV:
-        img_arr = np.array(img)
-        img_bgr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2BGR)
-        # Non-local means denoising — removes noise while keeping edges
-        img_bgr = cv2.fastNlMeansDenoisingColored(img_bgr, None, 6, 6, 7, 21)
-        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-        img = Image.fromarray(img_rgb)
-
-    # Step 4: Resize to 1024x1024 (same as model photos)
-    img = _resize_and_crop(img, MODEL_TARGET_SIZE)
+    # Downscale only if too large for API
+    max_dim = 2048
+    w, h = img.size
+    if w > max_dim or h > max_dim:
+        scale = min(max_dim / w, max_dim / h)
+        img = img.resize((int(w * scale), int(h * scale)), Image.Resampling.LANCZOS)
 
     output = io.BytesIO()
     img.save(output, format="PNG", quality=95)
@@ -196,32 +147,14 @@ async def preprocess_garment_image(image_bytes: bytes) -> bytes:
 async def postprocess_tryon_image(image_bytes: bytes) -> bytes:
     """
     Post-process the AI-generated try-on image.
-    - Quality enhancement: sharpening, contrast adjustment
-    - Color correction
-    - Artifact removal / boundary smoothing
-    - Convert to WebP for optimized delivery
+    Minimal processing — the AI output is already high quality.
+    Just convert to WebP for optimized delivery.
     """
     img = Image.open(io.BytesIO(image_bytes))
     img = img.convert("RGB")
 
-    # Step 1: Sharpening
-    img = img.filter(ImageFilter.SHARPEN)
-
-    # Step 2: Contrast enhancement (subtle)
-    enhancer = ImageEnhance.Contrast(img)
-    img = enhancer.enhance(1.05)
-
-    # Step 3: Color enhancement (subtle)
-    color_enhancer = ImageEnhance.Color(img)
-    img = color_enhancer.enhance(1.03)
-
-    # Step 4: OpenCV-based color correction and smoothing if available
-    if HAS_OPENCV:
-        img = _opencv_postprocess(img)
-
-    # Step 5: Resize to fit within max dimensions while preserving aspect ratio
-    # Do NOT force a square crop — preserve the full-body framing from AI output
-    max_w, max_h = 1024, 1366  # Allow tall portrait images
+    # Only resize if too large, preserve aspect ratio
+    max_w, max_h = 1024, 1366
     orig_w, orig_h = img.size
     if orig_w > max_w or orig_h > max_h:
         scale = min(max_w / orig_w, max_h / orig_h)

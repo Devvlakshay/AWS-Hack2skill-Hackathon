@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     DATA_DIR: str = "data"
 
     # JWT
-    JWT_SECRET_KEY: str = Field(default="change-this-to-a-real-secret-key-at-least-32-chars")
+    JWT_SECRET_KEY: str = Field(description="Required. Generate with: python -c \"import secrets; print(secrets.token_urlsafe(32))\"")
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -24,7 +24,13 @@ class Settings(BaseSettings):
     # AI APIs (Phase 3+)
     GEMINI_API_KEY: Optional[str] = None
     GEMINI_MODEL: str = "gemini-2.5-flash"
-    GEMINI_IMAGE_MODEL: str = "gemini-3.1-flash-image-preview"
+    GEMINI_IMAGE_MODEL: str = "gemini-3-pro-image-preview"
+
+    # Vertex AI (disabled — using direct Gemini API key from .env)
+    VERTEX_AI_PROJECT_ID: str = ""
+    VERTEX_AI_LOCATION: str = "us-central1"
+    VERTEX_AI_SERVICE_ACCOUNT_JSON: str = ""
+    USE_VERTEX_AI: bool = False
 
     # Database
     MONGODB_URL: str = "mongodb://localhost:27017"

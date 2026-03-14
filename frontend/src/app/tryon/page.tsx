@@ -81,6 +81,7 @@ function TryOnPageInner() {
   const [showBeforeAfter, setShowBeforeAfter] = useState(false);
   const [cartSize, setCartSize] = useState("M");
   const [addingToCart, setAddingToCart] = useState(false);
+  const [addingAllToCart, setAddingAllToCart] = useState(false);
 
   const [resultTab, setResultTab] = useState<"combined" | "individual">("combined");
 
@@ -764,6 +765,80 @@ function TryOnPageInner() {
                         {batchResults.product_count} garments · {batchResults.combined_result.processing_time_ms}ms
                       </p>
                       <div className="space-y-3">
+                        {/* Add All Items to Cart */}
+                        <button
+                          disabled={addingAllToCart}
+                          onClick={async () => {
+                            setAddingAllToCart(true);
+                            try {
+                              const productIdsInBatch = selectedProductIds.length > 0
+                                ? selectedProductIds
+                                : batchResults.combined_result!.product_id.split(",").map((id: string) => id.trim());
+                              let addedCount = 0;
+                              for (const pid of productIdsInBatch) {
+                                try {
+                                  await addToCart(pid, "M", 1);
+                                  addedCount++;
+                                } catch (err: any) {
+                                  console.warn(`Failed to add product ${pid}:`, err);
+                                }
+                              }
+                              if (addedCount > 0) {
+                                toast.success(`Added ${addedCount} item${addedCount > 1 ? "s" : ""} to cart`);
+                              } else {
+                                toast.error("Failed to add items to cart");
+                              }
+                            } catch (err: any) {
+                              toast.error(err.message || "Failed to add to cart");
+                            } finally {
+                              setAddingAllToCart(false);
+                            }
+                          }}
+                          className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-medium bg-[#B8860B] text-white hover:bg-[#9A7209] transition-all disabled:opacity-50"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100-4 2 2 0 000 4z" />
+                          </svg>
+                          {addingAllToCart
+                            ? "Adding..."
+                            : `Add All ${batchResults.product_count} Items to Cart`}
+                        </button>
+
+                        {/* Individual items list with per-item add to cart */}
+                        <div className="border border-[#E8E4DC] rounded-xl overflow-hidden bg-white divide-y divide-[#E8E4DC]">
+                          {selectedProductIds.map((pid) => {
+                            const product = products.find((p) => p._id === pid || p.id === pid);
+                            if (!product) return null;
+                            return (
+                              <div key={pid} className="flex items-center gap-3 p-3">
+                                <div className="w-10 h-12 rounded-lg overflow-hidden bg-[#F0EDE6] flex-shrink-0">
+                                  {product.images?.[0] && (
+                                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-[#1a1a1a] truncate">{product.name}</p>
+                                  <p className="text-xs text-[#9A9A9A]">{product.price ? `₹${product.price}` : ""}</p>
+                                </div>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await addToCart(pid, "M", 1);
+                                      toast.success(`Added ${product.name} to cart`);
+                                    } catch (err: any) {
+                                      toast.error(err.message || "Failed to add to cart");
+                                    }
+                                  }}
+                                  className="flex-shrink-0 text-xs font-medium px-3 py-1.5 rounded-lg bg-[#F0EDE6] text-[#B8860B] hover:bg-[#E8E4DC] transition-colors"
+                                >
+                                  + Cart
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Favourite */}
                         <button
                           onClick={() =>
                             toggleFavorite(
@@ -782,6 +857,21 @@ function TryOnPageInner() {
                           </svg>
                           {batchResults.combined_result.is_favorite ? "Saved to Favourites" : "Save to Favourites"}
                         </button>
+
+                        {/* Download */}
+                        <a
+                          href={batchResults.combined_result.result_url}
+                          download="fitview-combined-tryon.webp"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-medium border border-[#E8E4DC] bg-white text-[#6B6B6B] hover:border-[#1a1a1a] hover:text-[#1a1a1a] transition-all"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          Download Image
+                        </a>
+
                         <div className="grid grid-cols-2 gap-3">
                           <button onClick={handleTryAnother} className="bg-[#1a1a1a] text-white text-sm font-medium py-3 px-6 rounded-xl hover:bg-[#2d2d2d] transition-colors text-center">
                             Try Other Garments
