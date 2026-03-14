@@ -335,7 +335,7 @@ export default function Home() {
                   AI Try-On Live
                 </p>
                 <p style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 700, color: "#1a1a1a", margin: "0.15rem 0 0" }}>
-                  Silk Kurta Set
+                  Pinstripe Wide-Leg Street Style
                 </p>
               </div>
               <div style={{ textAlign: "right" }}>
